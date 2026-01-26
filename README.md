@@ -28,7 +28,7 @@ VIDEO. Include a demo video of your game here (you don't have to wait until the 
 GROUP PHOTO. Add a group photo here.
 
 - 1, Matthew Honey, is25252@bristol.ac.uk, role
-- 2, name, email, role
+- 2, Yoyo Wu, xa25891@bristol.ac.uk, role
 - 3, name, email, role
 - 4, name, email, role
 - 5, name, email, role
