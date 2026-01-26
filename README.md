@@ -27,12 +27,12 @@ VIDEO. Include a demo video of your game here (you don't have to wait until the 
 
 GROUP PHOTO. Add a group photo here.
 
-- Group member 1, name, email, role
-- Group member 2, name, email, role
-- Group member 3, name, email, role
-- Group member 4, name, email, role
-- Group member 5, name, email, role
-- Group member 6, name, email, role
+- 1, Matthew Honey, is25252@bristol.ac.uk, role
+- 2, name, email, role
+- 3, name, email, role
+- 4, name, email, role
+- 5, name, email, role
+- 6, name, email, role
 
 ## Project Report
 
