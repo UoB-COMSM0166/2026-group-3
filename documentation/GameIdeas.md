@@ -25,3 +25,21 @@ FTL is a game where you control a ship and fight there various encounters managi
 Pong is probably one of the most simple games out there, which could allow it to serve as a good base to build upon. There are lots of ways you could add complexity to this game in interesting ways with its simple physics based simulation
 
 ![Pong](images/Pong.png)
+
+### Plants vs Zombies
+
+Plants vs Zombies is a 2D lane-based tower defense game. It takes a very simple technical base (objects moving on a grid) and layers it with charming art and perfect mathematical balancing.
+
+![Plants vs Zombies](images/plantsVsZombies.png)
+
+### Dave the diver
+
+Dave the diver is a casual single-player adventure RPG that successfully blends two distinct genres. The game features an addictive day-and-night cycle: 
+
+-Day: You dive into the "Blue Hole" (a deep-sea environment that changes layout procedurally) to harpoon fish and gather resources. This is the Action/Roguelite phase.
+
+-Night: You return to the surface to run a sushi restaurant. You choose the menu based on what you caught, pour tea, and serve customers. This is the Tycoon/Management phase.
+
+
+![Dave the diver](images/dtd.png) ![Dave the diver](images/dtdsushi.png)
+
