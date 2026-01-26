@@ -43,3 +43,26 @@ Dave the diver is a casual single-player adventure RPG that successfully blends 
 
 ![Dave the diver](images/dtd.png) ![Dave the diver](images/dtdsushi.png)
 
+
+### Asteroids
+[Play here](https://www.echalk.co.uk/amusements/Games/asteroidsClassic/ateroids.html)
+
+Asteroids is a simple game, but quite good in that we have a lot of freedom to experiment with the themes and components. We could take the main objective of the game and apply different rules, e.g. some asteroids(/whatever they may be) only need to be hit once, twice, etc., based on colour, for example. 
+
+![Asteroids game screenshot](images/Asteroids.png)
+
+
+### Geometry Dash
+[Play here](https://geometrylitepc.io)
+
+The idea of an endless running game is interesting. The game is a matter of timing, where you have to press the screen/spacebar every time you encounter an obstacle. Not sure whether we could do the constant running aspect of it, but the main objective of jumping over obstacles to get around a map could be cool, also in a similar manner to FireBoy and Watergirl? As opposed to common shooter-type games.
+
+![Geometry Dash game screenshot](images/GeometryDash.png)
+
+
+### Frogger 
+[Play here](https://www.crazygames.com/game/frogger)
+
+The aim is to make sure 5 frogs cross the road with moving cars and jump over the lake containing moving planks to the lily pads. This could be interesting to adapt as a two-person game. We could also add a secondary objective of collecting coins to create competition with the other user. Also, the maps in Frogger are quite limited. They do increase in difficulty as they go on, but we could definitely experiment with extending the length of each map, as well as adding more complex obstacles. 
+
+![Frogger game screenshot](images/Frogger.png)
