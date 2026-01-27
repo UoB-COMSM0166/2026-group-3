@@ -30,7 +30,7 @@ GROUP PHOTO. Add a group photo here.
 - 1, Matthew Honey, is25252@bristol.ac.uk, role
 - 2, Yoyo Wu, xa25891@bristol.ac.uk, role
 - 3, Khalda Satti, ji25166@bristol.ac.uk, role
-- 4, name, email, role
+- 4, Tanveer Bakshi, lr25703@bristol.ac.uk, role
 - 5, name, email, role
 - 6, name, email, role
 
