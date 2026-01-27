@@ -66,3 +66,27 @@ The idea of an endless running game is interesting. The game is a matter of timi
 The aim is to make sure 5 frogs cross the road with moving cars and jump over the lake containing moving planks to the lily pads. This could be interesting to adapt as a two-person game. We could also add a secondary objective of collecting coins to create competition with the other user. Also, the maps in Frogger are quite limited. They do increase in difficulty as they go on, but we could definitely experiment with extending the length of each map, as well as adding more complex obstacles. 
 
 ![Frogger game screenshot](images/Frogger.png)
+
+
+### Pokémon Emerald
+[Play here](https://classicgamezone.com/games/pokemon-emerald)
+
+A classic RPG focused on exploration, story progression, and turn-based battles.The mix of exploration and strategic combat makes it engaging without relying on fast-paced action. it does have a lot of dialogue sometimes.
+
+![Pokémon Emerald Screenshot](images/pokemon-emerald-gameplay.png)
+
+
+### Super Dodge Ball
+[Play here](https://classicgamezone.com/games/super-dodge-ball)
+
+A fast-paced 2D sports game where two teams throw dodgeballs at each other to eliminate opponents. Players move, dodge, catch, and throw balls strategically to win matches. it can also be played by 2 players and we can also make a few changes to the gameplay like giving each player a single life so that the matches are smaller and interesting!
+
+![Super Dodge Ball Screenshot](images/Super-dodge-ball.png)
+
+
+### Teleportorium
+[Play here](https://devloglogan.itch.io/teleportorium)
+
+A 2D platformer where the player navigates levels using a teleport ability to overcome obstacles and hazards. The focus is on timing and precise movement to reach the end of each level. The concept is so interesting!!
+
+![Teleportorium Screenshot](images/Teleportorium.png)
