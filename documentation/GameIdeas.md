@@ -90,3 +90,12 @@ A fast-paced 2D sports game where two teams throw dodgeballs at each other to el
 A 2D platformer where the player navigates levels using a teleport ability to overcome obstacles and hazards. The focus is on timing and precise movement to reach the end of each level. The concept is so interesting!!
 
 ![Teleportorium Screenshot](images/Teleportorium.png)
+
+### Age of War
+[Play here](https://ageofwargame.io/)
+
+Age of War is a side-scrolling strategy game where two opposing sides continuously deploy units to defeat each other.  
+The key appeal of the game lies in its era-based progression system: players begin in a primitive age and gradually evolve through technological upgrades, unlocking increasingly powerful unit types.  
+This creates a strong sense of long-term growth, where strategic decisions about upgrades directly shape the battlefield over time.
+
+![Age of War Screenshot](images/Age%20of%20War.png)
