@@ -129,3 +129,16 @@ A 2D platformer where the player navigates levels using a teleport ability to ov
 - Simple rule set that gradually expands the player’s role within the ecosystem
 
 ![Feeding Frenzy 2 Screenshot](images/Feeding%20Frenzy%202.png)
+
+### Vampire Survivors
+
+[Steam Page / Video](https://store.steampowered.com/app/1794680/Vampire_Survivors/)
+
+- Action survival game with automatic attacks and minimal player input
+- Core gameplay centered on surviving increasingly dense enemy waves
+- Progression driven by weapon evolution rather than manual combat skill
+- Weapons unlock new forms and attack patterns through upgrade paths
+- Strong emphasis on form-based progression instead of pure stat increases
+- Simple control scheme paired with deep progression and build variety
+
+![Vampire Survivors Screenshot](images/b2d4a1c1e6fc1ca9033c9e6fb36b32e7.png)
