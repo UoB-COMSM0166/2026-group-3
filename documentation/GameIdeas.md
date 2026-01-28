@@ -114,4 +114,18 @@ A 2D platformer where the player navigates levels using a teleport ability to ov
 - Clear long-term growth driven by upgrade decisions
 - Simple battlefield structure that highlights progression and evolution systems
 
-![Kingdom Guard Screenshot](images/kingdom-guard.png)
+![Kingdom Guard Screenshot](images/Kingdom%20Guard.png)
+
+
+### Feeding Frenzy 2
+
+[Steam Page / Video](https://store.steampowered.com/app/3390/Feeding_Frenzy_2_Deluxe/)
+
+- Growth-based arcade game focused on predator–prey dynamics
+- Core mechanic centered on eating smaller fish while avoiding larger threats
+- Progression driven by evolutionary unlocks rather than simple size scaling
+- Players unlock new fish types with distinct appearances and abilities
+- Clear sense of progression through form-based evolution
+- Simple rule set that gradually expands the player’s role within the ecosystem
+
+![Feeding Frenzy 2 Screenshot](images/Feeding%20Frenzy%202.png)
