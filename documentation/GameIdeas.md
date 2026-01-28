@@ -94,8 +94,24 @@ A 2D platformer where the player navigates levels using a teleport ability to ov
 ### Age of War
 [Play here](https://ageofwargame.io/)
 
-Age of War is a side-scrolling strategy game where two opposing sides continuously deploy units to defeat each other.  
-The key appeal of the game lies in its era-based progression system: players begin in a primitive age and gradually evolve through technological upgrades, unlocking increasingly powerful unit types.  
-This creates a strong sense of long-term growth, where strategic decisions about upgrades directly shape the battlefield over time.
+- Side-scrolling strategy game with two opposing bases
+- Continuous unit deployment from both sides
+- Era-based progression system spanning multiple historical periods
+- Units and abilities unlocked through technological evolution
+- Progression focused on form and unit type unlocks rather than pure stat upgrades
+- Long-term strategic decisions significantly reshape battlefield dynamics
 
 ![Age of War Screenshot](images/Age%20of%20War.png)
+
+### Kingdom Guard
+
+[Gameplay Video](https://www.youtube.com/watch?v=vJZjWYM9BIU)
+
+- Lane-based tower defense with enemies advancing along a fixed path
+- Focus on unit deployment rather than complex tower placement
+- Strong emphasis on unit evolution and form upgrades
+- Progression through unlocking stronger unit types instead of pure stat scaling
+- Clear long-term growth driven by upgrade decisions
+- Simple battlefield structure that highlights progression and evolution systems
+
+![Kingdom Guard Screenshot](images/kingdom-guard.png)
