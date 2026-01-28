@@ -31,7 +31,7 @@ GROUP PHOTO. Add a group photo here.
 - 2, Yoyo Wu, xa25891@bristol.ac.uk, role
 - 3, Khalda Satti, ji25166@bristol.ac.uk, role
 - 4, Tanveer Bakshi, lr25703@bristol.ac.uk, role
-- 5, SHUYUAN LIU, de25547@britol.ac.uk, role
+- 5, SHUYUAN LIU, de25547@bristol.ac.uk, role
 - 6, name, email, role
 
 ## Project Report
