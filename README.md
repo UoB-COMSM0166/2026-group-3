@@ -39,7 +39,11 @@ GROUP PHOTO. Add a group photo here.
 ### Introduction
 
 - 5% ~250 words 
-- Describe your game, what is based on, what makes it novel? (what's the "twist"?) 
+- Describe your game, what is based on, what makes it novel? (what's the "twist"?)
+
+#### Paper Prototype Video
+
+https://github.com/user-attachments/assets/90a7eb9a-43de-479c-ae55-0d8551997492
 
 ### Requirements 
 
