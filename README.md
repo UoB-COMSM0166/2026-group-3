@@ -41,18 +41,18 @@ GROUP PHOTO. Add a group photo here.
 - 5% ~250 words 
 - Describe your game, what is based on, what makes it novel? (what's the "twist"?)
 
-## Requirements 
+## 2. Requirements 
 
 - 15% ~750 words
 - Early stages design. Ideation process. How did you decide as a team what to develop? Use case diagrams, user stories. 
 
-### Ideation Process
+### 2.1 Ideation Process
 
 #### Paper Prototype Video
 
 https://github.com/user-attachments/assets/90a7eb9a-43de-479c-ae55-0d8551997492
 
-### Stakeholders & Epics
+### 2.2 Stakeholders & Epics
 
 We identified the following stakeholders and visualised their relative impact on our development using an onion model:
 
@@ -87,7 +87,9 @@ With these epics and stakeholders, we devised the following user stories which w
 | Art Designer | Good Art | As an art designer, I want the art to be used properly in the game so that the art is appreciated by the players | Given I am playing the game, when multiple different assets are visible on screen, they should be layered correctly |
 | Music Designer | Good Music | As a music designer, I want the music to be properly utilised in the game so that the music is appreciated by the players | Given I am playing the game, when music is played in the game, then it should be used in the correct scenes and have it's volume correctly mixed with the sound effects |
 
-### Use Cases
+### 2.3 Use Cases
+
+### 2.4 Reflection
 
 
 ## Design
