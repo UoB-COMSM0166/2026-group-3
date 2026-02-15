@@ -48,12 +48,10 @@ GROUP PHOTO. Add a group photo here.
 
 ### 2.1 Ideation Process
 
-| ![Alt text](documentation/Requirements_figures/games.png) |
-| :---: |
-| Ideation Phase: We started with several game concepts... |
-
-| Voting Results: ... | ![Vote](documentation/Requirements_figures/vote.png) | 
-| :--- | :--- |
+<p align="center">
+  <img src="documentation/Requirements_figures/games.png" width="75%" />
+  <img src="documentation/Requirements_figures/vote.png" width="35%" /> 
+</p>
 
 #### Early stages design
 
@@ -79,8 +77,11 @@ GROUP PHOTO. Add a group photo here.
 - The Twist: A dual-phase loop inspired by Dave the Diver—players switch between an action phase (combat) and a management phase (serving customers).)
 </p>
 <p align="center">
-  <img src="documentation/Requirements_figures/gamePhase.jpg" />
-  To simplify development and keep the gameplay flow intuitive, we pivoted from a two-scene structure to a single unified view. We simplified the game loop by keeping everything in one persistent scene. The game alternates phases purely through character movement
+  <img src="documentation/Requirements_figures/gamePhase.jpg" width="70%" />
+  
+   <b>To simplify development and keep the gameplay flow intuitive, we pivoted from a two-scene structure to a single unified view. 
+ 
+  We simplified the game loop by keeping everything in one persistent scene. The game alternates phases purely through character movement</b>
 </p>
 
 <table>
