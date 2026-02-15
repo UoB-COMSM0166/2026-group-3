@@ -115,6 +115,7 @@ GROUP PHOTO. Add a group photo here.
     </td>
   </tr>
 </table>
+
 ### 2.2 Stakeholders & Epics
 
 We identified the following stakeholders and visualised their relative impact on our development using an onion model:
