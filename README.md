@@ -50,18 +50,71 @@ GROUP PHOTO. Add a group photo here.
 
 | ![Alt text](documentation/Requirements_figures/games.png) |
 | :---: |
-| **Ideation Phase:** We started with several game concepts... |
+| Ideation Phase: We started with several game concepts... |
 
-| **Voting Results:** As you can see, "Evolution through consumption" was the clear winner with 4 votes. | ![Vote](documentation/Requirements_figures/vote.png) | 
+| Voting Results: ... | ![Vote](documentation/Requirements_figures/vote.png) | 
 | :--- | :--- |
-
 
 #### Early stages design
 
-#### Paper Prototype Video
+<p align="center">
+  <img src="documentation/Requirements_figures/PvsZ.gif" width="45%" />
+  <img src="documentation/Requirements_figures/VSlevelup.jpg" width="45%" /> 
+</p>
+<p align="center">
+ Our initial concept was a Tower Defense game inspired by Plants vs. Zombies, featuring the power-scaling and upgrade systems of Vampire Survivors. To create a unique twist, we integrated a management cycle similar to Dave the Diver: the gameplay loops between a combat phase (gathering resources) and a management phase (running a shop/restaurant).
+</p>
 
-https://github.com/user-attachments/assets/90a7eb9a-43de-479c-ae55-0d8551997492
+<p align="center">
+  <img src="documentation/Requirements_figures/DtDfishing.gif" width="45%" />
+  <img src="documentation/Requirements_figures/DtDsushi.gif" width="45%" /> 
+</p>
+<b> Core Mechanics & Inspirations: </b>
+<p align="center">
 
+- Tower Defense: Base defense mechanics inspired by Plants vs. Zombies.
+
+- Progression: Roguelike level-ups and upgrades similar to Vampire Survivors.
+
+- The Twist: A dual-phase loop inspired by Dave the Diver—players switch between an action phase (combat) and a management phase (serving customers).)
+</p>
+<p align="center">
+  <img src="documentation/Requirements_figures/gamePhase.jpg" />
+  To simplify development and keep the gameplay flow intuitive, we pivoted from a two-scene structure to a single unified view. We simplified the game loop by keeping everything in one persistent scene. The game alternates phases purely through character movement
+</p>
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>Phase 1: Day Time Defense</h3>
+      <ul>
+        <li><b>Chef's Position:</b> In front of the counter.</li>
+        <li><b>Goal:</b> Defend the kitchen from incoming zombies.</li>
+        <li><b>Mechanic:</b> Shooting and gathering ingredients (zombie parts).</li>
+        <li><b>UI:</b> Health bar and ammo count are visible.</li>
+      </ul>
+    </td>
+    <td width="50%">
+      <img src="documentation/Requirements_figures/phase1Prototype.gif" width="100%">
+    </td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>Phase 2: Night Time Managment</h3>
+      <ul>
+        <li><b>Chef's Position:</b> Behind the counter.</li>
+        <li><b>Goal:</b> Serve customers food to earn gold.</li>
+        <li><b>Mechanic:</b> Cooking and Serving.</li>
+        <li><b>UI:</b> Ingredients stock and menu are visible.</li>
+      </ul>
+    </td>
+    <td width="50%">
+      <img src="documentation/Requirements_figures/phase2Prototype.gif" width="100%">
+    </td>
+  </tr>
+</table>
 ### 2.2 Stakeholders & Epics
 
 We identified the following stakeholders and visualised their relative impact on our development using an onion model:
