@@ -48,6 +48,16 @@ GROUP PHOTO. Add a group photo here.
 
 ### 2.1 Ideation Process
 
+| ![Alt text](documentation/Requirements_figures/games.png) |
+| :---: |
+| **Ideation Phase:** We started with several game concepts... |
+
+| **Voting Results:** As you can see, "Evolution through consumption" was the clear winner with 4 votes. | ![Vote](documentation/Requirements_figures/vote.png) | 
+| :--- | :--- |
+
+
+#### Early stages design
+
 #### Paper Prototype Video
 
 https://github.com/user-attachments/assets/90a7eb9a-43de-479c-ae55-0d8551997492
