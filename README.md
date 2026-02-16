@@ -154,6 +154,28 @@ With these epics and stakeholders, we devised the following user stories which w
 
 ### 2.3 Use Cases
 
+（figure）
+Figure X – Use Case Diagram
+
+- Actor: Player
+- System: Zombie Kitchen
+- Core Use Cases: Start Game, Configure Settings, Play Game（include Day/Night two stage）, Collect Ingredients, Purchase Upgrades
+
+
+
+Table X — Use Case Specifications (Zombie Kitchen)
+| Use Case ID | Use Case Name                | Primary Actor | Description                                                 | Preconditions                             | Basic Flow                                                                                                                                  | Alternative / Exception Flow                         | Postconditions                                   |
+|-------------|-----------------------------|---------------|-------------------------------------------------------------|-------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------|--------------------------------------------------|
+| UC1         | Start Game                  | Player        | Player starts a new game session                            | Game is launched and main menu is visible | 1. Player selects “Start Game” <br> 2. System initialises new run (reset stats, inventory, day) <br> 3. Game transitions to Play Game     | Player exits from menu → Game closes                 | A new run begins                                  |
+| UC2         | Configure Settings          | Player        | Player adjusts difficulty and accessibility settings        | Settings menu is accessible               | 1. Player opens settings <br> 2. Selects difficulty <br> 3. Adjusts UI scale or volume <br> 4. Confirms changes                           | Player cancels → no changes saved                    | Settings saved and applied                        |
+| UC3         | Play Game                   | Player        | Core gameplay loop alternating between day and night phases | Game session has started                  | 1. System enters Day Phase <br> 2. System enters Night Phase <br> 3. Player may upgrade <br> 4. Day counter increases                     | Player health reaches zero → Game Over               | Player progresses to next day or run ends         |
+| UC4         | Day Phase: Defend Kitchen   | Player        | Player fights zombies and survives waves                    | A day begins                              | 1. Zombies spawn <br> 2. Player attacks <br> 3. Zombies defeated <br> 4. Ingredients drop <br> 5. Day ends                                | Player dies → Game Over                              | Ingredients collected; transition to night        |
+| UC4.1       | Collect Ingredients         | Player        | Player collects dropped resources                           | Zombie defeated and drop appears          | 1. Ingredient appears <br> 2. Player collects <br> 3. Inventory updates                                                                     | Drop expires or inventory full                       | Inventory increases                               |
+| UC5         | Night Phase: Serve Customers| Player        | Player cooks dishes and earns coins                         | Day phase completed                       | 1. Customers appear <br> 2. Player selects dish <br> 3. Ingredients consumed <br> 4. Player serves dish <br> 5. Coins awarded             | No ingredients → cannot serve; customer leaves       | Coins increase                                    |
+| UC6         | Purchase Upgrades           | Player        | Player buys upgrades to improve performance                 | Player has coins and shop is open         | 1. Player opens shop <br> 2. Selects upgrade <br> 3. Coins deducted <br> 4. Upgrade applied                                               | Not enough coins → purchase fails                    | Player stats or weapons improved                  |
+
+
+
 ### 2.4 Reflection
 
 
