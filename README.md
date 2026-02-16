@@ -154,7 +154,7 @@ With these epics and stakeholders, we devised the following user stories which w
 
 ### 2.3 Use Cases
 
-（figure）
+![Use Case Diagram](documentation/images/zombie_kitchen_use_case_diagram_v2.png)
 Figure X – Use Case Diagram
 
 - Actor: Player
