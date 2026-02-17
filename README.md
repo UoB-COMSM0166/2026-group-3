@@ -144,10 +144,11 @@ Incorporating technical novelty into Doomsday Kitchen was more straightforward t
 </table>
 
 ### 2.2 Stakeholders & Epics
+<p align="center">
+  <img src="documentation/Requirements_figures/OnionModel.png" width="60%" />
+</p>
+<p align="center"><em>Figure : Onion model showing stakeholders of Doomsday Kitchen</em></p>
 
-We identified the following stakeholders and visualised their relative impact on our development using an onion model:
-
-Competitive Players, Casual Players, Game Designers, Visually Impaired Players, Hard of Hearing Player, Professors/Teaching Assistants, Art Designers, Music Designers, Legislatures, Publishers.
 
 We also identified the following epics based on the requirments of these stakeholders
 
