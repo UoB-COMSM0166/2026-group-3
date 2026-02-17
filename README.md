@@ -43,10 +43,36 @@ GROUP PHOTO. Add a group photo here.
 
 ## 2. Requirements 
 
-- 15% ~750 words
-- Early stages design. Ideation process. How did you decide as a team what to develop? Use case diagrams, user stories. 
-
 ### 2.1 Ideation Process
+
+Doomsday Kitchen was a result of continuous brainstorming and developing our ideas in response to feedback from both our team and other student groups. While gathering inspiration, we focused on what we liked and didn’t like about each game’s mechanics, storylines, objectives, themes and player modes (see Figure - below).
+
+Individual members developed their own game ideas, creating drawings, diagrams or character images to illustrate them to the group. Through an anonymous vote, we chose two games:
+- **Evolution Through Consumption**
+- **Doomsday Kitchen (Tower Defence + Management)**
+
+However, after creating prototypes of both games, we chose the latter for the following reasons:
+
+
+### Distinctive, Unique Gameplay Concept
+
+Doomsday Kitchen combines multiple game ideas into one concept:
+- *Plants vs Zombies* (zombie defence)
+- *Vampire Survivors* (upgrades)
+- *Dave the Diver* (restaurant management phase)
+
+As opposed to Evolution Through Consumption, which was solely inspired by *Agar.io* and contained less thematic creativity.
+
+
+### Interactive Menu System for Purchasing Food and Weapons
+
+We adapted the menu of *Dave the Diver* to create our own zombie food items, such as [insert examples]. This increased the customisability and interactivity of the game for the player, encouraging engagement by collecting coins and purchasing items they personally like. This is a key component of our user experience.
+
+
+### Increased Technical Complexity in Mechanics
+
+Incorporating technical novelty into Doomsday Kitchen was more straightforward than in Evolution Through Consumption. We planned for zombies to move freely within the game map, not restricted to a grid or rows, as in *Plants vs Zombies*, where movement is confined to a straight line. Evolution Through Consumption was more constrained in terms of imaginative mechanical design.
+
 
 <p align="center">
   <img src="documentation/Requirements_figures/games.png" width="75%" />
@@ -178,6 +204,15 @@ Table X — Use Case Specifications (Zombie Kitchen)
 
 ### 2.4 Reflection
 
+By shaping our epics, user stories and acceptance criteria, we reviewed our proposed game implementations and filled in design gaps. Developing the epics was straightforward, but we became hesitant when creating user stories and acceptance criteria, finding our original definitions too vague. For example, we were sure to include a buying menu, but did not specify what the buying currency in the game was. How would the player purchase upgrades, and how would they earn this currency? We chose that the player would collect zombie meat to earn coins. This lack of detail in our planning reflects our focus on forming good epics but a lack of consideration for the development process.  
+
+The epic, “Difficulty Scaling”, highlighted our lack of lose condition in gameplay. We knew we wanted to gradually increase difficulty as the levels progressed from easy to hard, but we were unsure how to create the challenge. This led to brainstorming ideas: zombies becoming critically close to the player, introducing a “big boss” at the end of a stage with higher difficulty to kill than ordinary zombies and spawning large numbers of zombies to challenge the player’s ability to defeat them before they get too close. We settled on a lose condition where the player’s health decreases as zombies become critically close to the player, and spawning larger numbers of zombies as game level difficulty increases.
+
+Our group also encountered challenges in creating quantifiable acceptance criteria since a significant part of our user stories was based on subjective features. For example, “Given I am playing the game, when multiple different assets are visible on screen, they should be layered correctly”. This user story would be difficult to test because “Good Art” as an epic is subjective. 
+
+Additionally, collecting the requirements emphasised how user stories and acceptance criteria can differ for the same epic. For example, both a casual player and a competitive player might want the option to switch difficulties, but for distinct reasons.
+
+Gathering requirements helped us perfect our game concept, moving us closer to a well-rounded game from a vague idea.
 
 ## Design
 
