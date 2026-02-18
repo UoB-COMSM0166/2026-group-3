@@ -181,7 +181,7 @@ With these epics and stakeholders, we devised the following user stories which w
 
 ### 2.3 Use Cases
 
-![Use Case Diagram](documentation/images/zombie_kitchen_use_case_diagram_v2.png)
+![Use Case Diagram](documentation/images/Use Case Diagram.png)
 Figure X – Use Case Diagram
 
 - Actor: Player
@@ -191,15 +191,22 @@ Figure X – Use Case Diagram
 
 
 Table X — Use Case Specifications (Zombie Kitchen)
-| Use Case ID | Use Case Name                | Primary Actor | Description                                                 | Preconditions                             | Basic Flow                                                                                                                                  | Alternative / Exception Flow                         | Postconditions                                   |
-|-------------|-----------------------------|---------------|-------------------------------------------------------------|-------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------|--------------------------------------------------|
-| UC1         | Start Game                  | Player        | Player starts a new game session                            | Game is launched and main menu is visible | 1. Player selects “Start Game” <br> 2. System initialises new run (reset stats, inventory, day) <br> 3. Game transitions to Play Game     | Player exits from menu → Game closes                 | A new run begins                                  |
-| UC2         | Configure Settings          | Player        | Player adjusts difficulty and accessibility settings        | Settings menu is accessible               | 1. Player opens settings <br> 2. Selects difficulty <br> 3. Adjusts UI scale or volume <br> 4. Confirms changes                           | Player cancels → no changes saved                    | Settings saved and applied                        |
-| UC3         | Play Game                   | Player        | Core gameplay loop alternating between day and night phases | Game session has started                  | 1. System enters Day Phase <br> 2. System enters Night Phase <br> 3. Player may upgrade <br> 4. Day counter increases                     | Player health reaches zero → Game Over               | Player progresses to next day or run ends         |
-| UC4         | Day Phase: Defend Kitchen   | Player        | Player fights zombies and survives waves                    | A day begins                              | 1. Zombies spawn <br> 2. Player attacks <br> 3. Zombies defeated <br> 4. Ingredients drop <br> 5. Day ends                                | Player dies → Game Over                              | Ingredients collected; transition to night        |
-| UC4.1       | Collect Ingredients         | Player        | Player collects dropped resources                           | Zombie defeated and drop appears          | 1. Ingredient appears <br> 2. Player collects <br> 3. Inventory updates                                                                     | Drop expires or inventory full                       | Inventory increases                               |
-| UC5         | Night Phase: Serve Customers| Player        | Player cooks dishes and earns coins                         | Day phase completed                       | 1. Customers appear <br> 2. Player selects dish <br> 3. Ingredients consumed <br> 4. Player serves dish <br> 5. Coins awarded             | No ingredients → cannot serve; customer leaves       | Coins increase                                    |
-| UC6         | Purchase Upgrades           | Player        | Player buys upgrades to improve performance                 | Player has coins and shop is open         | 1. Player opens shop <br> 2. Selects upgrade <br> 3. Coins deducted <br> 4. Upgrade applied                                               | Not enough coins → purchase fails                    | Player stats or weapons improved                  |
+| Use Case ID | Use Case Name | Primary Actor | Description | Preconditions | Trigger | Main Flow (Summary) | Postconditions | Alternatives / Exceptions |
+|------------|-------------|--------------|------------|--------------|--------|--------------------|---------------|--------------------------|
+| UC1 | Start Game | Player | Start a new gameplay run | Game launched; main menu visible | Player selects Start Game | System initializes run and enters gameplay loop | New run active | Loading failure returns to menu |
+| UC2 | Configure Settings | Player | Adjust game preferences | Player in menu | Player opens settings | System displays and saves updated preferences | Settings updated | Invalid input rejected |
+| UC3 | Play Game | Player | Progress through day–night cycles | Run has started | Gameplay begins | Day phase → Night phase → repeat | Player progresses or run ends | Pause, Quit, or Game Over |
+| UC4 | Day Phase – Defend Kitchen | Player | Protect kitchen from zombie waves | Play Game active | Day phase starts | Zombies spawn → Player defends → Ingredients drop | Resources gained | Kitchen destroyed → Game Over |
+| UC5 | Defeat Zombie Wave | Player | Eliminate attacking zombies | Zombie wave active | Zombies appear | Player attacks → Zombies removed → Drops generated | Wave cleared | Player overwhelmed → Game Over |
+| UC6 | Gather Ingredients | Player | Collect dropped ingredients | Ingredients in scene | Player collects item | Item picked up → Inventory updated | Ingredients stored | Inventory full prevents pickup |
+| UC7 | Night Phase – Run Kitchen | Player | Convert ingredients into coins/upgrades | Day phase completed | Night phase starts | Cook → Serve → Earn coins → Upgrade | Upgrades applied | None |
+| UC8 | Cook Dishes | Player | Prepare dishes from ingredients | Ingredients available | Player selects recipe | Ingredients consumed → Dish created | Dish ready | Missing ingredients |
+| UC9 | Serve Customers | Player | Fulfill orders for coins | Customers present | Order placed | Dish served → Coins rewarded | Coins earned | Wrong dish or timeout penalty |
+| UC10 | Pause Game | Player | Temporarily halt gameplay | Play Game active | Player pauses | Game freezes → Pause menu shown | Game resumes | None |
+| UC11 | Quit Game | Player | Exit current run | Play Game active | Player selects quit | Confirmation → Run ends | Main menu shown | Quit cancelled |
+| UC12 | Game Over | Player | End run after failure | Failure met | Kitchen destroyed | Game stops → Game Over screen | Post-game options | None |
+| UC13 | Purchase Upgrades | Player | Improve abilities | Sufficient coins | Player opens upgrade menu | Upgrade applied → Coins deducted | Ability improved | Insufficient coins |
+| UC14 | Post-Game Options | Player | Choose next action | Game Over active | Player selects option | Action executed | New run or menu | Invalid selection retry |
 
 
 
