@@ -182,6 +182,7 @@ With these epics and stakeholders, we devised the following user stories which w
 ### 2.3 Use Cases
 
 ![Use Case Diagram](documentation/images/UseCaseDiagram.png)
+
 Figure X – Use Case Diagram
 
 - Actor: Player
