@@ -9,9 +9,11 @@ export class TestEntity extends Entity{
         super(game, pos, size);
         this.speed = 0.1;
         this.color = color(0, 0, 0);
+        this.isVisible = true;
     }
 
     draw(gameSize){
+        if (!this.isVisible) { return; }
         fill(this.color);
         stroke(0);
         let rel_pos = this.game.view.localToScreen(this.pos);
@@ -19,14 +21,19 @@ export class TestEntity extends Entity{
         rect(rel_pos.x, rel_pos.y, rel_size.x, rel_size.y);
     }
     update(events){
+        if (!this.isVisible) { return; }
         if (keyIsDown(LEFT_ARROW)) this.pos.x -= this.speed;
         if (keyIsDown(RIGHT_ARROW)) this.pos.x += this.speed;
         if (keyIsDown(UP_ARROW)) this.pos.y -= this.speed;
         if (keyIsDown(DOWN_ARROW)) this.pos.y += this.speed;
+        
+        let mousePos = this.game.view.screenToLocal(new Vector2(mouseX, mouseY));
+        if (mousePos.withinBox(this.pos, this.size)){
+            cursor(HAND);
+        }
 
         for (let event of events){
             if (event.type == "click"){
-                let mousePos = this.game.view.screenToLocal(new Vector2(event.pageX, event.pageY));
                 if (mousePos.withinBox(this.pos, this.size)){
                     this.color.setRed(random(0, 255));
                     this.color.setGreen(random(0, 255));

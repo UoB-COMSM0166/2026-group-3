@@ -12,6 +12,7 @@ export class UIElement {
         //Y sticky: Top, Centre, Bottom 
         this.sticky = sticky;
         this.pos = this.calculatePosition(this.game.view.gameSize);
+        this.isVisible;
 
     }
     calculatePosition(gameSize){

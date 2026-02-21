@@ -7,6 +7,7 @@ export class Controller {
     }
 
     update() {
+        cursor(ARROW);
         let events = this.eventQueue;
         this.eventQueue = [];
         if (this.model.scene == null) return;

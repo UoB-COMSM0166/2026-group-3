@@ -10,9 +10,11 @@ export class TestUIElement extends UIElement {
         let sticky = new Vector2("Right","Top");
         super(game, offset, size, sticky);
         this.text = "Click me";
+        this.isVisible = true;
     }
 
     draw(gameSize){
+        if (!this.isVisible) { return; }
         fill(255, 0, 0);
         stroke(0);
         rect(this.pos.x, this.pos.y, this.size.x, this.size.y);
@@ -29,9 +31,15 @@ export class TestUIElement extends UIElement {
 
 
     update(events){
+        if (!this.isVisible) { return; }
+
+        let mousePos = new Vector2(mouseX, mouseY);
+        if (mousePos.withinBox(this.pos, this.size)){
+            cursor(HAND);
+        }
+
         for (let event of events){
             if (event.type == "click"){
-                let mousePos = new Vector2(event.pageX, event.pageY);
                 if (mousePos.withinBox(this.pos, this.size)){
                     this.handleClick();
                 }
