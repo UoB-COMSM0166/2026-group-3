@@ -12,7 +12,7 @@ export class UIElement {
         //Y sticky: Top, Centre, Bottom 
         this.sticky = sticky;
         this.pos = this.calculatePosition(this.game.view.gameSize);
-        this.isVisible;
+        this.isVisible = true;
 
     }
     calculatePosition(gameSize){
@@ -20,7 +20,7 @@ export class UIElement {
         if (this.sticky.x == "Left"){
             pos.x = this.offset.x;
         } else if (this.sticky.x == "Right") {
-            pos.x = (gameSize.x - this.offset.x) - this.size.x;
+            pos.x = (gameSize.x + this.offset.x) - this.size.x;
         } else if (this.sticky.x == "Centre") {
             pos.x = (gameSize.x / 2) - (this.size.x / 2);
         } else {
@@ -30,11 +30,11 @@ export class UIElement {
         if (this.sticky.y == "Top"){
             pos.y = this.offset.y;
         } else if (this.sticky.y == "Bottom") {
-            pos.y = (gameSize.y - this.offset.y) - this.size.y;
+            pos.y = (gameSize.y + this.offset.y) - this.size.y;
         } else if (this.sticky.y == "Centre") {
             pos.y = (gameSize.y / 2) - (this.size.y / 2);
         } else {
-            pos.y = this. offset.y;
+            pos.y = this.offset.y;
             console.log("Unknown Sticky Value: ", this.sticky.y);
         }
         return pos;

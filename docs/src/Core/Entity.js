@@ -8,7 +8,7 @@ export class Entity {
         this.pos = pos;
         this.size = size;
         this.game = game;
-        this.isVisible;
+        this.isVisible = true;
     }
     draw(gameSize){}
     update(events){}

@@ -4,7 +4,7 @@ import {Vector2} from "../Utility/Vector2.js";
 
 export class TestEntity extends Entity{
     constructor(game){
-        let pos = new Vector2(8, 4);
+        let pos = new Vector2(4, 4);
         let size = new Vector2(0.5, 0.5);
         super(game, pos, size);
         this.speed = 0.1;
