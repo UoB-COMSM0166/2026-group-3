@@ -1,10 +1,10 @@
-//Button Element
+//Label Element
 
 import {UIElement} from "../Core/UIElement.js";
 import {Vector2} from "../Utility/Vector2.js";
 import {Style} from "../Utility/Style.js";
 
-export class Button extends UIElement {
+export class Label extends UIElement {
     constructor(game, label, size, sticky = new Vector2("Centre","Centre"), offset = new Vector2()){
         super(game, offset, size, sticky);
         this.label = label;
@@ -28,24 +28,5 @@ export class Button extends UIElement {
         fill(this.style.textColor);
 
         text(this.label, this.pos.x, this.pos.y, this.size.x, this.size.y);
-    }
-
-    onClick(){}
-
-    update(events){
-        if (!this.isVisible) { return; }
-
-        let mousePos = new Vector2(mouseX, mouseY);
-        if (mousePos.withinBox(this.pos, this.size)){
-            cursor(HAND);
-        }
-
-        for (let event of events){
-            if (event.type == "click"){
-                if (mousePos.withinBox(this.pos, this.size)){
-                    this.onClick();
-                }
-            }
-        }
     }
 }

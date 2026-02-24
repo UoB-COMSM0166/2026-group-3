@@ -1,5 +1,6 @@
 //View class that draws each entity and ui element every frame
 import {Vector2} from "../Utility/Vector2.js";
+import {Style} from "../Utility/Style.js";
 
 export class View {
     constructor(game, model, windowSize){
@@ -8,7 +9,17 @@ export class View {
 
         this.gameSize = this.calculateWindowSize(windowSize);
         createCanvas(this.gameSize.x, this.gameSize.y);
-        textSize(20);
+    }
+
+    defaultStyle(style){
+        style.outline = color(100);
+        style.fillColor = color(90,90,255);
+        style.textColor = color(0);
+        style.font = 'Courier New';
+        style.textAlign.x = CENTER;
+        style.textAlign.y = CENTER;
+        style.textSize = 20;
+        style.textStyle = NORMAL;
     }
 
     calculateWindowSize(windowSize) {
