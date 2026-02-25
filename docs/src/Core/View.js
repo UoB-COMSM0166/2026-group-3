@@ -6,9 +6,10 @@ export class View {
     constructor(game, model, windowSize){
         this.model = model;
         this.game = game;
+        this.pos = new Vector2(0,0);
 
-        this.gameSize = this.calculateWindowSize(windowSize);
-        createCanvas(this.gameSize.x, this.gameSize.y);
+        this.size = this.calculateWindowSize(windowSize);
+        createCanvas(this.size.x, this.size.y);
     }
 
     defaultStyle(style){
@@ -37,18 +38,18 @@ export class View {
 
 
     resize(windowSize) {
-        this.gameSize = this.calculateWindowSize(windowSize);
-        resizeCanvas(this.gameSize.x, this.gameSize.y);
+        this.size = this.calculateWindowSize(windowSize);
+        resizeCanvas(this.size.x, this.size.y);
         for (let uielement of this.model.scene.uielements){
-            uielement.resize(this.gameSize);
+            uielement.resize(this.size);
         }
     }
 
     localToScreen(pos){
-        return pos.multiplyV(this.gameSize).divideV(this.game.gridSize);
+        return pos.multiplyV(this.size).divideV(this.game.gridSize);
     }
     screenToLocal(pos){
-        return pos.multiplyV(this.game.gridSize).divideV(this.gameSize);
+        return pos.multiplyV(this.game.gridSize).divideV(this.size);
     }
 
     drawGrid(){
@@ -77,11 +78,11 @@ export class View {
             return;
         }
         for (let entity of this.model.scene.entities){
-            entity.draw(this.gameSize);
+            entity.draw();
             
         }
         for (let uielement of this.model.scene.uielements){
-            uielement.draw(this.gameSize);
+            uielement.draw();
         }
     }
 }

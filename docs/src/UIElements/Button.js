@@ -12,9 +12,9 @@ export class Button extends UIElement {
         game.view.defaultStyle(this.style);
     }
 
-    draw(gameSize){
+    draw(){
         if (!this.isVisible) { return; }
-        this.pos = this.calculatePosition(gameSize);
+        this.pos = this.calculatePosition();
 
         fill(this.style.fillColor);
         stroke(this.style.outline);

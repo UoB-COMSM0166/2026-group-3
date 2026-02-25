@@ -12,7 +12,7 @@ export class TestEntity extends Entity{
         this.isVisible = true;
     }
 
-    draw(gameSize){
+    draw(){
         if (!this.isVisible) { return; }
         fill(this.color);
         stroke(0);

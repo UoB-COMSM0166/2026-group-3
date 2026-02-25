@@ -13,7 +13,7 @@ export class TestUIElement extends UIElement {
         this.isVisible = true;
     }
 
-    draw(gameSize){
+    draw(){
         if (!this.isVisible) { return; }
         fill(255, 0, 0);
         stroke(0);
