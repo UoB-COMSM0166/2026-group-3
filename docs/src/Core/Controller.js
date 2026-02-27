@@ -7,6 +7,9 @@ export class Controller {
     }
 
     update() {
+        if (!this.game.assetManager.isLoaded){
+            return;
+        }
         cursor(ARROW);
         let events = this.eventQueue;
         this.eventQueue = [];

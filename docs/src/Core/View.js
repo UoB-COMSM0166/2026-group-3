@@ -1,6 +1,5 @@
 //View class that draws each entity and ui element every frame
 import {Vector2} from "../Utility/Vector2.js";
-import {Style} from "../Utility/Style.js";
 
 export class View {
     constructor(game, model, windowSize){
@@ -70,6 +69,11 @@ export class View {
     //Maybe sort by y-height
     draw() {
         background(255);
+
+        if (!this.game.assetManager.isLoaded){
+            text("Loading...",100,100);
+            return;
+        }
 
         if (this.game.debug){
             this.drawGrid();
