@@ -28,6 +28,11 @@ export class TestScene extends Scene {
         let label = new Label(game, "Label", new Vector2(110,30), new Vector2("Right","Top"));
         this.uielements.push(label);
 
+        let imageLabel = new Label(game, "Image", new Vector2(100,100), new Vector2("Right","Top"));
+        imageLabel.offset.y = 30;
+        imageLabel.image = "testSprite";
+        this.uielements.push(imageLabel);
+
         let menu = new Menu(game, new Vector2(350,150), new Vector2("Centre","Centre"));
         menu.isVisible = false;
         menu.id = "menu";

@@ -10,6 +10,7 @@ export class Label extends UIElement {
         this.label = label;
         this.style = new Style();
         game.view.defaultStyle(this.style);
+        this.image = null;
     }
 
     draw(){
@@ -19,7 +20,12 @@ export class Label extends UIElement {
         fill(this.style.fillColor);
         stroke(this.style.outline);
 
-        rect(this.pos.x, this.pos.y, this.size.x, this.size.y);
+        if (this.image != null){
+            let sprite = this.game.assetManager.getImage(this.image);
+            image(sprite, this.pos.x, this.pos.y, this.size.x, this.size.y);
+        } else {
+            rect(this.pos.x, this.pos.y, this.size.x, this.size.y);
+        }
 
         textFont(this.style.font);
         textAlign(this.style.textAlign.x,this.style.textAlign.y);
