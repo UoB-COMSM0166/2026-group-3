@@ -10,6 +10,7 @@ export class TestEntity extends Entity{
         this.speed = 0.1;
         this.color = color(0, 0, 0);
         this.isVisible = true;
+        
     }
 
     draw(){
@@ -22,11 +23,12 @@ export class TestEntity extends Entity{
     }
     update(events){
         if (!this.isVisible) { return; }
-        if (keyIsDown(LEFT_ARROW)) this.pos.x -= this.speed;
-        if (keyIsDown(RIGHT_ARROW)) this.pos.x += this.speed;
         if (keyIsDown(UP_ARROW)) this.pos.y -= this.speed;
         if (keyIsDown(DOWN_ARROW)) this.pos.y += this.speed;
         
+        this.pos.x = constrain(this.pos.x, 0, this.game.gridSize.x / 6);  // left 1/6th of the grid
+        this.pos.y = constrain(this.pos.y, 0, this.game.gridSize.y);  
+
         let mousePos = this.game.view.screenToLocal(new Vector2(mouseX, mouseY));
         if (mousePos.withinBox(this.pos, this.size)){
             cursor(HAND);
