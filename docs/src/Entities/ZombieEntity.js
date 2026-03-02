@@ -5,18 +5,31 @@ export class ZombieEntity extends Entity {
     constructor(game, pos){
         let size = new Vector2(0.7, 0.7); 
         super(game, pos, size);
-        this.speed = 0.008; 
+        this.speed = 0.016; 
         this.color = color(0, 255, 0); 
         this.isVisible = true;
+        this.id = "Zombie";  
 
-        this.isZombie = true;  
+        this.health = 4;
     }
 
     update(events){
-        if (!this.isVisible) return;
+        if (!this.isVisible || this.game.model.scene.isGameOver) return;
+
+        if (this.health<=0) {
+            this.isVisible = false; 
+            return;
+        }
+
         this.pos.x -= this.speed;
 
         if (this.pos.x + this.size.x < 0) this.isVisible = false;
+
+        const boundary = 4;
+        if (this.pos.x <= boundary) {
+            this.game.model.scene.gameOver();
+        }
+
     }
 
     draw(){

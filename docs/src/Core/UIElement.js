@@ -25,7 +25,7 @@ export class UIElement {
         } else if (this.sticky.x == "Right") {
             pos.x = this.parent.pos.x + (parentSize.x + this.offset.x) - this.size.x;
         } else if (this.sticky.x == "Centre") {
-            pos.x = this.parent.pos.x + (parentSize.x / 2) - (this.size.x / 2);
+            pos.x = this.parent.pos.x + (parentSize.x / 2) - (this.size.x / 2) + this.offset.x;
         } else {
             pos.x = this.parent.pos.x + this.offset.x;
             console.log("Unknown Sticky Value: ", this.sticky.x);
@@ -35,7 +35,7 @@ export class UIElement {
         } else if (this.sticky.y == "Bottom") {
             pos.y = this.parent.pos.y + (parentSize.y + this.offset.y) - this.size.y;
         } else if (this.sticky.y == "Centre") {
-            pos.y = this.parent.pos.y + (parentSize.y / 2) - (this.size.y / 2);
+            pos.y = this.parent.pos.y + (parentSize.y / 2) - (this.size.y / 2) + this.offset.y;
         } else {
             pos.y = this.parent.pos.y + this.offset.y;
             console.log("Unknown Sticky Value: ", this.sticky.y);
