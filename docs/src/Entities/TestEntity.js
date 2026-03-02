@@ -10,7 +10,7 @@ export class TestEntity extends Entity{
         this.speed = 0.1;
         this.color = color(0, 0, 0);
         this.isVisible = true;
-        
+        this.sprite = "testSprite";
     }
 
     draw(){
@@ -19,7 +19,9 @@ export class TestEntity extends Entity{
         stroke(0);
         let rel_pos = this.game.view.localToScreen(this.pos);
         let rel_size = this.game.view.localToScreen(this.size);
-        rect(rel_pos.x, rel_pos.y, rel_size.x, rel_size.y);
+        let sprite = this.game.assetManager.getImage(this.sprite);
+        image(sprite, rel_pos.x, rel_pos.y, rel_size.x, rel_size.y)
+        //rect(rel_pos.x, rel_pos.y, rel_size.x, rel_size.y);
     }
     update(events){
         if (!this.isVisible) { return; }
