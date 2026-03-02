@@ -69,12 +69,7 @@ export class View {
     //Maybe sort by y-height
     draw() {
         background(255);
-    // Visualize allowed area (left 1/6th of grid)
-        fill(100, 100, 255, 50); // semi-transparent blue
-        noStroke();
-        let rectWidth = this.localToScreen(new Vector2(this.game.gridSize.x / 6+0.5, 0)).x;
-        let rectHeight = this.localToScreen(new Vector2(0, this.game.gridSize.y)).y;
-        rect(0, 0, rectWidth, rectHeight);
+        
 
 
         if (!this.game.assetManager.isLoaded){
@@ -85,15 +80,7 @@ export class View {
         if (this.game.debug){
             this.drawGrid();
         }
-        if (this.model.scene == null){
-            return;
-        }
-        for (let entity of this.model.scene.entities){
-            entity.draw();
-            
-        }
-        for (let uielement of this.model.scene.uielements){
-            uielement.draw();
-        }
+        
+        this.model.draw();
     }
 }

@@ -13,14 +13,8 @@ export class Controller {
         cursor(ARROW);
         let events = this.eventQueue;
         this.eventQueue = [];
-        if (this.model.scene == null) return;
         
-        for (let entity of this.model.scene.entities){
-            entity.update(events);
-        }
-        for (let uielement of this.model.scene.uielements){
-            uielement.update(events);
-        }
+        this.model.update(events);
     }
     onEvent(event){
         this.eventQueue.push(event);

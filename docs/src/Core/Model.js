@@ -7,9 +7,16 @@ export class Model {
         this.game = game;
         //TODO add any game variables here (e.g money or day)
     }
-    loadScene(scene){
-        this.scene = scene;
+    update(events){
+        if (this.scene != null){
+            this.scene.update(events);
+        }
+    }
 
+    draw(){
+        if (this.scene != null){
+            this.scene.draw();
+        }
     }
 
 

@@ -3,7 +3,7 @@
 import {Model} from "./Model.js";
 import {Controller} from "./Controller.js";
 import {View} from "./View.js";
-import {TestScene} from "../Scenes/TestScene.js";
+import {ShooterScene} from "../Scenes/ShooterScene.js";
 import {AssetManager} from "./AssetManager.js";
 
 export class Game {
@@ -19,7 +19,7 @@ export class Game {
         this.assetManager.preload();
 
         //Load a test Scene
-        let testScene = new TestScene(this);
-        this.model.loadScene(testScene);
+        let testScene = new ShooterScene(this);
+        this.model.scene = testScene;
     }
 }

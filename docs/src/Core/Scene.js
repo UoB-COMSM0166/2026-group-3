@@ -9,7 +9,23 @@ export class Scene {
         this.game = game;
     }
 
-
+    update(events){
+        for (let entity of this.entities){
+            entity.update(events);
+        }
+        for (let uielement of this.uielements){
+            uielement.update(events);
+        }
+    }
+    draw(){
+        for (let entity of this.entities){
+            entity.draw();
+        }
+        for (let uielement of this.uielements){
+            uielement.draw();
+        }
+    }
+    
 
 
 }
