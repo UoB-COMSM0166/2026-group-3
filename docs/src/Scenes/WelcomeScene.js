@@ -3,8 +3,8 @@ import { Button } from "../UIElements/Button.js";
 import { Label } from "../UIElements/Label.js";
 import { Vector2 } from "../Utility/Vector2.js";
 import { ShooterScene } from "../Scenes/ShooterScene.js";
-import { InstructionsScene } from "../Scenes/InstructionsScene.js";
-import { SettingsScene } from "../Scenes/SettingsScene.js";
+//import { InstructionsScene } from "../Scenes/InstructionsScene.js";
+//import { SettingsScene } from "../Scenes/SettingsScene.js";
 
 export class WelcomeScene extends Scene {
   constructor(game) {
@@ -34,7 +34,7 @@ export class WelcomeScene extends Scene {
 
     // on click for play 
     this.playButton.onClick = () => {
-    this.game.model.loadScene(new ShooterScene(this.game));
+    this.game.model.scene = new ShooterScene(this.game);
 };
 
 // on click instructions

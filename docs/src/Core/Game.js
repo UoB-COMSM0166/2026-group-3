@@ -5,6 +5,7 @@ import {Controller} from "./Controller.js";
 import {View} from "./View.js";
 import {ShooterScene} from "../Scenes/ShooterScene.js";
 import {AssetManager} from "./AssetManager.js";
+import {WelcomeScene} from "../Scenes/WelcomeScene.js"
 
 export class Game {
     constructor(windowSize, gridSize, DEBUG){
@@ -19,7 +20,7 @@ export class Game {
         this.assetManager.preload();
 
         //Load a test Scene
-        let testScene = new ShooterScene(this);
-        this.model.scene = testScene;
+        let startScene = new WelcomeScene(this);
+        this.model.scene = startScene;
     }
 }
