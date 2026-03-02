@@ -6,12 +6,12 @@ import { Bullet } from "./Bullet.js";
 export class PlayerDayEntity extends Entity{
     constructor(game){
         let pos = new Vector2(2, 4);
-        let size = new Vector2(0.8, 0.8);
+        let size = new Vector2(1.5, 1.5);
         super(game, pos, size);
         this.speed = 0.05;
         this.color = color(0, 0, 0);
         this.isVisible = true;
-        this.sprite = "testSprite";
+        this.sprite = "ChefShootingIdle";
         this.fireRate = 20;
         this.shootCooldown = 0;
     }
@@ -23,7 +23,7 @@ export class PlayerDayEntity extends Entity{
         let rel_pos = this.game.view.localToScreen(this.pos);
         let rel_size = this.game.view.localToScreen(this.size);
         let sprite = this.game.assetManager.getImage(this.sprite);
-        image(sprite, rel_pos.x, rel_pos.y, rel_size.x, rel_size.y)
+        image(sprite, rel_pos.x, rel_pos.y, rel_size.x, rel_size.y);
         //rect(rel_pos.x, rel_pos.y, rel_size.x, rel_size.y);
     }
     update(events){
@@ -46,7 +46,7 @@ export class PlayerDayEntity extends Entity{
     }
 
     shoot(){
-        let bullet = new Bullet(this.game, new Vector2(this.pos.x, this.pos.y + this.size.y/2));
+        let bullet = new Bullet(this.game, new Vector2(this.pos.x + this.size.x, this.pos.y + this.size.y/2));
         this.game.model.scene.entities.push(bullet);
     }
 

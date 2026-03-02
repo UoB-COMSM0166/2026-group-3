@@ -3,12 +3,13 @@ import { Vector2 } from "../Utility/Vector2.js";
 
 export class ZombieEntity extends Entity {
     constructor(game, pos){
-        let size = new Vector2(0.7, 0.7); 
+        let size = new Vector2(1.5, 1.5); 
         super(game, pos, size);
         this.speed = 0.016; 
         this.color = color(0, 255, 0); 
         this.isVisible = true;
         this.id = "Zombie";  
+        this.sprite = "ZombieWalking";
 
         this.health = 4;
     }
@@ -37,21 +38,24 @@ export class ZombieEntity extends Entity {
 
         let rel_pos = this.game.view.localToScreen(this.pos);
         let rel_size = this.game.view.localToScreen(this.size);
+        
+        let sprite = this.game.assetManager.getImage(this.sprite);
+        image(sprite, rel_pos.x, rel_pos.y, rel_size.x, rel_size.y)
 
-        fill(this.color);
-        stroke(0);
+        // fill(this.color);
+        // stroke(0);
 
-        let x = rel_pos.x;
-        let y = rel_pos.y;
-        let w = rel_size.x;
-        let h = rel_size.y;
+        // let x = rel_pos.x;
+        // let y = rel_pos.y;
+        // let w = rel_size.x;
+        // let h = rel_size.y;
 
-        // triangle — tip on left middle
-        triangle(
-            x + w, y,        // top-right
-            x + w, y + h,    // bottom-right
-            x, y + h / 2     // left-middle = tip
-        );
+        // // triangle — tip on left middle
+        // triangle(
+        //     x + w, y,        // top-right
+        //     x + w, y + h,    // bottom-right
+        //     x, y + h / 2     // left-middle = tip
+        // );
     }
 
     // tip position in LOCAL GRID coordinates
