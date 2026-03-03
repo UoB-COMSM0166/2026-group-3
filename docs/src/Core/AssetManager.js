@@ -16,9 +16,9 @@ export class AssetManager {
 
         // for testing loading:
 
-        for (let i=0; i<1000; i++){
-            this.loadImage("testSprites","./assets/test_image.png");
-        }
+        // for (let i=0; i<1000; i++){
+        //     this.loadImage("testSprites","./assets/test_image.png");
+        // }
 
         await Promise.all(this.promises);
         this.isLoaded = true;
