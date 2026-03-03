@@ -76,7 +76,7 @@ Incorporating technical novelty into Doomsday Kitchen was more straightforward t
 
 <p align="center">
   <img src="documentation/Requirements_figures/games.png" width="75%" />
-  <img src="documentation/Requirements_figures/vote.png" width="35%" /> 
+  <img src="documentation/Requirements_figures/vote.png" width="75%" /> 
 </p>
 
 #### Early stages design
