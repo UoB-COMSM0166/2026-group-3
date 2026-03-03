@@ -28,14 +28,14 @@ export class PlayerDayEntity extends Entity{
     }
     update(events){
         if (!this.isVisible || this.game.model.scene.isGameOver) { return; }
-        if (keyIsDown(UP_ARROW)) this.pos.y -= this.speed;
-        if (keyIsDown(DOWN_ARROW)) this.pos.y += this.speed;
+        if (keyIsDown(UP_ARROW) || keyIsDown('w')) this.pos.y -= this.speed;
+        if (keyIsDown(DOWN_ARROW) || keyIsDown('s')) this.pos.y += this.speed;
         
         this.pos.y = constrain(this.pos.y, 0, this.game.gridSize.y - this.size.y);  
 
         this.shootCooldown -= 1;
 
-        if (keyIsDown(ENTER) && this.shootCooldown <= 0) { // 32 = Space Bar keycode
+        if (keyIsDown('Space') && this.shootCooldown <= 0) {
             this.shoot();
             this.shootCooldown = this.fireRate
         }

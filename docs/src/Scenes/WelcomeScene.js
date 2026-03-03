@@ -38,18 +38,18 @@ export class WelcomeScene extends Scene {
 };
 
 // on click instructions
-this.InstructionsButton.onClick= () => { this.game.model.loadScene(new InstructionsScene(this.game)); };
+//this.InstructionsButton.onClick= () => { this.game.model.loadScene(new InstructionsScene(this.game)); };
   
 
  // on click settings
-this.settingsButton.onClick = () => {
-    this.game.model.loadScene(new SettingsScene(this.game));
-};
+// this.settingsButton.onClick = () => {
+//     this.game.model.loadScene(new SettingsScene(this.game));
+// };
 
-// on click quit
-this.quitButton.onClick = () => {
-    window.close();
-};
+// // on click quit
+// this.quitButton.onClick = () => {
+//     window.close();
+//};
 
     // add to entities
     this.entities.push(

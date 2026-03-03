@@ -4,7 +4,7 @@ import {Vector2} from "../Utility/Vector2.js";
 
 export class Bullet extends Entity{
     constructor(game, pos){
-        let size = new Vector2(0.05, 0.02);
+        let size = new Vector2(0.1, 0.05);
         super(game, pos, size);
         this.speed = 0.2;
 

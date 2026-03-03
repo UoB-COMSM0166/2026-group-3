@@ -25,6 +25,22 @@ export class Scene {
             uielement.draw();
         }
     }
+    getEntity(id){
+        for (let entity of this.entities){
+            if (entity.id=="id"){
+                return entity;
+            }
+        }
+        return null;
+    }
+    getEntities(id){
+        let entities = [];
+        for (let entity of this.entities){
+            
+        }
+    }
+    addEntity(entity){}
+    removeEntity(entity){}
     
 
 

@@ -5,6 +5,7 @@ import { Label } from "../UIElements/Label.js";
 import { Menu } from "../UIElements/Menu.js";
 import { Vector2 } from "../Utility/Vector2.js";
 import { ZombieManager } from "../Entities/ZombieManager.js";
+import { WelcomeScene } from "./WelcomeScene.js";
 
 export class ShooterScene extends Scene {
     constructor(game) {
@@ -41,9 +42,14 @@ export class ShooterScene extends Scene {
 
         let menuButton = new Button(game, "Menu", new Vector2(110, 30), new Vector2("Left", "Top"));
         menuButton.onClick = function() {
-            for (let ui of this.game.model.scene.uielements) {
-                if (ui.id == "menu") ui.isVisible = true;
-            }
+
+            let startScene = new WelcomeScene(this.game);
+            this.game.model.scene = startScene;
+
+
+            // for (let ui of this.game.model.scene.uielements) {
+            //     if (ui.id == "menu") ui.isVisible = true;
+            // }
         };
         this.uielements.push(menuButton);
 
