@@ -25,7 +25,7 @@ VIDEO. Include a demo video of your game here (you don't have to wait until the 
 
 ## Your Group
 
-GROUP PHOTO. Add a group photo here.
+ <img src="documentation/images/WhatsApp Image 2026-02-17 at 14.51.29.jpeg" width="75%" />
 
 - 1, Matthew Honey, is25252@bristol.ac.uk, role
 - 2, Yoyo Wu, xa25891@bristol.ac.uk, role
