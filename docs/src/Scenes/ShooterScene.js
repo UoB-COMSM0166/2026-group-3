@@ -46,10 +46,6 @@ export class ShooterScene extends Scene {
             let startScene = new WelcomeScene(this.game);
             this.game.model.scene = startScene;
 
-
-            // for (let ui of this.game.model.scene.uielements) {
-            //     if (ui.id == "menu") ui.isVisible = true;
-            // }
         };
         this.uielements.push(menuButton);
 

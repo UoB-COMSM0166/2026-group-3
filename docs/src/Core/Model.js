@@ -5,6 +5,9 @@ export class Model {
     constructor(game){
         this.scene = null;
         this.game = game;
+        this.money = 0;
+        this.difficulty = "normal";   // easy / normal / hard
+        this.phase = 1;  // 1 phase = 1 day + 1 night. 
         //TODO add any game variables here (e.g money or day)
     }
     update(events){

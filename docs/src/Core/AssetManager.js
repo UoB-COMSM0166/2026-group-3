@@ -10,9 +10,11 @@ export class AssetManager {
 
         //Add all image loads here:
 
-        this.loadImage("testSprite","./assets/test_image.png");
         this.loadImage("ChefShootingIdle","./assets/chefshootingidle.png");
-        this.loadImage("ZombieWalking","./assets/zombiewalking.gif");
+        this.loadImage("BasicZombieWalking","./assets/zombiewalking.gif");
+        this.loadImage("TankZombieWalking","./assets/tankwalking.gif");
+        this.loadImage("SlobZombieWalking","./assets/slobwalking.gif");
+        this.loadImage("SprinterZombieWalking","./assets/sprinter.gif");
 
         // for testing loading:
 
