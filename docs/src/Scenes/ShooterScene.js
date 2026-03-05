@@ -11,6 +11,7 @@ export class ShooterScene extends Scene {
     constructor(game) {
         super(game);
         this.isGameOver = false;
+        this.isRoundWon = false;
 
         //Player block 
         let Player = new PlayerDayEntity(game);
@@ -80,8 +81,16 @@ export class ShooterScene extends Scene {
     }
 
     update(events){
-        super.update(events);
-        if (this.zombieManager.waveStrength == 0){
+        //Stop Updating Entities after wave over
+        if (!this.isRoundWon && !this.isGameOver){
+            super.update(events);
+        } else {
+            for (let uielement of this.uielements){
+                uielement.update(events);
+            }
+        }
+        
+        if (this.zombieManager.waveStrength == 0 && !this.isRoundWon){
             if (this.getEntities("Zombie").length == 0){
                 this.roundWon();
             }
@@ -113,13 +122,19 @@ export class ShooterScene extends Scene {
     }
 
     roundWon(){
-        console.log("You won!");
+        this.isRoundWon = true;
+
+        //Continue Button
         this.contiueBtn = new Button(this.game, "Continue", new Vector2(160, 50), new Vector2("Centre", "Centre"));
         this.contiueBtn.offset.y = 90;
         this.contiueBtn.onClick = () => {
+
+            //Temporary Fucntion for continue button
             if (typeof loop === 'function') loop(); 
+                this.game.model.phase++;
                 this.game.model.scene = new ShooterScene(this.game);
             };
+
         this.addUIElement(this.contiueBtn);
 
         //You Won Label

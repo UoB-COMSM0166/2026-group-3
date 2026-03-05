@@ -3,9 +3,8 @@
 import {Model} from "./Model.js";
 import {Controller} from "./Controller.js";
 import {View} from "./View.js";
-import {ShooterScene} from "../Scenes/ShooterScene.js";
 import {AssetManager} from "./AssetManager.js";
-import {WelcomeScene} from "../Scenes/WelcomeScene.js"
+import {WelcomeScene} from "../Scenes/WelcomeScene.js";
 
 export class Game {
     constructor(windowSize, gridSize, DEBUG){
@@ -15,11 +14,12 @@ export class Game {
         this.model = new Model(this);
         this.view = new View(this, this.model, windowSize);
         this.controller = new Controller(this, this.model);
-        this.assetManager = new AssetManager();
+        this.assetManager = new AssetManager(this);
         
         this.assetManager.preload();
 
-        //Load a test Scene
+    }
+    finishedLoading(){
         let startScene = new WelcomeScene(this);
         this.model.scene = startScene;
     }

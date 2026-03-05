@@ -33,8 +33,7 @@ export class ZombieEntity extends Entity {
         let rel_pos = this.game.view.localToScreen(this.pos);
         let rel_size = this.game.view.localToScreen(this.size);
         
-        let sprite = this.game.assetManager.getImage(this.sprite);
-        image(sprite, rel_pos.x, rel_pos.y, rel_size.x, rel_size.y)
+        image(this.image, rel_pos.x, rel_pos.y, rel_size.x, rel_size.y)
 
 
     }
