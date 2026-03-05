@@ -14,13 +14,11 @@ export class ZombieEntity extends Entity {
         if (!this.isVisible || this.game.model.scene.isGameOver) return;
 
         if (this.health<=0) {
-            this.isVisible = false; 
+            this.game.model.scene.removeEntity(this);
             return;
         }
 
         this.pos.x -= this.speed;
-
-        if (this.pos.x + this.size.x < 0) this.isVisible = false;
 
         const boundary = 4;
         if (this.pos.x <= boundary) {

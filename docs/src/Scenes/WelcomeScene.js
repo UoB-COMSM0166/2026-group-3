@@ -34,8 +34,8 @@ export class WelcomeScene extends Scene {
 
     // on click for play 
     this.playButton.onClick = () => {
-    this.game.model.scene = new ShooterScene(this.game);
-};
+      this.game.model.scene = new ShooterScene(this.game);
+    };
 
 // on click instructions
 //this.InstructionsButton.onClick= () => { this.game.model.loadScene(new InstructionsScene(this.game)); };
@@ -51,14 +51,12 @@ export class WelcomeScene extends Scene {
 //     window.close();
 //};
 
-    // add to entities
-    this.entities.push(
-      this.title,
-      this.playButton,
-      this.InstructionsButton,
-      this.settingsButton,
-      this.quitButton
-    );
+    // add to uielements
+    this.addUIElement(this.title);
+    this.addUIElement(this.playButton);
+    this.addUIElement(this.InstructionsButton);
+    this.addUIElement(this.settingsButton);
+    this.addUIElement(this.quitButton);
   }
 
 }

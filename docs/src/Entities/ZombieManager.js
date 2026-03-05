@@ -61,7 +61,7 @@ export class ZombieManager extends Entity{
                     zombie = new BasicZombie(this.game, startPos);
                     this.waveStrength -= 1;
                 }
-                this.scene.entities.push(zombie);
+                this.scene.addEntity(zombie);
                 this.zombiesSpawned++;
             }
         }
