@@ -18,7 +18,9 @@ export class Button extends UIElement {
         this.pos = this.calculatePosition();
 
         fill(this.style.fillColor);
-        stroke(this.style.outline);
+        if (this.game.debug) stroke(0,0,0);
+        else stroke(this.style.outline);
+
         if (this.image != null){
             let sprite = this.game.assetManager.getImage(this.image);
             image(sprite, this.pos.x, this.pos.y, this.size.x, this.size.y);
