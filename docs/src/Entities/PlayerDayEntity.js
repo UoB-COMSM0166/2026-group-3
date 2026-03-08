@@ -24,7 +24,12 @@ export class PlayerDayEntity extends Entity{
         let rel_size = this.game.view.localToScreen(this.size);
         let sprite = this.game.assetManager.getImage(this.sprite);
         image(sprite, rel_pos.x, rel_pos.y, rel_size.x, rel_size.y);
-        //rect(rel_pos.x, rel_pos.y, rel_size.x, rel_size.y);
+        
+        if (this.game.debug) {
+            fill(0,0,0,0);
+            stroke(0);
+            rect(rel_pos.x, rel_pos.y, rel_size.x, rel_size.y);
+        }
     }
     update(events){
         if (!this.isVisible || this.game.model.scene.isGameOver) { return; }

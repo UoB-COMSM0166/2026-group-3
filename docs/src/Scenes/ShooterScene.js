@@ -11,34 +11,23 @@ export class ShooterScene extends Scene {
     constructor(game) {
         super(game);
         this.isGameOver = false;
+        this.isRoundWon = false;
 
         //Player block 
-        let testEntity = new PlayerDayEntity(game);
-        this.entities.push(testEntity);
-
-        //Restart Button (i hid it initially)
-        this.restartBtn = new Button(game, "Restart Game", new Vector2(160, 50), new Vector2("Centre", "Centre"));
-        this.restartBtn.offset.y = 90;
-        this.restartBtn.isVisible = false; 
-        this.restartBtn.onClick = () => {
-            if (typeof loop === 'function') loop(); 
-            game.model.scene = new ShooterScene(game);
-        };
-        this.uielements.push(this.restartBtn);
-
-        
+        let Player = new PlayerDayEntity(game);
+        this.addEntity(Player);
 
         this.zombieManager = new ZombieManager(game, this);
-        this.entities.push(this.zombieManager);
+        this.addEntity(this.zombieManager);
 
         //Labels & Menus
-        let label = new Label(game, "Day", new Vector2(50, 30), new Vector2("Right", "Top"));
-        this.uielements.push(label);
+        let label = new Label(game, `Day ${this.game.model.phase}`, new Vector2(80, 30), new Vector2("Right", "Top"));
+        this.addUIElement(label);
 
         let menu = new Menu(game, new Vector2(350,150), new Vector2("Centre","Centre"));
         menu.isVisible = false;
         menu.id = "menu";
-        this.uielements.push(menu);
+        this.addUIElement(menu);
 
         let menuButton = new Button(game, "Menu", new Vector2(110, 30), new Vector2("Left", "Top"));
         menuButton.onClick = function() {
@@ -47,21 +36,7 @@ export class ShooterScene extends Scene {
             this.game.model.scene = startScene;
 
         };
-        this.uielements.push(menuButton);
-
-        this.waveLabel = new Label(game, "Wave: 0/6", new Vector2(160, 30), new Vector2("Centre", "Top"));
-        this.uielements.push(this.waveLabel);
-        
-        
-        this.gameOverLabel = new Label(game, "Game Over", new Vector2(350, 120), new Vector2("Centre", "Centre"));
-        this.gameOverLabel.style.fillColor = color(0,0,0,0);
-        this.gameOverLabel.style.outline = color(0,0,0,0);
-        this.gameOverLabel.style.textColor = color(255,0,0);
-        this.gameOverLabel.style.textSize = 60;
-        this.gameOverLabel.offset.y = -70;
-        this.gameOverLabel.isVisible = false;
-
-        this.uielements.push(this.gameOverLabel);
+        this.addUIElement(menuButton);
         
         // Menu Internal Elements
         let menuLabel = new Label(game, "Super Menu", new Vector2(100, 70), new Vector2("Left", "Top"));
@@ -97,10 +72,7 @@ export class ShooterScene extends Scene {
         if (this.isGameOver) {
             //Draw a dark overlay to make it dramatic lmao :3
             fill(0, 0, 0, 150); //Semi-transparent black
-            rect(0, 0, width, height);
-
-            //the "GAME OVER" text 
-            this.gameOverLabel.isVisible = true;
+            rect(0, 0, width, height);         
         }
 
         super.draw(); //call the base draw function
@@ -109,15 +81,74 @@ export class ShooterScene extends Scene {
     }
 
     update(events){
-        super.update(events);
-        this.waveLabel.label = `Wave 1: ${this.zombieManager.zombiesSpawned}/${this.zombieManager.maxZombies}`;
+        //Stop Updating Entities after wave over
+        if (!this.isRoundWon && !this.isGameOver){
+            super.update(events);
+        } else {
+            for (let uielement of this.uielements){
+                uielement.update(events);
+            }
+        }
+        
+        if (this.zombieManager.waveStrength == 0 && !this.isRoundWon){
+            if (this.getEntities("Zombie").length == 0){
+                this.roundWon();
+            }
+        }
     }
 
 
     gameOver(){
         this.isGameOver = true;
-        this.restartBtn.isVisible = true;
+
+        //Restart Button
+        this.restartBtn = new Button(this.game, "Restart Game", new Vector2(160, 50), new Vector2("Centre", "Centre"));
+        this.restartBtn.offset.y = 90;
+        this.restartBtn.onClick = () => {
+            if (typeof loop === 'function') loop(); 
+                this.game.model.scene = new ShooterScene(this.game);
+            };
+        this.addUIElement(this.restartBtn);
+
+        //Game Over Label
+        this.gameOverLabel = new Label(this.game, "Game Over", new Vector2(350, 120), new Vector2("Centre", "Centre"));
+        this.gameOverLabel.style.fillColor = color(0,0,0,0);
+        this.gameOverLabel.style.outline = color(0,0,0,0);
+        this.gameOverLabel.style.textColor = color(255,0,0);
+        this.gameOverLabel.style.textSize = 60;
+        this.gameOverLabel.offset.y = -70;
+
+        this.addUIElement(this.gameOverLabel);
     }
+
+    roundWon(){
+        this.isRoundWon = true;
+
+        //Continue Button
+        this.contiueBtn = new Button(this.game, "Continue", new Vector2(160, 50), new Vector2("Centre", "Centre"));
+        this.contiueBtn.offset.y = 90;
+        this.contiueBtn.onClick = () => {
+
+            //Temporary Fucntion for continue button
+            if (typeof loop === 'function') loop(); 
+                this.game.model.phase++;
+                this.game.model.scene = new ShooterScene(this.game);
+            };
+
+        this.addUIElement(this.contiueBtn);
+
+        //You Won Label
+        this.youWonLabel = new Label(this.game, "You Beat The Wave!", new Vector2(450, 150), new Vector2("Centre", "Centre"));
+        this.youWonLabel.style.fillColor = color(0,0,0,0);
+        this.youWonLabel.style.outline = color(0,0,0,0);
+        this.youWonLabel.style.textColor = color(255,0,0);
+        this.youWonLabel.style.textSize = 40;
+        this.youWonLabel.offset.y = -70;
+
+        this.addUIElement(this.youWonLabel);
+    }
+
+
 
 
 }

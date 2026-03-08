@@ -9,6 +9,8 @@ export class View {
 
         this.size = this.calculateWindowSize(windowSize);
         createCanvas(this.size.x, this.size.y);
+
+        noSmooth(); // Renders Pixel Art Better
     }
 
     defaultStyle(style){

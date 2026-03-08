@@ -1,9 +1,10 @@
 
 export class AssetManager {
-    constructor(callback){
+    constructor(game){
         this.isLoaded = false;
         this.promises = []
         this.images = {};
+        this.game = game;
     }
 
     async preload(){
@@ -24,6 +25,8 @@ export class AssetManager {
 
         await Promise.all(this.promises);
         this.isLoaded = true;
+
+        this.game.finishedLoading();
     }
 
     //Can be called to load an image individually

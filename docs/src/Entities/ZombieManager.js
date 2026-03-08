@@ -32,8 +32,6 @@ export class ZombieManager extends Entity{
 
 
     update(events){
-        if (this.scene.isGameOver) return; // Stop logic if dead
-        
         const boundary = this.game.gridSize.x / 6;
 
         let lines = [1, 2.5, 4, 5.5, 7];
@@ -61,7 +59,7 @@ export class ZombieManager extends Entity{
                     zombie = new BasicZombie(this.game, startPos);
                     this.waveStrength -= 1;
                 }
-                this.scene.entities.push(zombie);
+                this.scene.addEntity(zombie);
                 this.zombiesSpawned++;
             }
         }
