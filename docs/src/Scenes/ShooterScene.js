@@ -31,13 +31,11 @@ export class ShooterScene extends Scene {
         this.addUIElement(label);
 
 
-        let menuButton = new Button(game, "Menu", new Vector2(110, 30), new Vector2("Left", "Top"));
-        menuButton.onClick = function() {
-
-            let startScene = new WelcomeScene(this.game);
-            this.game.model.scene = startScene;
-
-        };
+         let menuButton = new Button(game, "Menu", new Vector2(110, 30), new Vector2("Left", "Top"));
+      menuButton.onClick = () => {
+          let startScene = new WelcomeScene(game);
+           game.model.scene = startScene;
+      };
         this.addUIElement(menuButton);
         
         // Shop Menu
@@ -142,7 +140,17 @@ export class ShooterScene extends Scene {
     }
 
     update(events){
+        if (events.length > 0) console.log(events[0]);
         //Stop Updating Entities after wave over
+if (events.some(e => e.key === "Enter")) {
+    let menu = this.uielements.find(el => el.id === "menu");
+    if (menu) {
+        menu.isVisible = !menu.isVisible;
+        console.log("Set visibility to:", menu.isVisible); // add this
+    }
+}
+
+
         if (!this.isRoundWon && !this.isGameOver){
             super.update(events);
         } else {
