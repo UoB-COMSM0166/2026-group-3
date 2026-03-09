@@ -3,6 +3,7 @@ import { Button } from "../UIElements/Button.js";
 import { Label } from "../UIElements/Label.js";
 import { Vector2 } from "../Utility/Vector2.js";
 import { ShooterScene } from "../Scenes/ShooterScene.js";
+import { KitchenScene_MVP } from "../Scenes/KitchenScene_MVP.js";
 //import { InstructionsScene } from "../Scenes/InstructionsScene.js";
 //import { SettingsScene } from "../Scenes/SettingsScene.js";
 
@@ -35,6 +36,10 @@ export class WelcomeScene extends Scene {
     // on click for play 
     this.playButton.onClick = () => {
       this.game.model.scene = new ShooterScene(this.game);
+
+      // this for the kitchen test
+      // this.game.model.scene = new KitchenScene_MVP(this.game); 
+      
     };
 
 // on click instructions
