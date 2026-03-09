@@ -82,7 +82,7 @@ export class KitchenScene_MVP extends Scene {
     // ===== Colliders =====
     this.colliders = [
       // left equipment area
-      { pos: new Vector2(0, 0), size: new Vector2(3, 9) },
+      //{ pos: new Vector2(0, 0), size: new Vector2(3, 9) },
 
       // counter body
       { pos: this.counter.pos, size: this.counter.size },
@@ -96,64 +96,66 @@ export class KitchenScene_MVP extends Scene {
     );
   }
 
-  update(events) {
-    // 1) store old player position for rollback
-    const oldPos = new Vector2(this.player.pos.x, this.player.pos.y);
+update(events) {
+  // debug: 看 events 到底有没有传进来
+  // console.log("events:", events);
 
-    // 2) normal entity update
-    super.update(events);
+  // 1) 记录玩家移动前位置（用于回滚）
+  const oldPos = new Vector2(this.player.pos.x, this.player.pos.y);
 
-    // 3) collision rollback
-    for (const c of this.colliders) {
-      if (this._aabbOverlap(this.player.pos, this.player.size, c.pos, c.size)) {
-        this.player.pos.x = oldPos.x;
-        this.player.pos.y = oldPos.y;
-        break;
-      }
-    }
+  // 2) 正常更新：会更新所有实体（包括玩家移动）
+  super.update(events);
 
-    // 4) interaction logic (press E once)
-    if (this.player.justPressedE()) {
-      console.log("[Kitchen] E pressed");
-
-      // 4.1 try serve first
-      if (this.player.isNear(this.counter)) {
-        console.log("[Kitchen] Player is near counter");
-
-        const served = this.counter.tryServe(
-          this.player,
-          this.customer,
-          this.state,
-          this.orderSystem
-        );
-
-        if (served) {
-          this.customer.served = false;
-          this.customer.order = this.orderSystem.generateRandomOrder(this.menu);
-          console.log("[Kitchen] New order:", this.customer.order.recipeId);
-        }
-
-        return;
-      }
-
-      // 4.2 otherwise try cook at nearby station
-      const targetRecipeId = this.customer.order?.recipeId;
-      if (!targetRecipeId) {
-        console.log("[Kitchen] No current order.");
-        return;
-      }
-
-      for (const station of this.stations) {
-        if (this.player.isNear(station)) {
-          console.log("[Kitchen] Player is near station:", station.supportedRecipeIds);
-          station.tryCook(this.player, this.state, this.menu, targetRecipeId);
-          return;
-        }
-      }
-
-      console.log("[Kitchen] Press E near a station or the counter.");
+  // 3) 碰撞：撞到任意 collider -> 回滚到 oldPos
+  for (const c of this.colliders) {
+    if (this._aabbOverlap(this.player.pos, this.player.size, c.pos, c.size)) {
+      this.player.pos.x = oldPos.x;
+      this.player.pos.y = oldPos.y;
+      break;
     }
   }
+
+  // 4) 改成直接从 events 检测 E 键
+  if (this._wasEPressed(events)) {
+    console.log("[Kitchen] E pressed");
+
+    // 4.1 先尝试交付
+    if (this.player.isNear(this.counter)) {
+      console.log("[Kitchen] Player is near counter");
+
+      const served = this.counter.tryServe(
+        this.player,
+        this.customer,
+        this.state,
+        this.orderSystem
+      );
+
+      if (served) {
+        this.customer.served = false;
+        this.customer.order = this.orderSystem.generateRandomOrder(this.menu);
+        console.log("[Kitchen] New order:", this.customer.order.recipeId);
+      }
+      return;
+    }
+
+    // 4.2 再尝试做菜：靠近任意一个 station 就 cook
+    const targetRecipeId = this.customer.order?.recipeId;
+    if (!targetRecipeId) {
+      console.log("[Kitchen] No current order.");
+      return;
+    }
+
+    for (const station of this.stations) {
+      if (this.player.isNear(station)) {
+        console.log("[Kitchen] Player is near station:", station.supportedRecipeIds);
+        station.tryCook(this.player, this.state, this.menu, targetRecipeId);
+        return;
+      }
+    }
+
+    console.log("[Kitchen] Press E near a station or the counter.");
+  }
+}
 
   draw() {
     super.draw();
@@ -168,6 +170,31 @@ export class KitchenScene_MVP extends Scene {
     text(`Press E near a station to cook`, 20, 95);
     text(`Press E near the counter to serve`, 20, 120);
   }
+
+_wasEPressed(events) {
+  if (!events || !Array.isArray(events)) return false;
+
+  for (const ev of events) {
+    //print event for debug
+    console.log("[Kitchen] event:", ev);
+
+    //case 1: modern browsers with 'key' property
+    if (ev.type === "keydown" && (ev.key === "e" || ev.key === "E" || ev.keyCode === 69)) {
+      return true;
+    }
+
+    //case 2: older browsers with 'keyCode' property
+    if (ev.keyCode === 69) {
+      return true;
+    }
+
+    if (ev.code === "KeyE") {
+      return true;
+    }
+  }
+
+  return false;
+}
 
   _aabbOverlap(aPos, aSize, bPos, bSize) {
     const aMinX = aPos.x;
