@@ -3,11 +3,11 @@ import {Entity} from "../Core/Entity.js";
 import {Vector2} from "../Utility/Vector2.js";
 
 export class Bullet extends Entity{
-    constructor(game, pos){
+    constructor(game, pos, damage, speed){
         let size = new Vector2(0.1, 0.05);
         super(game, pos, size);
-        this.speed = 0.2;
-
+        this.speed = 0.2 * speed;
+        this.damage = damage;
     }
 
     draw(){
@@ -29,18 +29,14 @@ export class Bullet extends Entity{
         for (let entity of this.game.model.scene.entities){
             if (entity.id == "Zombie"){
                 if (entity.isVisible && this.pos.withinBox(entity.pos,entity.size)){
-                    entity.health -= 1;
+                    entity.health -= this.damage;
+                    if (entity.health<0) entity.health = 0;
                     this.game.model.scene.removeEntity(this);
                 }
                 
             }
         }
-
-
-
     }
-
-
 }
 
 

@@ -41,6 +41,7 @@ export class Button extends UIElement {
 
     update(events){
         if (!this.isVisible) { return; }
+        if (this.parent!=this.game.view && !this.parent.isVisible) { return; }
 
         let mousePos = new Vector2(mouseX, mouseY);
         if (mousePos.withinBox(this.pos, this.size)){

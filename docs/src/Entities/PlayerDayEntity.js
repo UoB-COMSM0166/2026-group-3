@@ -4,7 +4,7 @@ import {Vector2} from "../Utility/Vector2.js";
 import { Bullet } from "./Bullet.js";
 
 export class PlayerDayEntity extends Entity{
-    constructor(game){
+    constructor(game, weapon){
         let pos = new Vector2(2, 4);
         let size = new Vector2(1.5, 1.5);
         super(game, pos, size);
@@ -12,8 +12,8 @@ export class PlayerDayEntity extends Entity{
         this.color = color(0, 0, 0);
         this.isVisible = true;
         this.sprite = "ChefShootingIdle";
-        this.fireRate = 20;
         this.shootCooldown = 0;
+        this.weapon = weapon
     }
 
     draw(){
@@ -42,7 +42,7 @@ export class PlayerDayEntity extends Entity{
 
         if (keyIsDown('Space') && this.shootCooldown <= 0) {
             this.shoot();
-            this.shootCooldown = this.fireRate
+            this.shootCooldown = 20 / this.weapon.fireRate
         }
         if (this.shootCooldown < 0){
             this.shootCooldown = 0;
@@ -51,7 +51,7 @@ export class PlayerDayEntity extends Entity{
     }
 
     shoot(){
-        let bullet = new Bullet(this.game, new Vector2(this.pos.x + this.size.x, this.pos.y + this.size.y/2));
+        let bullet = new Bullet(this.game, new Vector2(this.pos.x + this.size.x, this.pos.y + this.size.y/2), this.weapon.damage, this.weapon.speed);
         this.game.model.scene.entities.push(bullet);
     }
 

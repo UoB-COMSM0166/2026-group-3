@@ -6,6 +6,8 @@ import { Menu } from "../UIElements/Menu.js";
 import { Vector2 } from "../Utility/Vector2.js";
 import { ZombieManager } from "../Entities/ZombieManager.js";
 import { WelcomeScene } from "./WelcomeScene.js";
+import { KitchenScene_MVP } from "./KitchenScene_MVP.js";
+import { WeaponManager } from "../Core/WeaponManager.js";
 
 export class ShooterScene extends Scene {
     constructor(game) {
@@ -13,21 +15,21 @@ export class ShooterScene extends Scene {
         this.isGameOver = false;
         this.isRoundWon = false;
 
+        this.weaponManager = new WeaponManager(game);
+
         //Player block 
-        let Player = new PlayerDayEntity(game);
+        let Player = new PlayerDayEntity(game, this.game.model.playerWeapon);
+        Player.id = "player";
         this.addEntity(Player);
 
         this.zombieManager = new ZombieManager(game, this);
         this.addEntity(this.zombieManager);
 
+
         //Labels & Menus
         let label = new Label(game, `Day ${this.game.model.phase}`, new Vector2(80, 30), new Vector2("Right", "Top"));
         this.addUIElement(label);
 
-        let menu = new Menu(game, new Vector2(350,150), new Vector2("Centre","Centre"));
-        menu.isVisible = false;
-        menu.id = "menu";
-        this.addUIElement(menu);
 
         let menuButton = new Button(game, "Menu", new Vector2(110, 30), new Vector2("Left", "Top"));
         menuButton.onClick = function() {
@@ -38,15 +40,74 @@ export class ShooterScene extends Scene {
         };
         this.addUIElement(menuButton);
         
-        // Menu Internal Elements
-        let menuLabel = new Label(game, "Super Menu", new Vector2(100, 70), new Vector2("Left", "Top"));
-        menuLabel.parent = menu;
-        menu.elements.push(menuLabel);
+        // Shop Menu
+        let shopButton = new Button(game, "Shop", new Vector2(110, 30), new Vector2("Left", "Top"));
+        shopButton.offset.x = 110;
+        shopButton.onClick = function() {
+            let shop = this.game.model.scene.getUIElement("shop");
+            shop.isVisible = !shop.isVisible;
 
-        let menuClose = new Button(game, "Close", new Vector2(110, 30), new Vector2("Right", "Top"));
-        menuClose.parent = menu;
-        menuClose.onClick = function() { this.parent.isVisible = false; }
-        menu.elements.push(menuClose);
+        };
+        this.addUIElement(shopButton);
+
+        let shop = new Menu(game, new Vector2(370,170), new Vector2("Centre","Centre"));
+        shop.style.fillColor = color(100);
+        shop.isVisible = false;
+        shop.id = "shop";
+        this.addUIElement(shop);
+
+
+        //Shop Setup
+        let shopWeapons = ["Rifle", "Machine Gun", "The Big Gun"];
+        
+        for (let i=0; i<shopWeapons.length; i++){
+            let weapon = this.weaponManager.getWeapon(shopWeapons[i])
+            
+            let weaponLabel = new Label(game, weapon.name, new Vector2(200, 30), new Vector2("Left", "Top"));
+            weaponLabel.offset.x = 20;
+            weaponLabel.offset.y = 30+40*i;
+            weaponLabel.parent = shop;
+            shop.elements.push(weaponLabel);
+
+            let weaponPrice = new Label(game, weapon.price, new Vector2(70, 30), new Vector2("Left", "Top"));
+            weaponPrice.offset.x = 220;
+            weaponPrice.offset.y = 30+40*i;
+            weaponPrice.parent = shop;
+            shop.elements.push(weaponPrice);
+            
+            let weaponBuyButton = new Button(game, "BUY", new Vector2(50, 30), new Vector2("Left", "Top"));
+            weaponBuyButton.offset.x = 290;
+            weaponBuyButton.offset.y = 30+40*i;
+            weaponBuyButton.parent = shop;
+            weaponBuyButton.weapon = weapon;
+
+            weaponBuyButton.onClick = function() {
+
+                if (this.game.model.money >= weapon.price){
+                    this.game.model.money -= weapon.price
+                    this.game.model.scene.getEntity("player").weapon = this.weapon;
+                    this.game.model.playerWeapon = this.weapon;
+                    this.game.model.scene.getUIElement("shop").isVisible = false;
+                } else {
+                    console.log("You can't afford "+this.weapon.name);
+                }
+            };
+
+            shop.elements.push(weaponBuyButton);
+        }
+        let weaponClose = new Button(game, "X", new Vector2(30, 30), new Vector2("Right", "Top"));
+        weaponClose.parent = shop; 
+        weaponClose.onClick = function() {
+            this.game.model.scene.getUIElement("shop").isVisible = false;
+        };
+
+        shop.elements.push(weaponClose);
+
+        //Money Label
+        this.moneyLabel = new Button(game, "Coins 0", new Vector2(130, 30), new Vector2("Left", "Top"));
+        this.moneyLabel.offset.x=220;
+        this.addUIElement(this.moneyLabel);
+        
     }
 
     draw () {
@@ -89,6 +150,7 @@ export class ShooterScene extends Scene {
                 uielement.update(events);
             }
         }
+        this.moneyLabel.label = "Coins "+this.game.model.money;
         
         if (this.zombieManager.waveStrength == 0 && !this.isRoundWon){
             if (this.getEntities("Zombie").length == 0){
@@ -100,6 +162,7 @@ export class ShooterScene extends Scene {
 
     gameOver(){
         this.isGameOver = true;
+        this.getUIElement("shop").isVisible = false;
 
         //Restart Button
         this.restartBtn = new Button(this.game, "Restart Game", new Vector2(160, 50), new Vector2("Centre", "Centre"));
@@ -123,6 +186,7 @@ export class ShooterScene extends Scene {
 
     roundWon(){
         this.isRoundWon = true;
+        this.getUIElement("shop").isVisible = false;
 
         //Continue Button
         this.contiueBtn = new Button(this.game, "Continue", new Vector2(160, 50), new Vector2("Centre", "Centre"));

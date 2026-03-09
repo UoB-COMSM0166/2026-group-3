@@ -11,9 +11,19 @@ export class ZombieEntity extends Entity {
     }
 
     update(events){
-        if (!this.isVisible || this.game.model.scene.isGameOver) return;
+        if (this.game.model.scene.isGameOver){
+            this.image.pause();
+            return;
+        } else {
+            this.image.play();
+        }
+        if (!this.isVisible) return;
 
         if (this.health<=0) {
+
+            //Temp Code to add Money on Death
+            this.game.model.money+=Math.floor(random(3, 8));
+
             this.game.model.scene.removeEntity(this);
             return;
         }

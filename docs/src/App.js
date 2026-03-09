@@ -4,7 +4,7 @@ import {Game} from "./Core/Game.js";
 import {Vector2} from "./Utility/Vector2.js";
 
 let game;
-let DEBUG = true;
+let DEBUG = false;
 
 window.setup = function() {
     let windowSize = new Vector2(windowWidth, windowHeight);

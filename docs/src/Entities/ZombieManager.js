@@ -12,22 +12,30 @@ export class ZombieManager extends Entity{
         this.scene = scene;
         this.game = game;
         this.spawnTimer = 0;
-        this.spawnInterval = 120;
         this.zombiesSpawned = 0;
 
-        this.totalStrength = this.calculateWaveStrength(this.game.model.phase, this.game.model.difficulty);
+        if (this.game.model.difficulty == "hard"){
+            this.difficultyMod = 1.25;
+        } else if (this.game.model.difficulty == "easy"){
+            this.difficultyMod = 0.75;
+        } else {
+            this.difficultyMod = 1;
+        }
+
+        this.totalStrength = this.calculateWaveStrength(this.game.model.phase);
         this.waveStrength = this.totalStrength;
+        this.spawnInterval = 3000/(this.difficultyMod*(this.waveStrength+20));
 
     }
 
-    calculateWaveStrength(phase, difficulty){
-        let waveStrengths = [12, 20, 32, 48, 68, 92];
+    calculateWaveStrength(phase){
+        let waveStrengths = [8, 12, 20, 32, 48, 68, 92];
 
-
-        if (difficulty == "easy") return waveStrengths[phase-1]*0.75;
-        if (difficulty == "hard") return waveStrengths[phase-1]*1.5;
-
-        return waveStrengths[phase-1];
+        if (phase>7){
+            return this.difficultyMod*25*(phase-3);
+        } else {
+            return this.difficultyMod*waveStrengths[phase-1];
+        }
     }
 
 
@@ -46,13 +54,13 @@ export class ZombieManager extends Entity{
                 let yPos = lines[lineIndex % lines.length];
                 let startPos = new Vector2(this.game.gridSize.x, yPos);
                 let zombie;
-                if (this.waveStrength > 20 && random(0,4)<=1){
+                if (this.waveStrength > 30 && random(0,6)<=1){
                     zombie = new TankZombie(this.game, startPos);
                     this.waveStrength -= 10;
-                } else if (this.waveStrength > 12 && random(0,3)<=1){
+                } else if (this.waveStrength > 20 && random(0,5)<=1){
                     zombie = new SlobZombie(this.game, startPos);
                     this.waveStrength -= 5;
-                } else if (this.waveStrength > 12 && random(0,2)<=1){
+                } else if (this.waveStrength > 20 && random(0,4)<=1){
                     zombie = new SprinterZombie(this.game, startPos);
                     this.waveStrength -= 5;
                 } else {
