@@ -28,19 +28,16 @@ export class KitchenStation_MVP extends Entity {
 
     console.log("[Station] Recipe requirements:", recipe.requirements);
 
-    // Station restriction: this station can only cook certain recipes
     if (!this.supportedRecipeIds.includes(recipe.id)) {
       console.log("[Station] Station cannot cook:", recipe.id);
       return false;
     }
 
-    // Inventory check
     if (!state.inventory.has(recipe.requirements)) {
       console.log("[Station] Not enough ingredients for:", recipe.id);
       return false;
     }
 
-    // Consume ingredients and give player the dish
     state.inventory.consume(recipe.requirements);
     player.heldDish = recipe.id;
 
