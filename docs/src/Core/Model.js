@@ -2,10 +2,6 @@
 //Global data is held here
 //Data local to the scene is held in the scene
 
-import { WeaponManager } from "./WeaponManager.js";
-
-
-
 export class Model {
     constructor(game){
         this.scene = null;

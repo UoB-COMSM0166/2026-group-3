@@ -19,15 +19,6 @@ export class ZombieEntity extends Entity {
         }
         if (!this.isVisible) return;
 
-        if (this.health<=0) {
-
-            //Temp Code to add Money on Death
-            this.game.model.money+=Math.floor(random(3, 8));
-
-            this.game.model.scene.removeEntity(this);
-            return;
-        }
-
         this.pos.x -= this.speed;
 
         const boundary = 4;
@@ -43,12 +34,32 @@ export class ZombieEntity extends Entity {
         let rel_pos = this.game.view.localToScreen(this.pos);
         let rel_size = this.game.view.localToScreen(this.size);
         
-        image(this.image, rel_pos.x, rel_pos.y, rel_size.x, rel_size.y);
+        if (this.damageTimer>0){
+            image(this.damageImage, rel_pos.x, rel_pos.y, rel_size.x, rel_size.y);
+            this.damageTimer-=1;
+        } else{
+            image(this.image, rel_pos.x, rel_pos.y, rel_size.x, rel_size.y);
+        }
 
         if (this.game.debug) {
             fill(0,0,0,0);
             stroke(0);
             rect(rel_pos.x, rel_pos.y, rel_size.x, rel_size.y);
         }
+    }
+
+    takeDamage(damage){
+        this.health -= damage;
+        if (this.health<=0) {
+
+            //Temp Code to add Money on Death
+            this.game.model.money+=Math.floor(random(3, 8));
+
+            this.game.model.scene.removeEntity(this);
+            return;
+        }
+        this.damageTimer=10;
+
+
     }
 }

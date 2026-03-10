@@ -6,6 +6,7 @@ export class SlobZombie extends ZombieEntity {
 
         this.sprite = "SlobZombieWalking";
         this.image = this.game.assetManager.getImage(this.sprite);
+        this.damageImage=this.image;
 
         this.speed = 0.02;
         this.health = Math.floor(random(3,20));;

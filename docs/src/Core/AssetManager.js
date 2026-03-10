@@ -16,6 +16,7 @@ export class AssetManager {
         this.loadImage("TankZombieWalking","./assets/tankwalking.gif");
         this.loadImage("SlobZombieWalking","./assets/slobwalking.gif");
         this.loadImage("SprinterZombieWalking","./assets/sprinter.gif");
+        this.loadImage("BasicZombieDamage","./assets/damage1.png");
 
         // for testing loading:
 

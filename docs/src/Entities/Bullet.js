@@ -29,8 +29,7 @@ export class Bullet extends Entity{
         for (let entity of this.game.model.scene.entities){
             if (entity.id == "Zombie"){
                 if (entity.isVisible && this.pos.withinBox(entity.pos,entity.size)){
-                    entity.health -= this.damage;
-                    if (entity.health<0) entity.health = 0;
+                    entity.takeDamage(this.damage);
                     this.game.model.scene.removeEntity(this);
                 }
                 
