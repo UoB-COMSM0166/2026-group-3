@@ -56,6 +56,7 @@ export class ShooterScene extends Scene {
         shop.style.fillColor = color(100);
         shop.isVisible = false;
         shop.id = "shop";
+        shop.offset.y = -200;
         this.addUIElement(shop);
 
 
@@ -182,7 +183,7 @@ if (events.some(e => e.key === "Enter")) {
         this.restartBtn.onClick = () => {
             this.game.model.money = 0;
             this.game.model.playerWeapon = "Pistol"; 
-            this.game.phase = 1;
+            this.game.model.phase = 1;
             this.game.model.scene = new ShooterScene(this.game);
         };
         this.addUIElement(this.restartBtn);
