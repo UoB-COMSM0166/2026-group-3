@@ -16,9 +16,10 @@ export class ShooterScene extends Scene {
         this.isRoundWon = false;
 
         this.weaponManager = new WeaponManager(game);
+        let weapon = this.weaponManager.getWeapon(game.model.playerWeapon);
 
         //Player block 
-        let Player = new PlayerDayEntity(game, this.game.model.playerWeapon);
+        let Player = new PlayerDayEntity(game, weapon);
         Player.id = "player";
         this.addEntity(Player);
 
@@ -31,11 +32,14 @@ export class ShooterScene extends Scene {
         this.addUIElement(label);
 
 
-         let menuButton = new Button(game, "Menu", new Vector2(110, 30), new Vector2("Left", "Top"));
-      menuButton.onClick = () => {
-          let startScene = new WelcomeScene(game);
-           game.model.scene = startScene;
-      };
+        let menuButton = new Button(game, "Menu", new Vector2(110, 30), new Vector2("Left", "Top"));
+        menuButton.onClick = () => {
+            game.model.money = 0;
+            game.model.playerWeapon = "Pistol";
+            game.model.phase = 1;
+            let startScene = new WelcomeScene(game);
+            game.model.scene = startScene;
+        };
         this.addUIElement(menuButton);
         
         // Shop Menu
@@ -84,7 +88,7 @@ export class ShooterScene extends Scene {
                 if (this.game.model.money >= weapon.price){
                     this.game.model.money -= weapon.price
                     this.game.model.scene.getEntity("player").weapon = this.weapon;
-                    this.game.model.playerWeapon = this.weapon;
+                    this.game.model.playerWeapon = this.weapon.name;
                     this.game.model.scene.getUIElement("shop").isVisible = false;
                 } else {
                     console.log("You can't afford "+this.weapon.name);
@@ -176,9 +180,11 @@ if (events.some(e => e.key === "Enter")) {
         this.restartBtn = new Button(this.game, "Restart Game", new Vector2(160, 50), new Vector2("Centre", "Centre"));
         this.restartBtn.offset.y = 90;
         this.restartBtn.onClick = () => {
-            if (typeof loop === 'function') loop(); 
-                this.game.model.scene = new ShooterScene(this.game);
-            };
+            this.game.model.money = 0;
+            this.game.model.playerWeapon = "Pistol"; 
+            this.game.phase = 1;
+            this.game.model.scene = new ShooterScene(this.game);
+        };
         this.addUIElement(this.restartBtn);
 
         //Game Over Label
@@ -202,10 +208,10 @@ if (events.some(e => e.key === "Enter")) {
         this.contiueBtn.onClick = () => {
 
             //Temporary Fucntion for continue button
-            if (typeof loop === 'function') loop(); 
-                this.game.model.phase++;
-                this.game.model.scene = new ShooterScene(this.game);
-            };
+            this.game.model.phase++;
+            this.game.model.scene = new ShooterScene(this.game);
+
+        };
 
         this.addUIElement(this.contiueBtn);
 

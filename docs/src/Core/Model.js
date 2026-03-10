@@ -14,8 +14,7 @@ export class Model {
         this.difficulty = "normal";   // easy / normal / hard
         this.phase = 1;  // 1 phase = 1 day + 1 night. 
         
-        let weaponManager = new WeaponManager
-        this.playerWeapon = weaponManager.getWeapon("Pistol");
+        this.playerWeapon = "Pistol";
         //TODO add any game variables here (e.g money or day)
     }
     update(events){
