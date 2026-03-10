@@ -3,6 +3,7 @@ import { Button } from "../UIElements/Button.js";
 import { Label } from "../UIElements/Label.js";
 import { Vector2 } from "../Utility/Vector2.js";
 import { ShooterScene } from "../Scenes/ShooterScene.js";
+import { KitchenScene_MVP } from "../Scenes/KitchenScene_MVP.js";
 
 export class WelcomeScene extends Scene {
   constructor(game) {
@@ -26,6 +27,15 @@ export class WelcomeScene extends Scene {
     this.settingsButton = new Button(game, "Settings", new Vector2(200, 50), new Vector2("Centre", "Top"), new Vector2(0, 460));
     this.quitButton = new Button(game, "Quit", new Vector2(200, 50), new Vector2("Centre", "Top"), new Vector2(0, 530));
 
+    // Test Kitchen Button (temporary debug access)
+    this.testKitchenButton = new Button(
+      game,
+      "Test Kitchen",
+      new Vector2(200, 50),
+      new Vector2("Centre", "Top"),
+      new Vector2(0, 600)
+    );
+
     //Difficulty Buttons
     this.easyButton = new Button(game, "Easy", new Vector2(200, 50), new Vector2("Centre", "Top"), new Vector2(0, 320));
     this.mediumButton = new Button(game, "Medium", new Vector2(200, 50), new Vector2("Centre", "Top"), new Vector2(0, 390));
@@ -39,7 +49,7 @@ export class WelcomeScene extends Scene {
 
     //Play Button: show difficulty menu
     this.playButton.onClick = () => {
-      [this.playButton, this.instructionsButton, this.settingsButton, this.quitButton]
+      [this.playButton, this.instructionsButton, this.settingsButton, this.quitButton,this.testKitchenButton]
         .forEach(b => b.isVisible = false);
 
       //Small delay before showing difficulty buttons
@@ -58,7 +68,12 @@ export class WelcomeScene extends Scene {
     //Back button: return to main menu
     this.backButton.onClick = () => {
       [this.easyButton, this.mediumButton, this.hardButton, this.backButton].forEach(b => b.isVisible = false);
-      [this.playButton, this.instructionsButton, this.settingsButton, this.quitButton].forEach(b => b.isVisible = true);
+      [this.playButton, this.instructionsButton, this.settingsButton, this.quitButton,this.testKitchenButton].forEach(b => b.isVisible = true);
+    };
+
+    // Test Kitchen Button → Directly enter KitchenScene
+    this.testKitchenButton.onClick = () => {
+      this.game.model.scene = new KitchenScene_MVP(this.game);
     };
 
     [
@@ -67,6 +82,7 @@ export class WelcomeScene extends Scene {
       this.instructionsButton,
       this.settingsButton,
       this.quitButton,
+      this.testKitchenButton,
       this.easyButton,
       this.mediumButton,
       this.hardButton,
