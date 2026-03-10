@@ -11,27 +11,33 @@ export class Counter_MVP extends Entity {
       console.log("[Counter] No active order.");
       return false;
     }
+
     if (!player.heldDish) {
       console.log("[Counter] Player not holding any dish.");
       return false;
     }
 
     if (player.heldDish !== customer.order.recipeId) {
-      console.log("[Counter] Wrong dish. Need:", customer.order.recipeId, "Got:", player.heldDish);
+      console.log(
+        "[Counter] Wrong dish. Need:",
+        customer.order.recipeId,
+        "Got:",
+        player.heldDish
+      );
       return false;
     }
 
-    // 完成订单
-    customer.order.accept(); // 若你不想要 ACCEPTED 状态，也可以删掉这一行
+    // Complete the order
+    customer.order.accept();
     orderSystem.completeOrder(customer.order, state);
 
     console.log("[Counter] Served! Coins:", state.coins);
 
-    // 清空玩家手上的菜
+    // Clear the dish currently held by the player
     player.heldDish = null;
 
-    // 顾客标记为已服务（Scene 会生成新订单）
-    customer.served = true;
+    // Mark the customer as served
+    customer.markServed();
 
     return true;
   }
