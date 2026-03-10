@@ -17,25 +17,25 @@ export class KitchenStation_MVP extends Entity {
 
     if (player.heldDish) {
       console.log("[Station] Player already holding a dish:", player.heldDish);
-      return false;
+      return { ok: false, reason: "Already holding a dish" };
     }
 
     const recipe = menu.getRecipe(targetRecipeId);
     if (!recipe) {
       console.log("[Station] Recipe not found:", targetRecipeId);
-      return false;
+      return { ok: false, reason: "Recipe not found" };
     }
 
     console.log("[Station] Recipe requirements:", recipe.requirements);
 
     if (!this.supportedRecipeIds.includes(recipe.id)) {
       console.log("[Station] Station cannot cook:", recipe.id);
-      return false;
+      return { ok: false, reason: "Wrong station for this dish" };
     }
 
     if (!state.inventory.has(recipe.requirements)) {
       console.log("[Station] Not enough ingredients for:", recipe.id);
-      return false;
+      return { ok: false, reason: "Not enough ingredients" };
     }
 
     state.inventory.consume(recipe.requirements);
@@ -44,7 +44,7 @@ export class KitchenStation_MVP extends Entity {
     console.log("[Station] Cooked:", recipe.id);
     console.log("[Station] Inventory after cooking:", state.inventory?.items);
 
-    return true;
+    return { ok: true, dish: recipe.id };
   }
 
   draw() {
