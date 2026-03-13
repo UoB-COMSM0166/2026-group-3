@@ -48,8 +48,11 @@ export class ZombieEntity extends Entity {
         }
     }
 
-    takeDamage(damage){
+    async takeDamage(damage){
         this.health -= damage;
+
+        // Damage Sound
+        await this.game.soundManager.playSFX("damage");
         if (this.health<=0) {
 
             //Temp Code to add Money on Death

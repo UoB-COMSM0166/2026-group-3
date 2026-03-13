@@ -5,6 +5,7 @@ import {Controller} from "./Controller.js";
 import {View} from "./View.js";
 import {AssetManager} from "./AssetManager.js";
 import {WelcomeScene} from "../Scenes/WelcomeScene.js";
+import {SoundManager} from "./SoundManager.js";
 
 export class Game {
     constructor(windowSize, gridSize, DEBUG){
@@ -15,8 +16,10 @@ export class Game {
         this.view = new View(this, this.model, windowSize);
         this.controller = new Controller(this, this.model);
         this.assetManager = new AssetManager(this);
-        
+        this.soundManager = new SoundManager(this)
+
         this.assetManager.preload();
+        this.soundManager.preload();
 
     }
     finishedLoading(){

@@ -84,13 +84,14 @@ export class ShooterScene extends Scene {
             weaponBuyButton.parent = shop;
             weaponBuyButton.weapon = weapon;
 
-            weaponBuyButton.onClick = function() {
+            weaponBuyButton.onClick = async function() {
 
                 if (this.game.model.money >= weapon.price){
                     this.game.model.money -= weapon.price
                     this.game.model.scene.getEntity("player").weapon = this.weapon;
                     this.game.model.playerWeapon = this.weapon.name;
                     this.game.model.scene.getUIElement("shop").isVisible = false;
+                    await this.game.soundManager.playSFX("buy");
                 } else {
                     console.log("You can't afford "+this.weapon.name);
                 }
@@ -173,7 +174,7 @@ if (events.some(e => e.key === "Enter")) {
     }
 
 
-    gameOver(){
+    async gameOver(){
         this.isGameOver = true;
         this.getUIElement("shop").isVisible = false;
 
@@ -196,10 +197,13 @@ if (events.some(e => e.key === "Enter")) {
         this.gameOverLabel.style.textSize = 60;
         this.gameOverLabel.offset.y = -70;
 
+        //Lose Sound
+        await this.game.soundManager.playSFX("lose");
+
         this.addUIElement(this.gameOverLabel);
     }
 
-    roundWon(){
+    async roundWon(){
         this.isRoundWon = true;
         this.getUIElement("shop").isVisible = false;
 
@@ -223,6 +227,10 @@ if (events.some(e => e.key === "Enter")) {
         this.youWonLabel.style.textColor = color(255,0,0);
         this.youWonLabel.style.textSize = 40;
         this.youWonLabel.offset.y = -70;
+
+        //Win sound 
+        await this.game.soundManager.playSFX("win");
+
 
         this.addUIElement(this.youWonLabel);
     }

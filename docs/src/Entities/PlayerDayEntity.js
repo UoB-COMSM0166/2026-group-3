@@ -50,9 +50,12 @@ export class PlayerDayEntity extends Entity{
 
     }
 
-    shoot(){
+    async shoot(){
         let bullet = new Bullet(this.game, new Vector2(this.pos.x + this.size.x, this.pos.y + this.size.y/2), this.weapon.damage, this.weapon.speed);
         this.game.model.scene.entities.push(bullet);
+
+        // Shoot sound
+        await this.game.soundManager.playSFX("shoot");
     }
 
 
