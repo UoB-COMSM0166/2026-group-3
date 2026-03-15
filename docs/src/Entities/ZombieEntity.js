@@ -58,6 +58,11 @@ export class ZombieEntity extends Entity {
             //Temp Code to add Money on Death
             this.game.model.money+=Math.floor(random(3, 8));
 
+            for (let drop of this.drops){
+                this.game.model.inventory.add(drop);
+            }
+
+
             this.game.model.scene.removeEntity(this);
             return;
         }

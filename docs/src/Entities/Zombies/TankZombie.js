@@ -9,8 +9,9 @@ export class TankZombie extends ZombieEntity {
         this.damageImage=this.image;
 
         this.speed = 0.01;
-        this.health = Math.floor(random(10,20));;
+        this.health = Math.floor(random(10,20));
         this.damage = 3;
+        this.drops = ["Prime Bone","Zombie Belly"];
 
     }
 }

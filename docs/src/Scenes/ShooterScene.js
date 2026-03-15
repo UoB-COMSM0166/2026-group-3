@@ -28,7 +28,7 @@ export class ShooterScene extends Scene {
 
 
         //Labels & Menus
-        let dayLabel = new Label(game, `Day ${this.game.model.phase}`, new Vector2(80, 30), new Vector2("Right", "Top"));
+        let dayLabel = new Label(game, `Day ${this.game.model.phase}`, new Vector2(50, 60), new Vector2("Right", "Top"));
         this.addUIElement(dayLabel);
 
 
@@ -43,18 +43,36 @@ export class ShooterScene extends Scene {
         this.addUIElement(menuButton);
 
         let startButton = new Button(game, "Start Wave", new Vector2(250, 60), new Vector2("Centre", "Top"));
-        startButton.style.fillColor = color(220,30,30);
+        startButton.style.fillColor = color(220,60,60);
         startButton.style.textColor = color(0,0,0);
         startButton.style.textSize = 30;
         startButton.onClick = function() {
             this.game.model.scene.zombieManager.waveStarted = true;
             this.isVisible = false;
         };
-
-
         this.addUIElement(startButton);
 
 
+        //Inventory Labels
+
+        let drops = game.model.drops;
+        for (let i=0; i < drops.length; i++){
+            let dropLabel = new Label(game, "", new Vector2(30, 30), new Vector2("Right", "Top"));
+            dropLabel.offset.x = - 50 -i*30;
+            dropLabel.image = drops[i];
+            this.addUIElement(dropLabel);
+
+            let dropCount = new Label(game, "0", new Vector2(30, 30), new Vector2("Right", "Top"));
+            dropCount.offset.x = - 50 -i*30;
+            dropCount.offset.y = 30;
+            dropCount.drop = drops[i];
+
+            dropCount.update = function(events) {
+                this.label = this.game.model.inventory.get(this.drop);
+            }
+
+            this.addUIElement(dropCount);
+        }   
         
         // Shop Menu
         let shopButton = new Button(game, "Shop", new Vector2(110, 30), new Vector2("Left", "Top"));

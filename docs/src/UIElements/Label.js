@@ -21,13 +21,13 @@ export class Label extends UIElement {
         stroke(this.style.outline);
         strokeWeight(this.style.outlineWidth);
 
+        rect(this.pos.x, this.pos.y, this.size.x, this.size.y);
+
         if (this.image != null){
             let sprite = this.game.assetManager.getImage(this.image);
             image(sprite, this.pos.x, this.pos.y, this.size.x, this.size.y);
-        } else {
-            rect(this.pos.x, this.pos.y, this.size.x, this.size.y);
         }
-
+        
         textFont(this.style.font);
         textAlign(this.style.textAlign.x,this.style.textAlign.y);
         textSize(this.style.textSize);

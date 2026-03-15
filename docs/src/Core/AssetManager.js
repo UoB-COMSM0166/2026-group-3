@@ -12,11 +12,20 @@ export class AssetManager {
         //Add all image loads here:
 
         this.loadImage("ChefShootingIdle","./assets/chefshootingidle.png");
+
+        //Zombie Sprites
         this.loadImage("BasicZombieWalking","./assets/zombiewalking.gif");
         this.loadImage("TankZombieWalking","./assets/tankwalking.gif");
         this.loadImage("SlobZombieWalking","./assets/slobwalking.gif");
         this.loadImage("SprinterZombieWalking","./assets/sprinter.gif");
         this.loadImage("BasicZombieDamage","./assets/damage1.png");
+
+        //Drop Sprites
+        this.loadImage("Prime Bone","./assets/drops/primeBone.png");
+        this.loadImage("Zombie Belly","./assets/drops/zombieBelly.png");
+        this.loadImage("Zombie Drumstick","./assets/drops/zombieDrumstick.png");
+        this.loadImage("Zombie Juice","./assets/drops/zombieJuice.png");
+        this.loadImage("Zombie Mince","./assets/drops/zombieMince.png");
 
         // for testing loading:
 

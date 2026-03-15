@@ -11,6 +11,7 @@ export class SlobZombie extends ZombieEntity {
         this.speed = 0.02;
         this.health = Math.floor(random(3,20));;
         this.damage = 2;
+        this.drops = ["Zombie Juice"];
 
     }
 }

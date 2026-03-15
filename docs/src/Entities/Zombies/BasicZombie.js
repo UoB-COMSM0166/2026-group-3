@@ -12,6 +12,7 @@ export class BasicZombie extends ZombieEntity {
         this.speed = 0.015;
         this.health = Math.floor(random(3,7));
         this.damage = 1;
+        this.drops = ["Zombie Mince"];
 
     }
 }
