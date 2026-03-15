@@ -13,6 +13,7 @@ export class ZombieManager extends Entity{
         this.game = game;
         this.spawnTimer = 0;
         this.zombiesSpawned = 0;
+        this.waveStarted = false;
 
         if (this.game.model.difficulty == "hard"){
             this.difficultyMod = 1.25;
@@ -40,6 +41,7 @@ export class ZombieManager extends Entity{
 
 
     update(events){
+        if (!this.waveStarted) return;
         const boundary = this.game.gridSize.x / 6;
 
         let lines = [1, 2.5, 4, 5.5, 7];

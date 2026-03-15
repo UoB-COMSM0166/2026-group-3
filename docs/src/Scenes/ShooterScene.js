@@ -28,8 +28,8 @@ export class ShooterScene extends Scene {
 
 
         //Labels & Menus
-        let label = new Label(game, `Day ${this.game.model.phase}`, new Vector2(80, 30), new Vector2("Right", "Top"));
-        this.addUIElement(label);
+        let dayLabel = new Label(game, `Day ${this.game.model.phase}`, new Vector2(80, 30), new Vector2("Right", "Top"));
+        this.addUIElement(dayLabel);
 
 
         let menuButton = new Button(game, "Menu", new Vector2(110, 30), new Vector2("Left", "Top"));
@@ -41,6 +41,20 @@ export class ShooterScene extends Scene {
             game.model.scene = startScene;
         };
         this.addUIElement(menuButton);
+
+        let startButton = new Button(game, "Start Wave", new Vector2(250, 60), new Vector2("Centre", "Top"));
+        startButton.style.fillColor = color(220,30,30);
+        startButton.style.textColor = color(0,0,0);
+        startButton.style.textSize = 30;
+        startButton.onClick = function() {
+            this.game.model.scene.zombieManager.waveStarted = true;
+            this.isVisible = false;
+        };
+
+
+        this.addUIElement(startButton);
+
+
         
         // Shop Menu
         let shopButton = new Button(game, "Shop", new Vector2(110, 30), new Vector2("Left", "Top"));
@@ -148,13 +162,13 @@ export class ShooterScene extends Scene {
     update(events){
         if (events.length > 0) console.log(events[0]);
         //Stop Updating Entities after wave over
-if (events.some(e => e.key === "Enter")) {
-    let menu = this.uielements.find(el => el.id === "menu");
-    if (menu) {
-        menu.isVisible = !menu.isVisible;
-        console.log("Set visibility to:", menu.isVisible); // add this
-    }
-}
+        if (events.some(e => e.key === "Enter")) {
+            let menu = this.uielements.find(el => el.id === "menu");
+            if (menu) {
+                menu.isVisible = !menu.isVisible;
+                console.log("Set visibility to:", menu.isVisible); // add this
+            }
+        }
 
 
         if (!this.isRoundWon && !this.isGameOver){
