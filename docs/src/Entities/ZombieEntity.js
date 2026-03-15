@@ -8,6 +8,7 @@ export class ZombieEntity extends Entity {
 
         this.isVisible = true;
         this.id = "Zombie";
+        this.attackCooldown = 0;
     }
 
     update(events){
@@ -19,11 +20,17 @@ export class ZombieEntity extends Entity {
         }
         if (!this.isVisible) return;
 
-        this.pos.x -= this.speed;
-
         const boundary = 4;
         if (this.pos.x <= boundary) {
-            this.game.model.scene.gameOver();
+            if (this.attackCooldown <= 0){
+                let fence = this.game.model.scene.getEntity("Fence");
+                fence.takeDamage(this.damage);
+                this.attackCooldown = 60;
+            } else {
+                this.attackCooldown -= 1;
+            }
+        } else {
+            this.pos.x -= this.speed;
         }
 
     }

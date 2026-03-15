@@ -8,6 +8,7 @@ import { ZombieManager } from "../Entities/ZombieManager.js";
 import { WelcomeScene } from "./WelcomeScene.js";
 import { KitchenScene_MVP } from "./KitchenScene_MVP.js";
 import { WeaponManager } from "../Core/WeaponManager.js";
+import { Fence } from "../Entities/Fence.js";
 
 export class ShooterScene extends Scene {
     constructor(game) {
@@ -22,6 +23,10 @@ export class ShooterScene extends Scene {
         let Player = new PlayerDayEntity(game, weapon);
         Player.id = "player";
         this.addEntity(Player);
+
+        let fence = new Fence(game);
+        this.addEntity(fence);
+
 
         this.zombieManager = new ZombieManager(game, this);
         this.addEntity(this.zombieManager);
@@ -52,6 +57,11 @@ export class ShooterScene extends Scene {
         };
         this.addUIElement(startButton);
 
+
+        let fenceHealth = new Label(game, "Health: 100%", new Vector2(200, 30), new Vector2("Centre", "Bottom"));
+        fenceHealth.id = "FenceLabel";
+
+        this.addUIElement(fenceHealth);
 
         //Inventory Labels
 
