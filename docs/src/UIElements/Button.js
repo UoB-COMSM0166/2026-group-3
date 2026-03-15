@@ -18,8 +18,8 @@ export class Button extends UIElement {
         this.pos = this.calculatePosition();
 
         fill(this.style.fillColor);
-        if (this.game.debug) stroke(0,0,0);
-        else stroke(this.style.outline);
+        stroke(this.style.outline);
+        strokeWeight(this.style.outlineWidth);
 
         if (this.image != null){
             let sprite = this.game.assetManager.getImage(this.image);
@@ -33,6 +33,7 @@ export class Button extends UIElement {
         textSize(this.style.textSize);
         textStyle(this.style.textStyle);
         fill(this.style.textColor);
+        strokeWeight(1);
 
         text(this.label, this.pos.x, this.pos.y, this.size.x, this.size.y);
     }

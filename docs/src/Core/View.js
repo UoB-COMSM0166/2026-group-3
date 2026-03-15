@@ -14,7 +14,8 @@ export class View {
     }
 
     defaultStyle(style){
-        style.outline = color(100);
+        style.outline = color(50);
+        style.outlineWidth = 2;
         style.fillColor = color(90,90,255);
         style.textColor = color(0);
         style.font = 'Courier New';
