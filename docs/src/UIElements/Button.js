@@ -34,8 +34,15 @@ export class Button extends UIElement {
         textStyle(this.style.textStyle);
         fill(this.style.textColor);
         strokeWeight(1);
-
+        let mousePos = new Vector2(mouseX, mouseY);
+        if (mousePos.withinBox(this.pos, this.size)){
+            textSize(5 + this.style.textSize);
+        } else {
+            textSize(this.style.textSize);
+        }
         text(this.label, this.pos.x, this.pos.y, this.size.x, this.size.y);
+
+        
     }
 
     onClick(){}

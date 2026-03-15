@@ -37,7 +37,7 @@ export class ShooterScene extends Scene {
         this.addUIElement(dayLabel);
 
 
-        let menuButton = new Button(game, "Menu", new Vector2(110, 30), new Vector2("Left", "Top"));
+        let menuButton = new Button(game, "Menu", new Vector2(110, 50), new Vector2("Left", "Top"));
         menuButton.onClick = () => {
             game.model.money = 0;
             game.model.playerWeapon = "Pistol";
@@ -85,7 +85,7 @@ export class ShooterScene extends Scene {
         }   
         
         // Shop Menu
-        let shopButton = new Button(game, "Shop", new Vector2(110, 30), new Vector2("Left", "Top"));
+        let shopButton = new Button(game, "Shop", new Vector2(110, 50), new Vector2("Left", "Top"));
         shopButton.offset.x = 110;
         shopButton.onClick = function() {
             let shop = this.game.model.scene.getUIElement("shop");
@@ -150,7 +150,7 @@ export class ShooterScene extends Scene {
         shop.elements.push(weaponClose);
 
         //Money Label
-        this.moneyLabel = new Button(game, "Coins 0", new Vector2(130, 30), new Vector2("Left", "Top"));
+        this.moneyLabel = new Label(game, "Coins 0", new Vector2(130, 50), new Vector2("Left", "Top"));
         this.moneyLabel.offset.x=220;
         this.addUIElement(this.moneyLabel);
         
