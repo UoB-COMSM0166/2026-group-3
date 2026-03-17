@@ -37,10 +37,12 @@ export class Button extends UIElement {
         let mousePos = new Vector2(mouseX, mouseY);
         if (mousePos.withinBox(this.pos, this.size)){
             textSize(5 + this.style.textSize);
+            text(this.label, this.pos.x - 5, this.pos.y - 5, this.size.x + 10, this.size.y + 10);
         } else {
             textSize(this.style.textSize);
+            text(this.label, this.pos.x, this.pos.y, this.size.x, this.size.y);
         }
-        text(this.label, this.pos.x, this.pos.y, this.size.x, this.size.y);
+        
 
         
     }
