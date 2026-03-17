@@ -51,7 +51,9 @@ export class ShooterScene extends Scene {
         startButton.style.fillColor = color(220,60,60);
         startButton.style.textColor = color(0,0,0);
         startButton.style.textSize = 30;
+        startButton.id = "Start Button";
         startButton.onClick = function() {
+            if (!this.game.model.scene.zombieManager.loaded) {return;}
             this.game.model.scene.zombieManager.waveStarted = true;
             this.isVisible = false;
         };
@@ -188,7 +190,14 @@ export class ShooterScene extends Scene {
     }
 
     update(events){
-        if (events.length > 0) console.log(events[0]);
+        if (!this.game.model.scene.zombieManager.waveStarted){
+            if (this.game.model.scene.zombieManager.loaded){
+                this.getUIElement("Start Button").label = "Start Wave";
+            } else {
+                this.getUIElement("Start Button").label = "Loading...";
+            }
+        }
+
         //Stop Updating Entities after wave over
         if (events.some(e => e.key === "Enter")) {
             let menu = this.uielements.find(el => el.id === "menu");
@@ -208,7 +217,7 @@ export class ShooterScene extends Scene {
         }
         this.moneyLabel.label = "Coins "+this.game.model.money;
         
-        if (this.zombieManager.waveStrength == 0 && !this.isRoundWon){
+        if (this.zombieManager.zombies.length == 0 && !this.isRoundWon){
             if (this.getEntities("Zombie").length == 0){
                 this.roundWon();
             }

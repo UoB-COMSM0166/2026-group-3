@@ -14,4 +14,9 @@ export class SlobZombie extends ZombieEntity {
         this.drops = ["Zombie Juice"];
 
     }
+
+    preload(){
+        let promise = loadImage("./assets/slobwalking.gif").then(image => this.image = image);
+        return promise;
+    }
 }

@@ -14,6 +14,7 @@ export class ZombieManager extends Entity{
         this.spawnTimer = 0;
         this.zombiesSpawned = 0;
         this.waveStarted = false;
+        this.loaded = false;
 
         if (this.game.model.difficulty == "hard"){
             this.difficultyMod = 1.25;
@@ -26,6 +27,9 @@ export class ZombieManager extends Entity{
         this.totalStrength = this.calculateWaveStrength(this.game.model.phase);
         this.waveStrength = this.totalStrength;
         this.spawnInterval = 3000/(this.difficultyMod*(this.waveStrength+20));
+
+        this.zombies = [];
+        this.preloadWave(this.waveStrength);
 
     }
 
@@ -40,54 +44,121 @@ export class ZombieManager extends Entity{
     }
 
 
+    async preloadWave(waveStrength){
+        let promises = [];
+
+        const lines = [1, 2.5, 4, 5.5, 7];
+        
+        while (waveStrength > 0){
+            
+            let lineIndex = Math.floor(random(0, 5));
+            let yPos = lines[lineIndex % lines.length];
+            let startPos = new Vector2(this.game.gridSize.x, yPos);
+            let zombie;
+            
+            const phase = this.game.model.phase;
+            const spawnMult = 1/(this.difficultyMod**2)
+            
+            if (waveStrength > 10 
+                && phase >= 3 
+                && random(0, 6 * spawnMult)<=1){
+
+                //Spawn Tank
+                zombie = new TankZombie(this.game, startPos);
+                waveStrength = Math.max(0, waveStrength - 10);
+            } else if (waveStrength > 5 
+                && phase >= 2 
+                && random(0, 5 * spawnMult)<=1){
+
+                //Spawn Slob
+                zombie = new SlobZombie(this.game, startPos);
+                waveStrength = Math.max(0, waveStrength - 5);
+            } else if (waveStrength > 5 
+                && phase >= 2 
+                && random(0, 4 * spawnMult)<=1){
+
+                //Spawn Sprinter
+                zombie = new SprinterZombie(this.game, startPos);
+                waveStrength = Math.max(0, waveStrength - 5);
+            } else {
+                //Spawn Basic
+                zombie = new BasicZombie(this.game, startPos);
+                waveStrength = Math.max(0, waveStrength - 1);
+            }
+            promises.push(zombie.preload());
+            this.zombies.push(zombie);
+        }
+
+        await Promise.all(promises);
+        this.shuffleZombies(this.zombies);
+
+        this.loaded = true;
+        console.log("Zombies Loaded");
+
+    }
+
+
+    shuffleZombies(zombies){
+        for (let i=0; i<zombies.length-1; i++){
+            let r = Math.floor(random(i,zombies.length));
+            let temp = zombies[i];
+            zombies[i] = zombies[r];
+            zombies[r] = temp;
+        }
+    }
+
+
+
     update(events){
         if (!this.waveStarted) return;
-        const boundary = this.game.gridSize.x / 6;
-
-        let lines = [1, 2.5, 4, 5.5, 7];
-
         
         //Spawning Logic
-        if (this.waveStrength > 0) {
+        if (this.zombies.length > 0) {
             this.spawnTimer--;
             if (this.spawnTimer <= 0) {
                 this.spawnTimer = this.spawnInterval;
-                let lineIndex = Math.floor(random(0, 5));
-                let yPos = lines[lineIndex % lines.length];
-                let startPos = new Vector2(this.game.gridSize.x, yPos);
-                let zombie;
-                
-                const phase = this.game.model.phase;
-                const spawnMult = 1/(this.difficultyMod**2)
-                
-                if (this.waveStrength > 10 
-                    && phase >= 3 
-                    && random(0, 6 * spawnMult)<=1){
-
-                    //Spawn Tank
-                    zombie = new TankZombie(this.game, startPos);
-                    this.waveStrength = Math.max(0, this.waveStrength - 10);
-                } else if (this.waveStrength > 5 
-                    && phase >= 2 
-                    && random(0, 5 * spawnMult)<=1){
-
-                    //Spawn Slob
-                    zombie = new SlobZombie(this.game, startPos);
-                    this.waveStrength = Math.max(0, this.waveStrength - 5);
-                } else if (this.waveStrength > 5 
-                    && phase >= 2 
-                    && random(0, 4 * spawnMult)<=1){
-
-                    //Spawn Sprinter
-                    zombie = new SprinterZombie(this.game, startPos);
-                    this.waveStrength = Math.max(0, this.waveStrength - 5);
-                } else {
-                    //Spawn Basic
-                    zombie = new BasicZombie(this.game, startPos);
-                    this.waveStrength = Math.max(0, this.waveStrength - 1);
-                }
+                let zombie = this.zombies.pop();
+                zombie.isVisible = true;
                 this.scene.addEntity(zombie);
                 this.zombiesSpawned++;
+
+
+        //         let lineIndex = Math.floor(random(0, 5));
+        //         let yPos = lines[lineIndex % lines.length];
+        //         let startPos = new Vector2(this.game.gridSize.x, yPos);
+        //         let zombie;
+                
+        //         const phase = this.game.model.phase;
+        //         const spawnMult = 1/(this.difficultyMod**2)
+                
+        //         if (this.waveStrength > 10 
+        //             && phase >= 3 
+        //             && random(0, 6 * spawnMult)<=1){
+
+        //             //Spawn Tank
+        //             zombie = new TankZombie(this.game, startPos);
+        //             this.waveStrength = Math.max(0, this.waveStrength - 10);
+        //         } else if (this.waveStrength > 5 
+        //             && phase >= 2 
+        //             && random(0, 5 * spawnMult)<=1){
+
+        //             //Spawn Slob
+        //             zombie = new SlobZombie(this.game, startPos);
+        //             this.waveStrength = Math.max(0, this.waveStrength - 5);
+        //         } else if (this.waveStrength > 5 
+        //             && phase >= 2 
+        //             && random(0, 4 * spawnMult)<=1){
+
+        //             //Spawn Sprinter
+        //             zombie = new SprinterZombie(this.game, startPos);
+        //             this.waveStrength = Math.max(0, this.waveStrength - 5);
+        //         } else {
+        //             //Spawn Basic
+        //             zombie = new BasicZombie(this.game, startPos);
+        //             this.waveStrength = Math.max(0, this.waveStrength - 1);
+        //         }
+        //         this.scene.addEntity(zombie);
+        //         this.zombiesSpawned++;
             }
         }
     }

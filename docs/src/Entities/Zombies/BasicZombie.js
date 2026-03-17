@@ -6,7 +6,7 @@ export class BasicZombie extends ZombieEntity {
 
         this.sprite = "BasicZombieWalking";
         this.damageSprite = "BasicZombieDamage";
-        this.image = this.game.assetManager.getImage(this.sprite);
+        //this.image = this.game.assetManager.getImage(this.sprite);
         this.damageImage = this.game.assetManager.getImage(this.damageSprite);
 
         this.speed = 0.015;
@@ -14,5 +14,10 @@ export class BasicZombie extends ZombieEntity {
         this.damage = 1;
         this.drops = ["Zombie Mince"];
 
+    }
+
+    preload(){
+        let promise = loadImage("./assets/zombiewalking.gif").then(image => this.image = image);
+        return promise;
     }
 }

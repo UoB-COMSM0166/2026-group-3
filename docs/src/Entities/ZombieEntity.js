@@ -32,8 +32,9 @@ export class ZombieEntity extends Entity {
         } else {
             this.pos.x -= this.speed;
         }
-
     }
+
+    preload(){}
 
     draw(){
         if (!this.isVisible) return;

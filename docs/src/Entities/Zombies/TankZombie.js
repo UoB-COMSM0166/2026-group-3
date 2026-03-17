@@ -14,4 +14,9 @@ export class TankZombie extends ZombieEntity {
         this.drops = ["Prime Bone","Zombie Belly"];
 
     }
+
+    preload(){
+        let promise = loadImage("./assets/tankwalking.gif").then(image => this.image = image);
+        return promise;
+    }
 }

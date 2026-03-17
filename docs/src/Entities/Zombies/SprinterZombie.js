@@ -14,4 +14,9 @@ export class SprinterZombie extends ZombieEntity {
         this.drops = ["Zombie Drumstick"];
 
     }
+
+    preload(){
+        let promise = loadImage("./assets/sprinter.gif").then(image => this.image = image);
+        return promise;
+    }
 }
