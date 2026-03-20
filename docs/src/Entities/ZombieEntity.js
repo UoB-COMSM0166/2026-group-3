@@ -42,8 +42,12 @@ export class ZombieEntity extends Entity {
         let rel_pos = this.game.view.localToScreen(this.pos);
         let rel_size = this.game.view.localToScreen(this.size);
         
+        
         if (this.damageTimer>0){
-            image(this.damageImage, rel_pos.x, rel_pos.y, rel_size.x, rel_size.y);
+            tint(255,0,0,196);
+            image(this.image, rel_pos.x, rel_pos.y, rel_size.x, rel_size.y);
+            tint(255);
+            
             this.damageTimer-=1;
         } else{
             image(this.image, rel_pos.x, rel_pos.y, rel_size.x, rel_size.y);
@@ -74,7 +78,7 @@ export class ZombieEntity extends Entity {
             this.game.model.scene.removeEntity(this);
             return;
         }
-        this.damageTimer=10;
+        this.damageTimer = 10;
 
 
     }
