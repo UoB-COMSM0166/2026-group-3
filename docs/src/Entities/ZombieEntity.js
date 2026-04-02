@@ -42,7 +42,6 @@ export class ZombieEntity extends Entity {
         let rel_pos = this.game.view.localToScreen(this.pos);
         let rel_size = this.game.view.localToScreen(this.size);
         
-        
         if (this.damageTimer>0){
             tint(255,0,0,196);
             image(this.image, rel_pos.x, rel_pos.y, rel_size.x, rel_size.y);
@@ -68,10 +67,10 @@ export class ZombieEntity extends Entity {
         if (this.health<=0) {
 
             //Temp Code to add Money on Death
-            this.game.model.money+=Math.floor(random(3, 8));
+            this.game.model.gameState.coins+=Math.floor(random(3, 8));
 
             for (let drop of this.drops){
-                this.game.model.inventory.add(drop);
+                this.game.model.gameState.inventory.add(drop);
             }
 
 

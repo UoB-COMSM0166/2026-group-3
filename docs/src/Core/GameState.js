@@ -1,15 +1,13 @@
 import { Inventory } from "./Inventory.js";
 
 export class GameState {
-  constructor() {
-    this.inventory = new Inventory({
-      zombie_meat: 3,
-      toxic_slime: 1,
-      bone_fragments: 1,
-      spice_powder: 2,
-      mutant_core: 0,
-    });
+  constructor(game) {
+    this.game = game
+    this.inventory = new Inventory([]);
     this.coins = 0;
+    this.playerWeapon = "Pistol";
+    this.phase = 1;  // 1 phase = 1 day + 1 night. 
+    this.turrets = [];
   }
 
   addCoins(amount) {

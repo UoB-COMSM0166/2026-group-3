@@ -19,7 +19,7 @@ export class KitchenScene_MVP extends Scene {
     console.log("KitchenScene_MVP loaded");
 
     // Core logic layer
-    this.state = new GameState();
+    this.state = this.game.model.gameState;
     this.menu = new MenuData();
     this.orderSystem = new OrderSystem();
 

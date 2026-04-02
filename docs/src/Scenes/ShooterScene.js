@@ -9,6 +9,8 @@ import { WelcomeScene } from "./WelcomeScene.js";
 import { KitchenScene_MVP } from "./KitchenScene_MVP.js";
 import { WeaponManager } from "../Core/WeaponManager.js";
 import { Fence } from "../Entities/Fence.js";
+import { TurretManager } from "../Entities/TurretManager.js";
+import { GameState } from "../Core/GameState.js";
 
 export class ShooterScene extends Scene {
     constructor(game) {
@@ -16,8 +18,10 @@ export class ShooterScene extends Scene {
         this.isGameOver = false;
         this.isRoundWon = false;
 
+        this.rows = [1, 2.5, 4, 5.5, 7];
+
         this.weaponManager = new WeaponManager(game);
-        let weapon = this.weaponManager.getWeapon(game.model.playerWeapon);
+        let weapon = this.weaponManager.getWeapon(game.model.gameState.playerWeapon);
 
         //Player block 
         let Player = new PlayerDayEntity(game, weapon);
@@ -31,17 +35,18 @@ export class ShooterScene extends Scene {
         this.zombieManager = new ZombieManager(game, this);
         this.addEntity(this.zombieManager);
 
+        this.turretManager = new TurretManager(game, this);
+        this.addEntity(this.turretManager);
+
 
         //Labels & Menus
-        let dayLabel = new Label(game, `Day ${this.game.model.phase}`, new Vector2(50, 60), new Vector2("Right", "Top"));
+        let dayLabel = new Label(game, `Day ${this.game.model.gameState.phase}`, new Vector2(50, 60), new Vector2("Right", "Top"));
         this.addUIElement(dayLabel);
 
 
         let menuButton = new Button(game, "Menu", new Vector2(110, 50), new Vector2("Left", "Top"));
         menuButton.onClick = () => {
-            game.model.money = 0;
-            game.model.playerWeapon = "Pistol";
-            game.model.phase = 1;
+            game.model.gameState = new GameState(game)
             let startScene = new WelcomeScene(game);
             game.model.scene = startScene;
         };
@@ -80,7 +85,7 @@ export class ShooterScene extends Scene {
             dropCount.drop = drops[i];
 
             dropCount.update = function(events) {
-                this.label = this.game.model.inventory.get(this.drop);
+                this.label = this.game.model.gameState.inventory.get(this.drop);
             }
 
             this.addUIElement(dropCount);
@@ -96,7 +101,7 @@ export class ShooterScene extends Scene {
         };
         this.addUIElement(shopButton);
 
-        let shop = new Menu(game, new Vector2(370,170), new Vector2("Centre","Centre"));
+        let shop = new Menu(game, new Vector2(370,210), new Vector2("Centre","Centre"));
         shop.style.fillColor = color(100);
         shop.isVisible = false;
         shop.id = "shop";
@@ -130,8 +135,8 @@ export class ShooterScene extends Scene {
 
             weaponBuyButton.onClick = async function() {
 
-                if (this.game.model.money >= weapon.price){
-                    this.game.model.money -= weapon.price
+                if (this.game.model.gameState.coins >= weapon.price){
+                    this.game.model.gameState.coins -= weapon.price
                     this.game.model.scene.getEntity("player").weapon = this.weapon;
                     this.game.model.playerWeapon = this.weapon.name;
                     this.game.model.scene.getUIElement("shop").isVisible = false;
@@ -150,6 +155,37 @@ export class ShooterScene extends Scene {
         };
 
         shop.elements.push(weaponClose);
+
+        //Turret Purchase Button Options
+        let turretLabel = new Label(game, "Turret", new Vector2(200, 30), new Vector2("Left", "Top"));
+        turretLabel.offset.x = 20;
+        turretLabel.offset.y = 150;
+        turretLabel.parent = shop;
+        shop.elements.push(turretLabel);
+
+        let turretPrice = new Label(game, this.turretManager.turretPrice, new Vector2(70, 30), new Vector2("Left", "Top"));
+        turretPrice.offset.x = 220;
+        turretPrice.offset.y = 150;
+        turretPrice.parent = shop;
+        shop.elements.push(turretPrice);
+
+        let turretBuyButton = new Button(game, "BUY", new Vector2(50, 30), new Vector2("Left", "Top"));
+        turretBuyButton.offset.x = 290;
+        turretBuyButton.offset.y = 150;
+        turretBuyButton.parent = shop;
+        turretBuyButton.weapon = weapon;
+        turretBuyButton.onClick = async function() {
+            if (this.game.model.gameState.coins >= this.game.model.scene.turretManager.turretPrice){
+                this.game.model.scene.getUIElement("shop").isVisible = false;
+                this.game.model.scene.turretManager.buyingTurret = true;
+                await this.game.soundManager.playSFX("buy");
+            } else {
+                console.log("You can't afford Turret");
+            }
+        };
+
+        shop.elements.push(turretBuyButton);
+
 
         //Money Label
         this.moneyLabel = new Label(game, "Coins 0", new Vector2(130, 50), new Vector2("Left", "Top"));
@@ -215,7 +251,7 @@ export class ShooterScene extends Scene {
                 uielement.update(events);
             }
         }
-        this.moneyLabel.label = "Coins "+this.game.model.money;
+        this.moneyLabel.label = "Coins "+this.game.model.gameState.coins;
         
         if (this.zombieManager.zombies.length == 0 && !this.isRoundWon){
             if (this.getEntities("Zombie").length == 0){
@@ -233,9 +269,7 @@ export class ShooterScene extends Scene {
         this.restartBtn = new Button(this.game, "Restart Game", new Vector2(160, 50), new Vector2("Centre", "Centre"));
         this.restartBtn.offset.y = 90;
         this.restartBtn.onClick = () => {
-            this.game.model.money = 0;
-            this.game.model.playerWeapon = "Pistol"; 
-            this.game.model.phase = 1;
+            this.game.model.gameState = new GameState(this.game)
             this.game.model.scene = new ShooterScene(this.game);
         };
         this.addUIElement(this.restartBtn);
@@ -264,8 +298,8 @@ export class ShooterScene extends Scene {
         this.contiueBtn.onClick = () => {
 
             //Temporary Fucntion for continue button
-            this.game.model.phase++;
-            this.game.model.scene = new ShooterScene(this.game);
+            this.game.model.gameState.phase++;
+            this.game.model.scene = new KitchenScene_MVP(this.game);
 
         };
 

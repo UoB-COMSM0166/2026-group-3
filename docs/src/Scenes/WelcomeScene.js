@@ -4,6 +4,7 @@ import { Label } from "../UIElements/Label.js";
 import { Vector2 } from "../Utility/Vector2.js";
 import { ShooterScene } from "../Scenes/ShooterScene.js";
 import { KitchenScene_MVP } from "../Scenes/KitchenScene_MVP.js";
+import { Inventory } from "../Core/Inventory.js";
 
 export class WelcomeScene extends Scene {
   constructor(game) {
@@ -73,6 +74,13 @@ export class WelcomeScene extends Scene {
 
     // Test Kitchen Button → Directly enter KitchenScene
     this.testKitchenButton.onClick = () => {
+      this.game.model.gameState.inventory = new Inventory({
+            zombie_meat: 3,
+            toxic_slime: 1,
+            bone_fragments: 1,
+            spice_powder: 2,
+            mutant_core: 0,
+          });
       this.game.model.scene = new KitchenScene_MVP(this.game);
     };
 
