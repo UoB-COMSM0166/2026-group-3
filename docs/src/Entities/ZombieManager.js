@@ -56,7 +56,7 @@ export class ZombieManager extends Entity{
             let startPos = new Vector2(this.game.gridSize.x, yPos);
             let zombie;
             
-            const phase = this.game.model.phase;
+            const phase = this.game.model.gameState.phase;
             const spawnMult = 1/(this.difficultyMod**2)
             
             if (waveStrength > 10 

@@ -138,7 +138,7 @@ export class ShooterScene extends Scene {
                 if (this.game.model.gameState.coins >= weapon.price){
                     this.game.model.gameState.coins -= weapon.price
                     this.game.model.scene.getEntity("player").weapon = this.weapon;
-                    this.game.model.playerWeapon = this.weapon.name;
+                    this.game.model.gameState.playerWeapon = this.weapon.name;
                     this.game.model.scene.getUIElement("shop").isVisible = false;
                     await this.game.soundManager.playSFX("buy");
                 } else {

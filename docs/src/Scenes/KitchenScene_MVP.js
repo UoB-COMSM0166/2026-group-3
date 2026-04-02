@@ -51,11 +51,11 @@ export class KitchenScene_MVP extends Scene {
     const verticalSpacing = 1.6;
 
     const stationRecipes = [
-      ["rotten_burger"],
-      ["toxic_stew"],
-      ["bone_bbq"],
-      ["mutant_soup"],
-      ["zombie_special"]
+      ["zomburger"],
+      ["fried_zombie_leg"],
+      ["zombie_ramen"],
+      ["zombeer"],
+      ["zombbq"]
     ];
 
     for (let i = 0; i < 5; i++) {

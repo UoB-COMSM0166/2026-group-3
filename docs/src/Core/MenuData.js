@@ -2,38 +2,33 @@ export class MenuData {
   constructor() {
     this.recipes = [
       {
-        id: "rotten_burger",
-        name: "Rotten Burger",
-        requirements: { zombie_meat: 2, spice_powder: 1 },
+        id: "zomburger",
+        name: "Zomburger",
+        requirements: { "Zombie Mince": 2},
         rewardCoins: 20,
       },
       {
-        id: "toxic_stew",
-        name: "Toxic Stew",
-        requirements: { zombie_meat: 1, toxic_slime: 1, spice_powder: 1 },
+        id: "fried_zombie_leg",
+        name: "Fried Zombie Leg",
+        requirements: { "Zombie Drumstick": 4 },
         rewardCoins: 35,
       },
       {
-        id: "bone_bbq",
-        name: "Bone BBQ",
-        requirements: { zombie_meat: 1, bone_fragments: 2 },
+        id: "zombie_ramen",
+        name: "Zombie Ramen",
+        requirements: { "Zombie Belly": 2, "Zombie Juice": 1 },
         rewardCoins: 40,
       },
       {
-        id: "mutant_soup",
-        name: "Mutant Soup",
-        requirements: { toxic_slime: 2, spice_powder: 1 },
+        id: "zombeer",
+        name: "Zombeer",
+        requirements: { "Zombie Juice": 3 },
         rewardCoins: 45,
       },
       {
-        id: "ultimate_feast",
-        name: "Ultimate Zombie Feast",
-        requirements: {
-          zombie_meat: 2,
-          toxic_slime: 1,
-          bone_fragments: 1,
-          mutant_core: 1,
-        },
+        id: "zombbq",
+        name: "ZomBBQ",
+        requirements: { "Prime Bone": 1, "Zombie Drumstick": 2, "Zombie Belly": 1, "Zombie Juice": 2 },
         rewardCoins: 100,
       },
     ];
