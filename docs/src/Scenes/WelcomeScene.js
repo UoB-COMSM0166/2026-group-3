@@ -5,10 +5,13 @@ import { Vector2 } from "../Utility/Vector2.js";
 import { ShooterScene } from "../Scenes/ShooterScene.js";
 import { KitchenScene_MVP } from "../Scenes/KitchenScene_MVP.js";
 import { Inventory } from "../Core/Inventory.js";
+import { SettingsScene } from "../Scenes/SettingsScene.js";
 
 export class WelcomeScene extends Scene {
   constructor(game) {
     super(game);
+    this.showSettings = false; 
+    this.settingsOverlay = new SettingsScene(this.game);
 
     // Title
     this.title = new Label(
@@ -72,6 +75,20 @@ export class WelcomeScene extends Scene {
       [this.playButton, this.instructionsButton, this.settingsButton, this.quitButton,this.testKitchenButton].forEach(b => b.isVisible = true);
     };
 
+    // Settings Button: Go to settings
+    this.settingsButton.onClick = () => {
+      this.showSettings = true;
+    };
+
+    // When settings off
+    this.settingsOverlay.whenClose = () => {
+    
+    this.showSettings = false;
+
+    // reset: ui elements reappear when reopening settings
+    this.settingsOverlay.getUIElements().forEach(el => el.isVisible = true);
+  };
+
     // Test Kitchen Button → Directly enter KitchenScene
     this.testKitchenButton.onClick = () => {
       this.game.model.gameState.inventory = new Inventory({
@@ -97,6 +114,40 @@ export class WelcomeScene extends Scene {
       this.backButton
     ].forEach(el => this.addUIElement(el));
   }
+
+
+update(events) {
+  if (this.showSettings) {
+  
+    this.settingsOverlay.update(events); 
+    
+   // Disable menu buttons
+    return; 
+  }
+
+  super.update(events);
+}
+
+   draw() {
+  super.draw();
+
+  if (this.showSettings) {
+    push();
+
+    // Grey overlay/brightness effect
+    fill(0, 100);
+    rect(0, 0, width, height); 
+
+    // Settings tab
+    rectMode(CENTER);
+    fill(255);
+    rect(width/2, height/2 , 500, 500, 15); 
+
+
+    this.settingsOverlay.draw(); 
+    pop();
+  }
+}
 
   //Start Shooter Scene 
   startGame(difficulty) {

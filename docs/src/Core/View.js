@@ -85,5 +85,10 @@ export class View {
         }
         
         this.model.draw();
+
+        // Brightness overlay    
+        let opacity = (1 - this.game.brightness) * 255;
+        fill(0, 0, 0, opacity);
+        rect(0, 0, width, height);
     }
 }

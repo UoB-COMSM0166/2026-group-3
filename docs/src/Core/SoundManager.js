@@ -1,6 +1,8 @@
 export class SoundManager {
     constructor(game) {
         this.sounds = {};
+        this.musicVol = 1; 
+        this.sfxVol = 1;  
         this.game = game;
     }
 
@@ -14,20 +16,35 @@ export class SoundManager {
         this.sounds["intro"] = loadSound("./assets/sounds/introMusic.mp3");
     }
 
-    // retrieve sound by name
+    // Retrieve sound by name
     getSFX(name) {
         return this.sounds[name];
     }
 
-    // async sound, resolve promise
+    // Retrieve music by name
+    getMusic(name) {
+        return this.sounds[name];
+    }
+
+    // Sound Effects
     async playSFX(name) {
-    let sfxPromise = this.getSFX(name);
-    const sfx = await sfxPromise;
-    userStartAudio();
-    sfx.play();
+        let sfxPromise = this.getSFX(name);
+        const sfx = await sfxPromise;
+        userStartAudio();
+        sfx.amp(this.sfxVol);
+        sfx.play();
+    }
+    
+    // Play music, loop, set vol
+    async playMusic(name){
+        let musicPromise = this.getMusic(name);
+        const music = await musicPromise;
+        this.gameMusic = music;
+        music.loop();
+        music.amp(this.musicVol);   
+        music.play();
 }
-
-
+    
 
 }
 

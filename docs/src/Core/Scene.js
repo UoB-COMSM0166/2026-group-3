@@ -78,7 +78,7 @@ export class Scene {
                 uielements.push(element);
             }
         }
-        return entities;
+        return uielements;
     }
     addUIElement(newUIElement){
         for (let element of this.uielements){
