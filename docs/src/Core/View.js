@@ -7,8 +7,12 @@ export class View {
         this.game = game;
         this.pos = new Vector2(0,0);
 
+        this.minSize = new Vector2(1024,576);
+
         this.size = this.calculateWindowSize(windowSize);
         createCanvas(this.size.x, this.size.y);
+
+        this.textSize = 20;
 
         noSmooth(); // Renders Pixel Art Better
     }
@@ -16,16 +20,19 @@ export class View {
     defaultStyle(style){
         style.outline = color(50);
         style.outlineWidth = 2;
-        style.fillColor = color(90,90,255);
+        style.fillColor = color(255);
         style.textColor = color(0);
         style.font = 'Courier New';
         style.textAlign.x = CENTER;
         style.textAlign.y = CENTER;
-        style.textSize = 20;
+        style.textSize = this.textSize;
+        style.textPadding.x = 25;
+        style.textPadding.y = 15;
         style.textStyle = NORMAL;
     }
 
-    calculateWindowSize(windowSize) {
+    calculateWindowSize() {
+        let windowSize = new Vector2(windowWidth, windowHeight)
         let gameSize = new Vector2();
 
         if (windowSize.x / this.game.gridSize.x > windowSize.y / this.game.gridSize.y) {
@@ -35,12 +42,16 @@ export class View {
             gameSize.x = windowSize.x;
             gameSize.y = windowSize.x * this.game.gridSize.y / this.game.gridSize.x;
         }
+        if (gameSize.x < this.minSize.x){
+            gameSize.x = this.minSize.x
+            gameSize.y = this.minSize.y
+        }
         return gameSize;
     }
 
 
-    resize(windowSize) {
-        this.size = this.calculateWindowSize(windowSize);
+    resize() {
+        this.size = this.calculateWindowSize();
         resizeCanvas(this.size.x, this.size.y);
         for (let uielement of this.model.scene.uielements){
             uielement.resize(this.size);

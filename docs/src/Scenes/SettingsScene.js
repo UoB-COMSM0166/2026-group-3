@@ -80,11 +80,15 @@ export class SettingsScene extends Scene {
 
     // Text Resize slider
     this.textResizeSlider = new Slider(
-      game, 0, 1, 0.5,
+      game, 2, 30, this.game.view.textSize,
       new Vector2(200, 40),
       new Vector2("Centre", "Centre"),
       new Vector2(90, 47) 
     );
+    this.textResizeSlider.onClick = (value) => {
+      this.game.view.textSize = value;
+      this.game.view.resize();
+    };
 
     // Brightness
     this.brightnessSubTitle = new Label(

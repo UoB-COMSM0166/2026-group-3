@@ -81,6 +81,7 @@ export class Scene {
         return uielements;
     }
     addUIElement(newUIElement){
+        newUIElement.resize()
         for (let element of this.uielements){
             if (element == null){
                 element = newUIElement;

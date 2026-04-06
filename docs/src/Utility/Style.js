@@ -10,6 +10,7 @@ export class Style {
         this.font;
         this.textAlign = new Vector2();
         this.textSize;
+        this.textPadding = new Vector2();
         this.textStyle;
     }
 }

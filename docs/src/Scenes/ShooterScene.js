@@ -45,6 +45,7 @@ export class ShooterScene extends Scene {
 
 
         let menuButton = new Button(game, "Menu", new Vector2(110, 50), new Vector2("Left", "Top"));
+        menuButton.expandToFit.x = true;
         menuButton.onClick = () => {
             game.model.gameState = new GameState(game)
             let startScene = new WelcomeScene(game);
@@ -93,7 +94,8 @@ export class ShooterScene extends Scene {
         
         // Shop Menu
         let shopButton = new Button(game, "Shop", new Vector2(110, 50), new Vector2("Left", "Top"));
-        shopButton.offset.x = 110;
+        shopButton.anchor.x = menuButton;
+        shopButton.expandToFit.x = true;
         shopButton.onClick = function() {
             let shop = this.game.model.scene.getUIElement("shop");
             shop.isVisible = !shop.isVisible;
@@ -189,7 +191,8 @@ export class ShooterScene extends Scene {
 
         //Money Label
         this.moneyLabel = new Label(game, "Coins 0", new Vector2(130, 50), new Vector2("Left", "Top"));
-        this.moneyLabel.offset.x=220;
+        this.moneyLabel.anchor.x = shopButton
+        this.moneyLabel.expandToFit.x = true;
         this.addUIElement(this.moneyLabel);
         
     }

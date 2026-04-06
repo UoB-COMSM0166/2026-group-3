@@ -11,6 +11,7 @@ export class Label extends UIElement {
         this.style = new Style();
         game.view.defaultStyle(this.style);
         this.image = null;
+        this.expandToFit = new Vector2(false, false);
     }
 
     draw(){
@@ -36,5 +37,23 @@ export class Label extends UIElement {
         strokeWeight(1);
 
         text(this.label, this.pos.x, this.pos.y, this.size.x, this.size.y);
+    }
+
+    resize(){
+        this.style.textSize = this.game.view.textSize;
+        textFont(this.style.font);
+        textAlign(this.style.textAlign.x,this.style.textAlign.y);
+        textSize(this.style.textSize);
+        textStyle(this.style.textStyle);
+
+        let bounds = textBounds(this.label, this.pos.x, this.pos.y)
+        if (this.expandToFit.x){
+            this.size.x = bounds.w + this.style.textPadding.x
+        } if (this.expandToFit.y){
+            this.size.y = bounds.h + this.style.textPadding.y
+        }
+
+        super.resize()
+
     }
 }

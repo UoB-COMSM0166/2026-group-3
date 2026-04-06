@@ -17,8 +17,7 @@ window.draw = function() {
     game.view.draw();
 }
 window.windowResized = function() {
-    let windowSize = new Vector2(windowWidth, windowHeight)
-    game.view.resize(windowSize);
+    game.view.resize();
 }
 
 

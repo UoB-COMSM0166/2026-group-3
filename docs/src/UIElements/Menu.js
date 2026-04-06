@@ -28,4 +28,9 @@ export class Menu extends UIElement {
             element.update(events);
         }
     }
+    resize(){
+        for (let element of this.elements){
+            element.resize();
+        }
+    }
 }
