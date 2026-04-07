@@ -2,6 +2,10 @@
 
 import {Game} from "./Core/Game.js";
 import {Vector2} from "./Utility/Vector2.js";
+import { TaskList } from "./Core/TaskList.js";
+import { GameState } from "./Core/GameState.js";
+import { MenuData } from "./Core/MenuData.js";
+import { ProductionManager } from "./Core/ProductionManager.js";
 
 let game;
 let DEBUG = false;
@@ -10,6 +14,7 @@ window.setup = function() {
     let windowSize = new Vector2(windowWidth, windowHeight);
     let gridSize = new Vector2(16,9);
     game = new Game(windowSize, gridSize, DEBUG);
+
 }
 
 window.draw = function() {

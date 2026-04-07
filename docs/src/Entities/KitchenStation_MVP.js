@@ -2,49 +2,52 @@ import { Entity } from "../Core/Entity.js";
 import { Vector2 } from "../Utility/Vector2.js";
 
 export class KitchenStation_MVP extends Entity {
-  constructor(game, pos, supportedRecipeIds = []) {
+  constructor(game, pos, stationType) {
     super(game, pos, new Vector2(1.2, 1.0));
-    this.supportedRecipeIds = supportedRecipeIds;
+
+    this.stationType = stationType;
+    this.currentTask = null;
+    this.isBusy = false;
   }
 
-  tryCook(player, state, menu, targetRecipeId) {
-    console.log("[Station] Interact triggered");
-    console.log("[Station] Target recipe:", targetRecipeId);
-    console.log("[Station] Supported recipes:", this.supportedRecipeIds);
-    console.log("[Station] Player held dish:", player.heldDish);
-    console.log("[Station] Inventory object:", state.inventory);
-    console.log("[Station] Inventory items:", state.inventory?.items);
+  canCook(recipe) {
+    if (!recipe) return false;
+    return recipe.stationType === this.stationType;
+  }
 
-    if (player.heldDish) {
-      console.log("[Station] Player already holding a dish:", player.heldDish);
-      return { ok: false, reason: "Already holding a dish" };
-    }
-
+  tryCook(state, menu, targetRecipeId) {
     const recipe = menu.getRecipe(targetRecipeId);
     if (!recipe) {
       console.log("[Station] Recipe not found:", targetRecipeId);
-      return { ok: false, reason: "Recipe not found" };
+      return false;
     }
 
-    console.log("[Station] Recipe requirements:", recipe.requirements);
-
-    if (!this.supportedRecipeIds.includes(recipe.id)) {
-      console.log("[Station] Station cannot cook:", recipe.id);
-      return { ok: false, reason: "Wrong station for this dish" };
+    if (!this.canCook(recipe)) {
+      console.log(
+        "[Station] Wrong station type. Need:",
+        recipe.stationType,
+        "but this station is:",
+        this.stationType
+      );
+      return false;
     }
 
     if (!state.inventory.has(recipe.requirements)) {
       console.log("[Station] Not enough ingredients for:", recipe.id);
-      return { ok: false, reason: "Not enough ingredients" };
+      return false;
     }
 
     state.inventory.consume(recipe.requirements);
-    player.heldDish = recipe.id;
 
-    console.log("[Station] Cooked:", recipe.id);
-    console.log("[Station] Inventory after cooking:", state.inventory?.items);
-
-    return { ok: true, dish: recipe.id };
+    console.log(
+      "[Station] Started cooking:",
+      recipe.id,
+      "| stationType:",
+      this.stationType,
+      "| Inventory:",
+      state.inventory.items
+    );
+    return true;
   }
 
   draw() {
@@ -52,15 +55,34 @@ export class KitchenStation_MVP extends Entity {
     const relSize = this.game.view.localToScreen(this.size);
 
     stroke(0);
-    fill(120, 200, 160);
+
+    if (this.stationType === "grill") {
+      fill(255, 180, 120);
+    } else if (this.stationType === "pot") {
+      fill(120, 180, 255);
+    } else if (this.stationType === "oven") {
+      fill(255, 220, 120);
+    } else if (this.stationType === "prep") {
+      fill(180, 255, 180);
+    } else if (this.stationType === "special") {
+      fill(220, 160, 255);
+    } else {
+      fill(120, 200, 160);
+    }
+
     rect(relPos.x, relPos.y, relSize.x, relSize.y);
+
+    let label = this.stationType;
+    if (this.stationType === "grill") label = "Burger";
+    else if (this.stationType === "pot") label = "Stew";
+    else if (this.stationType === "oven") label = "BBQ";
+    else if (this.stationType === "prep") label = "Soup";
+    else if (this.stationType === "special") label = "Feast";
 
     fill(0);
     noStroke();
-    textSize(10);
-    textAlign(CENTER, CENTER);
-
-    const label = this.supportedRecipeIds[0] ?? "Station";
-    text(label, relPos.x + relSize.x / 2, relPos.y + relSize.y / 2);
+    textSize(12);
+    textAlign(CENTER, BOTTOM);
+    text(label, relPos.x + relSize.x / 2, relPos.y - 4);
   }
 }

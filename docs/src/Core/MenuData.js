@@ -2,35 +2,63 @@ export class MenuData {
   constructor() {
     this.recipes = [
       {
-        id: "zomburger",
-        name: "Zomburger",
-        requirements: { "Zombie Mince": 2},
+        id: "rotten_burger",
+        name: "Rotten Burger",
+        requirements: {
+          zombie_meat: 2,
+          spice_powder: 1
+        },
+        cookTime: 4,
         rewardCoins: 20,
+        stationType: "grill"
       },
       {
-        id: "fried_zombie_leg",
-        name: "Fried Zombie Leg",
-        requirements: { "Zombie Drumstick": 4 },
+        id: "toxic_stew",
+        name: "Toxic Stew",
+        requirements: {
+          zombie_meat: 1,
+          toxic_slime: 1,
+          spice_powder: 1
+        },
+        cookTime: 6,
         rewardCoins: 35,
+        stationType: "pot"
       },
       {
-        id: "zombie_ramen",
-        name: "Zombie Ramen",
-        requirements: { "Zombie Belly": 2, "Zombie Juice": 1 },
+        id: "bone_bbq",
+        name: "Bone BBQ",
+        requirements: {
+          zombie_meat: 1,
+          bone_fragments: 2
+        },
+        cookTime: 7,
         rewardCoins: 40,
+        stationType: "oven"
       },
       {
-        id: "zombeer",
-        name: "Zombeer",
-        requirements: { "Zombie Juice": 3 },
+        id: "mutant_soup",
+        name: "Mutant Soup",
+        requirements: {
+          toxic_slime: 2,
+          spice_powder: 1
+        },
+        cookTime: 8,
         rewardCoins: 45,
+        stationType: "prep"
       },
       {
-        id: "zombbq",
-        name: "ZomBBQ",
-        requirements: { "Prime Bone": 1, "Zombie Drumstick": 2, "Zombie Belly": 1, "Zombie Juice": 2 },
+        id: "ultimate_feast",
+        name: "Ultimate Zombie Feast",
+        requirements: {
+          zombie_meat: 2,
+          toxic_slime: 1,
+          bone_fragments: 1,
+          mutant_core: 1
+        },
+        cookTime: 12,
         rewardCoins: 100,
-      },
+        stationType: "special"
+      }
     ];
   }
 
@@ -39,6 +67,6 @@ export class MenuData {
   }
 
   getRecipe(id) {
-    return this.recipes.find(r => r.id === id) ?? null;
+    return this.recipes.find(recipe => recipe.id === id) ?? null;
   }
 }
