@@ -65,26 +65,23 @@ export class ZombieManager extends Entity{
 
                 //Spawn Tank
                 zombie = new TankZombie(this.game, startPos);
-                waveStrength = Math.max(0, waveStrength - 10);
             } else if (waveStrength > 5 
                 && phase >= 2 
                 && random(0, 5 * spawnMult)<=1){
 
                 //Spawn Slob
                 zombie = new SlobZombie(this.game, startPos);
-                waveStrength = Math.max(0, waveStrength - 5);
             } else if (waveStrength > 5 
                 && phase >= 2 
                 && random(0, 4 * spawnMult)<=1){
 
                 //Spawn Sprinter
                 zombie = new SprinterZombie(this.game, startPos);
-                waveStrength = Math.max(0, waveStrength - 5);
             } else {
                 //Spawn Basic
                 zombie = new BasicZombie(this.game, startPos);
-                waveStrength = Math.max(0, waveStrength - 1);
             }
+            waveStrength = Math.max(0, waveStrength - zombie.strength);
             promises.push(zombie.preload());
             this.zombies.push(zombie);
         }
@@ -121,6 +118,10 @@ export class ZombieManager extends Entity{
                 zombie.isVisible = true;
                 this.scene.addEntity(zombie);
                 this.zombiesSpawned++;
+
+                this.waveStrength -= zombie.strength / 2;
+
+                this.game.model.gameState.phaseProgress = 1- (this.waveStrength / this.totalStrength)
             }
         }
     }

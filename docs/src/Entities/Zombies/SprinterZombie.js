@@ -12,6 +12,7 @@ export class SprinterZombie extends ZombieEntity {
         this.health = Math.floor(random(2,8));;
         this.damage = 1;
         this.drops = ["Zombie Drumstick"];
+        this.strength = 5;
 
     }
 

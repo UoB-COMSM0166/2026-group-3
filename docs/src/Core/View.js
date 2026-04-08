@@ -26,8 +26,6 @@ export class View {
         style.textAlign.x = CENTER;
         style.textAlign.y = CENTER;
         style.textSize = this.textSize;
-        style.textPadding.x = 25;
-        style.textPadding.y = 15;
         style.textStyle = NORMAL;
     }
 
@@ -94,6 +92,8 @@ export class View {
         if (this.game.debug){
             this.drawGrid();
         }
+
+        this.resize();
         
         this.model.draw();
 

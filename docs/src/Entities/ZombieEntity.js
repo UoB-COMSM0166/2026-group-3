@@ -69,6 +69,11 @@ export class ZombieEntity extends Entity {
             //Temp Code to add Money on Death
             this.game.model.gameState.coins+=Math.floor(random(3, 8));
 
+            let zombieManager = this.game.model.scene.zombieManager
+
+            zombieManager.waveStrength -= this.strength / 2;
+            this.game.model.gameState.phaseProgress = 1- (zombieManager.waveStrength / zombieManager.totalStrength)
+
             for (let drop of this.drops){
                 this.game.model.gameState.inventory.add(drop);
             }

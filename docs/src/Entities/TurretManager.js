@@ -71,7 +71,7 @@ export class TurretManager extends Entity{
     update(events){
 
         for (let event of events){
-            if (event.type == "click"){
+            if (event.type == "click" && this.buyingTurret){
                 this.buyingTurret = false;
                 let mousePos = new Vector2(mouseX, mouseY);
                 let localMouse = this.game.view.screenToLocal(mousePos)

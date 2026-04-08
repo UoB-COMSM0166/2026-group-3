@@ -80,7 +80,7 @@ export class SettingsScene extends Scene {
 
     // Text Resize slider
     this.textResizeSlider = new Slider(
-      game, 2, 30, this.game.view.textSize,
+      game, 10, 30, this.game.view.textSize,
       new Vector2(200, 40),
       new Vector2("Centre", "Centre"),
       new Vector2(90, 47) 

@@ -48,9 +48,13 @@ export class Label extends UIElement {
 
         let bounds = textBounds(this.label, this.pos.x, this.pos.y)
         if (this.expandToFit.x){
-            this.size.x = bounds.w + this.style.textPadding.x
+            if (this.image !=null){
+                this.size.x = 1.5 * this.style.textSize
+            } else {
+                this.size.x = bounds.w + 20
+            }
         } if (this.expandToFit.y){
-            this.size.y = bounds.h + this.style.textPadding.y
+            this.size.y = 1.5 * this.style.textSize
         }
 
         super.resize()

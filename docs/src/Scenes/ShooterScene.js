@@ -11,6 +11,7 @@ import { WeaponManager } from "../Core/WeaponManager.js";
 import { Fence } from "../Entities/Fence.js";
 import { TurretManager } from "../Entities/TurretManager.js";
 import { GameState } from "../Core/GameState.js";
+import {UIBar} from "../UIElements/UIBar.js"
 
 export class ShooterScene extends Scene {
     constructor(game) {
@@ -39,69 +40,29 @@ export class ShooterScene extends Scene {
         this.addEntity(this.turretManager);
 
 
-        //Labels & Menus
-        let dayLabel = new Label(game, `Day ${this.game.model.gameState.phase}`, new Vector2(50, 60), new Vector2("Right", "Top"));
-        this.addUIElement(dayLabel);
+        this.uiBar = new UIBar(game, this);
+        this.addUIElement(this.uiBar);
 
 
-        let menuButton = new Button(game, "Menu", new Vector2(110, 50), new Vector2("Left", "Top"));
-        menuButton.expandToFit.x = true;
-        menuButton.onClick = () => {
-            game.model.gameState = new GameState(game)
-            let startScene = new WelcomeScene(game);
-            game.model.scene = startScene;
-        };
-        this.addUIElement(menuButton);
-
-        let startButton = new Button(game, "Start Wave", new Vector2(250, 60), new Vector2("Centre", "Top"));
+        let startButton = new Button(game, "Start Wave", new Vector2(250, 60), new Vector2("Centre", "Bottom"));
         startButton.style.fillColor = color(220,60,60);
         startButton.style.textColor = color(0,0,0);
         startButton.style.textSize = 30;
         startButton.id = "Start Button";
         startButton.onClick = function() {
             if (!this.game.model.scene.zombieManager.loaded) {return;}
-            this.game.model.scene.zombieManager.waveStarted = true;
             this.isVisible = false;
+            this.game.model.scene.startWave();
         };
         this.addUIElement(startButton);
 
 
         let fenceHealth = new Label(game, "Health: 100%", new Vector2(200, 30), new Vector2("Centre", "Bottom"));
         fenceHealth.id = "FenceLabel";
+        fenceHealth.isVisible = false;
 
         this.addUIElement(fenceHealth);
 
-        //Inventory Labels
-
-        let drops = game.model.drops;
-        for (let i=0; i < drops.length; i++){
-            let dropLabel = new Label(game, "", new Vector2(30, 30), new Vector2("Right", "Top"));
-            dropLabel.offset.x = - 50 -i*30;
-            dropLabel.image = drops[i];
-            this.addUIElement(dropLabel);
-
-            let dropCount = new Label(game, "0", new Vector2(30, 30), new Vector2("Right", "Top"));
-            dropCount.offset.x = - 50 -i*30;
-            dropCount.offset.y = 30;
-            dropCount.drop = drops[i];
-
-            dropCount.update = function(events) {
-                this.label = this.game.model.gameState.inventory.get(this.drop);
-            }
-
-            this.addUIElement(dropCount);
-        }   
-        
-        // Shop Menu
-        let shopButton = new Button(game, "Shop", new Vector2(110, 50), new Vector2("Left", "Top"));
-        shopButton.anchor.x = menuButton;
-        shopButton.expandToFit.x = true;
-        shopButton.onClick = function() {
-            let shop = this.game.model.scene.getUIElement("shop");
-            shop.isVisible = !shop.isVisible;
-
-        };
-        this.addUIElement(shopButton);
 
         let shop = new Menu(game, new Vector2(370,210), new Vector2("Centre","Centre"));
         shop.style.fillColor = color(100);
@@ -187,14 +148,15 @@ export class ShooterScene extends Scene {
         };
 
         shop.elements.push(turretBuyButton);
-
-
-        //Money Label
-        this.moneyLabel = new Label(game, "Coins 0", new Vector2(130, 50), new Vector2("Left", "Top"));
-        this.moneyLabel.anchor.x = shopButton
-        this.moneyLabel.expandToFit.x = true;
-        this.addUIElement(this.moneyLabel);
         
+    }
+
+    startWave(){
+        this.zombieManager.waveStarted = true;
+        this.getUIElement("FenceLabel").isVisible = true;
+        this.getUIElement("shop").isVisible = false;
+        this.uiBar.shopButton.style.fillColor = color(150);
+        this.uiBar.shopButton.active = false;
     }
 
     draw () {
@@ -253,9 +215,7 @@ export class ShooterScene extends Scene {
             for (let uielement of this.uielements){
                 uielement.update(events);
             }
-        }
-        this.moneyLabel.label = "Coins "+this.game.model.gameState.coins;
-        
+        } 
         if (this.zombieManager.zombies.length == 0 && !this.isRoundWon){
             if (this.getEntities("Zombie").length == 0){
                 this.roundWon();
@@ -266,7 +226,6 @@ export class ShooterScene extends Scene {
 
     async gameOver(){
         this.isGameOver = true;
-        this.getUIElement("shop").isVisible = false;
 
         //Restart Button
         this.restartBtn = new Button(this.game, "Restart Game", new Vector2(160, 50), new Vector2("Centre", "Centre"));
@@ -293,7 +252,6 @@ export class ShooterScene extends Scene {
 
     async roundWon(){
         this.isRoundWon = true;
-        this.getUIElement("shop").isVisible = false;
 
         //Continue Button
         this.contiueBtn = new Button(this.game, "Continue", new Vector2(160, 50), new Vector2("Centre", "Centre"));

@@ -22,6 +22,7 @@ export class KitchenScene_MVP extends Scene {
     // ===== Core Logic =====
     this.state = new GameState();
     this.menu = new MenuData();
+    this.time = "Night";
 
     this.taskList = new TaskList();
     this.productionManager = new ProductionManager();

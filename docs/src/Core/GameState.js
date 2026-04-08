@@ -7,6 +7,8 @@ export class GameState {
     this.coins = 0;
     this.playerWeapon = "Pistol";
     this.phase = 1;  // 1 phase = 1 day + 1 night. 
+    this.time = "Night";
+    this.phaseProgress = 0; // 0 = Start of phase, 1 = end of phase
     this.turrets = [];
   }
 
