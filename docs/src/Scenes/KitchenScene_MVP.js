@@ -217,6 +217,15 @@ export class KitchenScene_MVP extends Scene {
         if (event.key === "5") this.taskList.increase("ultimate_feast", 1);
         if (event.key === "Backspace") this.taskList.clear();
 
+        // Skip kitchen and continue to next phase
+        if (event.key === "n" || event.key === "N") {
+          this.success = true;
+          this.phase = "END";
+          this.endTimer = 0.6;
+          this.showMessage("Skipped kitchen");
+          return;
+        }
+
         if (event.type === "click") {
           const clickedButton = this._getClickedMenuButton(mouseX, mouseY);
 
@@ -657,7 +666,7 @@ export class KitchenScene_MVP extends Scene {
     push();
     fill(255, 255, 230);
     stroke(0);
-    rect(20, 540, 420, 105, 8);
+    rect(20, 540, 420, 125, 8);
 
     fill(0);
     noStroke();
@@ -670,6 +679,7 @@ export class KitchenScene_MVP extends Scene {
       text("1~5 = plan dishes", 30, 574);
       text("Click +/- to adjust plan", 30, 594);
       text("Backspace = clear, P = start cooking", 30, 614);
+      text("N = skip kitchen and continue", 30, 634);
     } else if (this.phase === "PRODUCTION") {
       text("COOK + SERVE PHASE", 30, 550);
       textSize(12);
@@ -932,45 +942,45 @@ export class KitchenScene_MVP extends Scene {
     pop();
   }
 
-  _drawInventoryPanel() {
-    const inventory = this.state && this.state.inventory ? this.state.inventory : {};
+_drawInventoryPanel() {
+  const inventoryObj = this.state?.inventory?.items || {};
 
-    push();
+  push();
 
-    const x = width - 250;
-    const y = 18;
-    const w = 220;
-    const h = 170;
+  const x = width - 250;
+  const y = 18;
+  const w = 220;
+  const h = 170;
 
-    fill(25, 30, 42, 220);
-    stroke(255, 255, 255, 40);
-    rect(x, y, w, h, 12);
+  fill(25, 30, 42, 220);
+  stroke(255, 255, 255, 40);
+  rect(x, y, w, h, 12);
 
-    fill(255);
-    noStroke();
-    textAlign(LEFT, TOP);
-    textSize(15);
-    text("INGREDIENTS", x + 12, y + 12);
+  fill(255);
+  noStroke();
+  textAlign(LEFT, TOP);
+  textSize(15);
+  text("INGREDIENTS", x + 12, y + 12);
 
-    const entries = Object.entries(inventory);
-    let lineY = y + 40;
+  const entries = Object.entries(inventoryObj);
+  let lineY = y + 40;
 
-    textSize(12);
+  textSize(12);
 
-    if (entries.length === 0) {
-      text("No ingredients", x + 12, lineY);
-    } else {
-      for (let i = 0; i < entries.length; i++) {
-        const [name, amount] = entries[i];
-        text(`${name}: ${amount}`, x + 12, lineY);
-        lineY += 18;
+  if (entries.length === 0) {
+    text("No ingredients", x + 12, lineY);
+  } else {
+    for (let i = 0; i < entries.length; i++) {
+      const [name, amount] = entries[i];
+      text(`${name}: ${amount}`, x + 12, lineY);
+      lineY += 18;
 
-        if (lineY > y + h - 18) break;
-      }
+      if (lineY > y + h - 18) break;
     }
-
-    pop();
   }
+
+  pop();
+}
 
   _drawProductionStatusPanel() {
     if (this.phase !== "PRODUCTION") return;
