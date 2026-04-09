@@ -1,7 +1,8 @@
 import { ProductionTask } from "./ProductionTask.js";
 
 export class ProductionManager {
-  constructor() {
+  constructor(game = null) {
+    this.game = game;
     this.tasks = [];
     this.nextTaskId = 1;
   }
@@ -15,6 +16,7 @@ export class ProductionManager {
     this.clear();
 
     const tasks = taskList.getTasks();
+    const difficulty = this.game?.model?.difficulty || "normal";
 
     for (const [recipeId, quantity] of Object.entries(tasks)) {
       if (quantity <= 0) continue;
@@ -23,7 +25,12 @@ export class ProductionManager {
       if (!recipe) continue;
 
       for (let i = 0; i < quantity; i++) {
-        const task = new ProductionTask(`task_${this.nextTaskId}`, recipe);
+        const task = new ProductionTask(
+          `task_${this.nextTaskId}`,
+          recipe,
+          difficulty
+        );
+
         this.tasks.push(task);
         this.nextTaskId++;
       }
@@ -62,5 +69,18 @@ export class ProductionManager {
 
   allTasksCollected() {
     return this.tasks.length > 0 && this.tasks.every(task => task.status === "COLLECTED");
+  }
+
+  removeCollectedTaskByRecipeId(recipeId) {
+    const index = this.tasks.findIndex(
+      task => task.recipeId === recipeId && task.status === "COLLECTED"
+    );
+
+    if (index !== -1) {
+      this.tasks.splice(index, 1);
+      return true;
+    }
+
+    return false;
   }
 }
