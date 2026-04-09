@@ -250,7 +250,7 @@ export class ShooterScene extends Scene {
         this.addUIElement(this.gameOverLabel);
     }
 
-    async roundWon(){
+    /*async roundWon(){
         this.isRoundWon = true;
 
         //Continue Button
@@ -279,9 +279,23 @@ export class ShooterScene extends Scene {
 
 
         this.addUIElement(this.youWonLabel);
+    }*/
+
+    async roundWon(){
+    this.isRoundWon = true;
+    this.getUIElement("shop").isVisible = false;
+
+    //Continue Button
+    this.game.model.gameState.phase++;
+
+    //Win sound 
+    await this.game.soundManager.playSFX("win");
+
+    console.log("[Shooter] → Kitchen");
+
+    //continue to kitchen(CORE FUNCTIONALITY)
+    this.game.model.scene = new KitchenScene_MVP(this.game);
     }
-
-
 
 
 }
