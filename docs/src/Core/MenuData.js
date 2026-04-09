@@ -5,8 +5,7 @@ export class MenuData {
         id: "rotten_burger",
         name: "Rotten Burger",
         requirements: {
-          zombie_meat: 2,
-          spice_powder: 1
+          zombie_meat: 2
         },
         cookTime: 4,
         rewardCoins: 20,
