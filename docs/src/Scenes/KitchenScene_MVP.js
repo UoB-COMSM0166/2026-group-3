@@ -24,6 +24,9 @@ export class KitchenScene_MVP extends Scene {
     this.state = this.game.model.gameState;
     this.menu = new MenuData();
 
+    // ===== Added teammate change =====
+    this.time = "Night";
+
     // ===== Core managers kept from old system =====
     this.taskList = new TaskList();
     this.productionManager = new ProductionManager(this.game);
@@ -57,8 +60,9 @@ export class KitchenScene_MVP extends Scene {
     this.messageTimer = 0;
 
     // ===== UI panel states =====
-    this.isMenuOpen = false;
-    this.isTaskListOpen = false;
+    // Planning阶段默认打开，用户一进来就能看见怎么玩
+    this.isMenuOpen = true;
+    this.isTaskListOpen = true;
 
     // ===== UI hitboxes =====
     this.menuButtons = [];
@@ -67,6 +71,9 @@ export class KitchenScene_MVP extends Scene {
     this.taskCloseButton = null;
     this.menuOpenTab = null;
     this.taskOpenTab = null;
+
+    // ===== UI layout helpers =====
+    this.planningUIAutoVisible = true;
 
     // ===== Player =====
     this.player = new PlayerChef_MVP(game);
@@ -122,6 +129,7 @@ export class KitchenScene_MVP extends Scene {
 
     console.log("[Kitchen] Current phase:", this.phase);
     console.log("[Kitchen] Difficulty:", difficulty);
+    console.log("[Kitchen] Time of day:", this.time);
   }
 
   update(events) {
@@ -153,6 +161,17 @@ export class KitchenScene_MVP extends Scene {
       this.messageTimer--;
     } else {
       this.message = "";
+    }
+
+    // Planning阶段自动保持显示；进入生产后自动隐藏
+    if (this.phase === "PLANNING" && this.planningUIAutoVisible) {
+      this.isMenuOpen = true;
+      this.isTaskListOpen = true;
+    }
+
+    if (this.phase !== "PLANNING") {
+      this.isMenuOpen = false;
+      this.isTaskListOpen = false;
     }
 
     // ===== Planning input =====
@@ -233,6 +252,10 @@ export class KitchenScene_MVP extends Scene {
           this.timerStarted = true;
           this.kitchenTimer = this.kitchenTimeLimit;
 
+          // 开始后自动关闭规划面板
+          this.isMenuOpen = false;
+          this.isTaskListOpen = false;
+
           this._spawnNextCustomerOrder();
           this.showMessage("Cooking started");
           console.log("[Kitchen] Entered PRODUCTION");
@@ -271,7 +294,7 @@ export class KitchenScene_MVP extends Scene {
         }
       }
 
-      this.productionManager.updateAll(0.02);
+      this.productionManager.updateAll(deltaTime / 1000);
 
       for (const task of this.productionManager.getDoneTasks()) {
         if (!this._loggedDoneTaskIds.has(task.id)) {
@@ -312,18 +335,29 @@ export class KitchenScene_MVP extends Scene {
   draw() {
     super.draw();
 
+    this._drawTopHUD();
     this._drawPhaseBar();
-    this._drawPanelTabs();
 
-    if (this.isMenuOpen) {
-      this._drawMenuPanel();
-      this._drawMenuHoverCard();
+    if (this.phase === "PLANNING") {
+      this._drawPlanningCenterCards();
     }
 
-    if (this.isTaskListOpen) {
-      this._drawTaskListPanel();
+    if (this.phase === "PLANNING") {
+      this._drawPanelTabs();
+
+      if (this.isMenuOpen) {
+        this._drawMenuPanel();
+        this._drawMenuHoverCard();
+      }
+
+      if (this.isTaskListOpen) {
+        this._drawTaskListPanel();
+      }
     }
 
+    this._drawInventoryPanel();
+    this._drawProductionStatusPanel();
+    this._drawCookingCountdownPanel();
     this._drawMainHint();
 
     if (this.message) {
@@ -533,18 +567,48 @@ export class KitchenScene_MVP extends Scene {
   // UI DRAWING
   // =========================================================
 
+  _drawTopHUD() {
+    push();
+
+    const x = 20;
+    const y = 12;
+    const w = 215;
+    const h = 70;
+
+    fill(20, 24, 34, 215);
+    stroke(255, 255, 255, 50);
+    rect(x, y, w, h, 10);
+
+    fill(255);
+    noStroke();
+    textAlign(LEFT, TOP);
+
+    textSize(12);
+    text("KITCHEN STATUS", x + 12, y + 10);
+
+    textSize(14);
+    text(`Time: ${this.time}`, x + 12, y + 30);
+    text(`Coins: ${this.state.coins}`, x + 110, y + 30);
+
+    const heldDish = this.player && this.player.heldDish ? this.player.heldDish : "None";
+    textSize(12);
+    text(`Holding: ${heldDish}`, x + 12, y + 50);
+
+    pop();
+  }
+
   _drawPhaseBar() {
     push();
 
     const barX = 250;
-    const barY = 8;
-    const boxW = 110;
-    const boxH = 30;
-    const gap = 10;
+    const barY = 12;
+    const boxW = 120;
+    const boxH = 34;
+    const gap = 12;
 
     const phases = [
       { label: "PLAN", value: "PLANNING" },
-      { label: "COOK+SERVE", value: "PRODUCTION" },
+      { label: "COOK + SERVE", value: "PRODUCTION" },
       { label: "END", value: "END" },
     ];
 
@@ -554,7 +618,7 @@ export class KitchenScene_MVP extends Scene {
 
       fill(isActive ? color(255, 230, 140) : color(235));
       stroke(0);
-      rect(x, barY, boxW, boxH);
+      rect(x, barY, boxW, boxH, 8);
 
       fill(0);
       noStroke();
@@ -566,11 +630,34 @@ export class KitchenScene_MVP extends Scene {
     pop();
   }
 
+  _drawPlanningCenterCards() {
+    push();
+
+    const totalW = 760;
+    const totalH = 320;
+    const baseX = width / 2 - totalW / 2;
+    const baseY = 90;
+
+    fill(15, 18, 28, 170);
+    noStroke();
+    rect(baseX, baseY, totalW, totalH, 18);
+
+    fill(255);
+    textAlign(CENTER, TOP);
+    textSize(22);
+    text("Night Prep", width / 2, baseY + 16);
+
+    textSize(12);
+    text("Plan dishes first. Then press P to enter cooking.", width / 2, baseY + 48);
+
+    pop();
+  }
+
   _drawMainHint() {
     push();
     fill(255, 255, 230);
     stroke(0);
-    rect(20, 540, 380, 95);
+    rect(20, 540, 420, 105, 8);
 
     fill(0);
     noStroke();
@@ -580,20 +667,20 @@ export class KitchenScene_MVP extends Scene {
     if (this.phase === "PLANNING") {
       text("PLANNING PHASE", 30, 550);
       textSize(12);
-      text("1~5 = plan dishes", 30, 572);
-      text("P = start cooking phase", 30, 592);
-      text("No timer in this phase", 30, 612);
+      text("1~5 = plan dishes", 30, 574);
+      text("Click +/- to adjust plan", 30, 594);
+      text("Backspace = clear, P = start cooking", 30, 614);
     } else if (this.phase === "PRODUCTION") {
       text("COOK + SERVE PHASE", 30, 550);
       textSize(12);
-      text(`Order: ${this.currentOrder ? this.currentOrder.recipeId : "None"}`, 30, 572);
-      text(`Timer: ${Math.ceil(this.kitchenTimer)}s`, 30, 592);
-      text(`Coins: ${this.state.coins}`, 30, 612);
+      text(`Order: ${this.currentOrder ? this.currentOrder.recipeId : "None"}`, 30, 574);
+      text(`Kitchen Timer: ${Math.ceil(this.kitchenTimer)}s`, 30, 594);
+      text("E = cook / collect / serve when in range", 30, 614);
     } else {
       text("ENDING...", 30, 550);
       textSize(12);
-      text(this.success ? "Night success" : "Night failed", 30, 572);
-      text("Returning to Shooter...", 30, 592);
+      text(this.success ? "Night success" : "Night failed", 30, 574);
+      text("Returning to Shooter...", 30, 594);
     }
 
     pop();
@@ -603,11 +690,11 @@ export class KitchenScene_MVP extends Scene {
     push();
 
     if (!this.isMenuOpen) {
-      this.menuOpenTab = { x: 20, y: 20, w: 80, h: 30 };
+      this.menuOpenTab = { x: 20, y: 100, w: 92, h: 30 };
 
       fill(235);
       stroke(0);
-      rect(this.menuOpenTab.x, this.menuOpenTab.y, this.menuOpenTab.w, this.menuOpenTab.h);
+      rect(this.menuOpenTab.x, this.menuOpenTab.y, this.menuOpenTab.w, this.menuOpenTab.h, 6);
 
       fill(0);
       noStroke();
@@ -619,11 +706,11 @@ export class KitchenScene_MVP extends Scene {
     }
 
     if (!this.isTaskListOpen) {
-      this.taskOpenTab = { x: 20, y: 270, w: 80, h: 30 };
+      this.taskOpenTab = { x: 20, y: 138, w: 92, h: 30 };
 
       fill(235);
       stroke(0);
-      rect(this.taskOpenTab.x, this.taskOpenTab.y, this.taskOpenTab.w, this.taskOpenTab.h);
+      rect(this.taskOpenTab.x, this.taskOpenTab.y, this.taskOpenTab.w, this.taskOpenTab.h, 6);
 
       fill(0);
       noStroke();
@@ -640,19 +727,20 @@ export class KitchenScene_MVP extends Scene {
   _drawMenuPanel() {
     push();
 
-    const panelX = 110;
-    const panelY = 20;
-    const panelW = 340;
-    const panelH = 235;
+    // 规划阶段放在中央偏左
+    const panelX = width / 2 - 370;
+    const panelY = 140;
+    const panelW = 350;
+    const panelH = 240;
 
     fill(255, 245, 220);
     stroke(0);
-    rect(panelX, panelY, panelW, panelH);
+    rect(panelX, panelY, panelW, panelH, 12);
 
-    this.menuCloseButton = { x: panelX + panelW - 28, y: panelY + 8, w: 20, h: 20 };
+    this.menuCloseButton = { x: panelX + panelW - 30, y: panelY + 10, w: 20, h: 20 };
     fill(230);
     stroke(0);
-    rect(this.menuCloseButton.x, this.menuCloseButton.y, this.menuCloseButton.w, this.menuCloseButton.h);
+    rect(this.menuCloseButton.x, this.menuCloseButton.y, this.menuCloseButton.w, this.menuCloseButton.h, 4);
 
     fill(0);
     noStroke();
@@ -662,81 +750,86 @@ export class KitchenScene_MVP extends Scene {
 
     fill(0);
     noStroke();
-    textSize(16);
+    textSize(18);
     textAlign(LEFT, TOP);
-    text("MENU", panelX + 10, panelY + 10);
+    text("MENU", panelX + 14, panelY + 12);
 
     const items = [
-      { key: "1", name: "Rotten Burger", recipeId: "rotten_burger", y: panelY + 40 },
-      { key: "2", name: "Toxic Stew", recipeId: "toxic_stew", y: panelY + 70 },
-      { key: "3", name: "Bone BBQ", recipeId: "bone_bbq", y: panelY + 100 },
-      { key: "4", name: "Mutant Soup", recipeId: "mutant_soup", y: panelY + 130 },
-      { key: "5", name: "Ultimate Feast", recipeId: "ultimate_feast", y: panelY + 160 },
+      { key: "1", name: "Rotten Burger", recipeId: "rotten_burger", y: panelY + 48 },
+      { key: "2", name: "Toxic Stew", recipeId: "toxic_stew", y: panelY + 82 },
+      { key: "3", name: "Bone BBQ", recipeId: "bone_bbq", y: panelY + 116 },
+      { key: "4", name: "Mutant Soup", recipeId: "mutant_soup", y: panelY + 150 },
+      { key: "5", name: "Ultimate Feast", recipeId: "ultimate_feast", y: panelY + 184 },
     ];
 
     this.menuButtons = [];
     this.menuHoverZones = [];
 
     for (const item of items) {
+      const recipe = this.menu.getRecipe(item.recipeId);
+      const cookTime = recipe ? recipe.cookTime : "-";
+
       fill(0);
       noStroke();
-      textSize(12);
+      textSize(13);
       textAlign(LEFT, TOP);
-      text(`${item.key}. ${item.name}`, panelX + 10, item.y);
+      text(`${item.key}. ${item.name}`, panelX + 14, item.y);
+      textSize(11);
+      fill(80);
+      text(`Cook ${cookTime}s`, panelX + 180, item.y + 1);
 
       this.menuHoverZones.push({
         recipeId: item.recipeId,
         x: panelX + 10,
         y: item.y,
-        w: 190,
-        h: 18
+        w: 210,
+        h: 20
       });
 
       fill(220);
       stroke(0);
-      rect(panelX + 230, item.y - 2, 22, 18);
+      rect(panelX + 265, item.y - 2, 26, 20, 4);
 
       fill(0);
       noStroke();
       textSize(14);
       textAlign(CENTER, CENTER);
-      text("-", panelX + 241, item.y + 7);
+      text("-", panelX + 278, item.y + 8);
 
       this.menuButtons.push({
         recipeId: item.recipeId,
         action: "decrease",
-        x: panelX + 230,
+        x: panelX + 265,
         y: item.y - 2,
-        w: 22,
-        h: 18
+        w: 26,
+        h: 20
       });
 
       fill(220);
       stroke(0);
-      rect(panelX + 260, item.y - 2, 22, 18);
+      rect(panelX + 299, item.y - 2, 26, 20, 4);
 
       fill(0);
       noStroke();
       textSize(14);
       textAlign(CENTER, CENTER);
-      text("+", panelX + 271, item.y + 7);
+      text("+", panelX + 312, item.y + 8);
 
       this.menuButtons.push({
         recipeId: item.recipeId,
         action: "increase",
-        x: panelX + 260,
+        x: panelX + 299,
         y: item.y - 2,
-        w: 22,
-        h: 18
+        w: 26,
+        h: 20
       });
     }
 
-    fill(0);
+    fill(70);
     noStroke();
-    textSize(12);
+    textSize(11);
     textAlign(LEFT, TOP);
-    text("Backspace = Clear", panelX + 10, panelY + 190);
-    text("M = Toggle Menu", panelX + 160, panelY + 190);
+    text("Hover a dish to preview ingredients / cook time / reward", panelX + 14, panelY + 210);
 
     pop();
   }
@@ -752,13 +845,13 @@ export class KitchenScene_MVP extends Scene {
       .map(([name, amount]) => `${name}: ${amount}`)
       .join(", ");
 
-    const cardX = Math.min(mouseX + 12, width - 260);
-    const cardY = Math.min(mouseY + 12, height - 120);
+    const cardX = Math.min(mouseX + 12, width - 280);
+    const cardY = Math.min(mouseY + 12, height - 130);
 
     push();
     fill(255);
     stroke(0);
-    rect(cardX, cardY, 250, 105);
+    rect(cardX, cardY, 270, 112, 8);
 
     fill(0);
     noStroke();
@@ -767,9 +860,9 @@ export class KitchenScene_MVP extends Scene {
     text(recipe.name, cardX + 10, cardY + 10);
 
     textSize(11);
-    text(`Time: ${recipe.cookTime}`, cardX + 10, cardY + 35);
+    text(`Cook Time: ${recipe.cookTime}s`, cardX + 10, cardY + 35);
     text(`Profit: ${recipe.rewardCoins}`, cardX + 10, cardY + 55);
-    text(`Needs: ${reqText}`, cardX + 10, cardY + 75, 230);
+    text(`Needs: ${reqText}`, cardX + 10, cardY + 75, 248);
 
     pop();
   }
@@ -786,19 +879,20 @@ export class KitchenScene_MVP extends Scene {
 
     push();
 
-    const panelX = 110;
-    const panelY = 270;
-    const panelW = 420;
-    const panelH = 260;
+    // 规划阶段放在中央偏右
+    const panelX = width / 2 + 20;
+    const panelY = 140;
+    const panelW = 360;
+    const panelH = 240;
 
     fill(220, 240, 255);
     stroke(0);
-    rect(panelX, panelY, panelW, panelH);
+    rect(panelX, panelY, panelW, panelH, 12);
 
-    this.taskCloseButton = { x: panelX + panelW - 28, y: panelY + 8, w: 20, h: 20 };
+    this.taskCloseButton = { x: panelX + panelW - 30, y: panelY + 10, w: 20, h: 20 };
     fill(230);
     stroke(0);
-    rect(this.taskCloseButton.x, this.taskCloseButton.y, this.taskCloseButton.w, this.taskCloseButton.h);
+    rect(this.taskCloseButton.x, this.taskCloseButton.y, this.taskCloseButton.w, this.taskCloseButton.h, 4);
 
     fill(0);
     noStroke();
@@ -808,34 +902,188 @@ export class KitchenScene_MVP extends Scene {
 
     fill(0);
     noStroke();
-    textSize(16);
+    textSize(18);
     textAlign(LEFT, TOP);
-    text("TASK LIST", panelX + 10, panelY + 10);
+    text("TASK LIST", panelX + 14, panelY + 12);
 
     textSize(12);
     textAlign(LEFT, TOP);
 
-    text(`Burger: ${tasks.rotten_burger}`, panelX + 10, panelY + 40);
-    text(`Stew: ${tasks.toxic_stew}`, panelX + 10, panelY + 65);
-    text(`BBQ: ${tasks.bone_bbq}`, panelX + 10, panelY + 90);
-    text(`Soup: ${tasks.mutant_soup}`, panelX + 10, panelY + 115);
-    text(`Feast: ${tasks.ultimate_feast}`, panelX + 10, panelY + 140);
+    text(`Burger: ${tasks.rotten_burger}`, panelX + 14, panelY + 48);
+    text(`Stew: ${tasks.toxic_stew}`, panelX + 14, panelY + 74);
+    text(`BBQ: ${tasks.bone_bbq}`, panelX + 14, panelY + 100);
+    text(`Soup: ${tasks.mutant_soup}`, panelX + 14, panelY + 126);
+    text(`Feast: ${tasks.ultimate_feast}`, panelX + 14, panelY + 152);
 
-    text(`Profit: ${profit}`, panelX + 10, panelY + 175);
+    text(`Profit: ${profit}`, panelX + 14, panelY + 184);
 
-    fill(feasible ? 0 : 200, feasible ? 120 : 0, 0);
-    text(`Feasible: ${feasible}`, panelX + 10, panelY + 200);
+    fill(feasible ? color(0, 130, 0) : color(200, 0, 0));
+    text(`Feasible: ${feasible}`, panelX + 14, panelY + 208);
     fill(0);
 
-    text("Requirements:", panelX + 200, panelY + 40);
+    text("Required Ingredients:", panelX + 165, panelY + 48);
 
-    let y = panelY + 65;
+    let y = panelY + 74;
     for (const line of reqLines) {
-      text(line, panelX + 200, y);
+      text(line, panelX + 165, y);
       y += 20;
     }
 
     pop();
+  }
+
+  _drawInventoryPanel() {
+    const inventory = this.state && this.state.inventory ? this.state.inventory : {};
+
+    push();
+
+    const x = width - 250;
+    const y = 18;
+    const w = 220;
+    const h = 170;
+
+    fill(25, 30, 42, 220);
+    stroke(255, 255, 255, 40);
+    rect(x, y, w, h, 12);
+
+    fill(255);
+    noStroke();
+    textAlign(LEFT, TOP);
+    textSize(15);
+    text("INGREDIENTS", x + 12, y + 12);
+
+    const entries = Object.entries(inventory);
+    let lineY = y + 40;
+
+    textSize(12);
+
+    if (entries.length === 0) {
+      text("No ingredients", x + 12, lineY);
+    } else {
+      for (let i = 0; i < entries.length; i++) {
+        const [name, amount] = entries[i];
+        text(`${name}: ${amount}`, x + 12, lineY);
+        lineY += 18;
+
+        if (lineY > y + h - 18) break;
+      }
+    }
+
+    pop();
+  }
+
+  _drawProductionStatusPanel() {
+    if (this.phase !== "PRODUCTION") return;
+
+    push();
+
+    const x = width - 290;
+    const y = 205;
+    const w = 260;
+    const h = 130;
+
+    fill(255, 251, 236, 235);
+    stroke(0);
+    rect(x, y, w, h, 10);
+
+    fill(0);
+    noStroke();
+    textAlign(LEFT, TOP);
+    textSize(15);
+    text("CURRENT STATUS", x + 12, y + 12);
+
+    textSize(12);
+
+    const orderText = this.currentOrder ? this.currentOrder.recipeId : "None";
+    const queued = this.orderQueue ? this.orderQueue.length : 0;
+    const heldDish = this.player && this.player.heldDish ? this.player.heldDish : "None";
+
+    text(`Night: ${this.time}`, x + 12, y + 40);
+    text(`Order: ${orderText}`, x + 12, y + 62);
+    text(`Remaining Orders: ${queued}`, x + 12, y + 84);
+    text(`Holding: ${heldDish}`, x + 12, y + 106);
+
+    pop();
+  }
+
+  _drawCookingCountdownPanel() {
+    if (this.phase !== "PRODUCTION") return;
+
+    const cookingTasks = this.productionManager
+      .getTasks()
+      .filter(task => task.status === "COOKING");
+
+    push();
+
+    const x = width - 290;
+    const y = 350;
+    const w = 260;
+    const h = Math.max(88, 52 + cookingTasks.length * 24);
+
+    fill(235, 255, 240, 235);
+    stroke(0);
+    rect(x, y, w, h, 10);
+
+    fill(0);
+    noStroke();
+    textAlign(LEFT, TOP);
+    textSize(15);
+    text("COOKING", x + 12, y + 12);
+
+    textSize(12);
+
+    if (cookingTasks.length === 0) {
+      text("No dish is currently cooking", x + 12, y + 42);
+      pop();
+      return;
+    }
+
+    let lineY = y + 42;
+    for (const task of cookingTasks) {
+      const countdownText = this._getCookCountdownText(task);
+      text(`${task.recipeId}: ${countdownText}`, x + 12, lineY);
+      lineY += 22;
+    }
+
+    pop();
+  }
+
+  _getCookCountdownText(task) {
+    // 只读UI推断，不改你基础逻辑
+    // 尽量兼容队友/已有Task实现中的不同字段命名
+    if (!task) return "...";
+
+    if (typeof task.remainingTime === "number") {
+      return `${Math.max(0, Math.ceil(task.remainingTime))}s`;
+    }
+
+    if (typeof task.timeLeft === "number") {
+      return `${Math.max(0, Math.ceil(task.timeLeft))}s`;
+    }
+
+    if (typeof task.cookTimer === "number") {
+      return `${Math.max(0, Math.ceil(task.cookTimer))}s`;
+    }
+
+    if (typeof task.timer === "number") {
+      return `${Math.max(0, Math.ceil(task.timer))}s`;
+    }
+
+    if (typeof task.elapsedTime === "number" && typeof task.totalTime === "number") {
+      return `${Math.max(0, Math.ceil(task.totalTime - task.elapsedTime))}s`;
+    }
+
+    if (typeof task.progress === "number" && typeof task.totalTime === "number") {
+      return `${Math.max(0, Math.ceil(task.totalTime - task.progress))}s`;
+    }
+
+    // 再退一层：从recipe静态时间做保守展示
+    const recipe = this.menu.getRecipe(task.recipeId);
+    if (recipe && typeof recipe.cookTime === "number") {
+      return `~${Math.ceil(recipe.cookTime)}s`;
+    }
+
+    return "Cooking...";
   }
 
   _getClickedMenuButton(mx, my) {
