@@ -66,7 +66,7 @@ export class WelcomeScene extends Scene {
 
     //Difficulty buttons
     this.easyButton.onClick = () => this.startGame("easy");
-    this.mediumButton.onClick = () => this.startGame("medium");
+    this.mediumButton.onClick = () => this.startGame("normal");
     this.hardButton.onClick = () => this.startGame("hard");
 
     //Back button: return to main menu
@@ -91,6 +91,7 @@ export class WelcomeScene extends Scene {
 
     // Test Kitchen Button → Directly enter KitchenScene
     this.testKitchenButton.onClick = () => {
+      this.game.model.difficulty = "normal";
       this.game.model.gameState.inventory = new Inventory({
             zombie_meat: 3,
             toxic_slime: 1,
