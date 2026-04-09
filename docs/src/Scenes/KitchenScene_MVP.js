@@ -1,8 +1,8 @@
 import { Scene } from "../Core/Scene.js";
 import { Vector2 } from "../Utility/Vector2.js";
 
-import { GameState } from "../Core/GameState.js";
 import { MenuData } from "../Core/MenuData.js";
+import { Order } from "../Core/Order.js";
 
 import { PlayerChef_MVP } from "../Entities/PlayerChef_MVP.js";
 import { KitchenStation_MVP } from "../Entities/KitchenStation_MVP.js";
@@ -11,7 +11,7 @@ import { Customer_MVP } from "../Entities/Customer_MVP.js";
 
 import { TaskList } from "../Core/TaskList.js";
 import { ProductionManager } from "../Core/ProductionManager.js";
-import { SalesSystem } from "../Core/SalesSystem.js";
+import { ShooterScene } from "./ShooterScene.js";
 
 export class KitchenScene_MVP extends Scene {
   constructor(game) {
@@ -19,49 +19,54 @@ export class KitchenScene_MVP extends Scene {
 
     console.log("KitchenScene_MVP loaded");
 
-    // ===== Core Logic =====
-    this.state = new GameState();
+    // ===== Shared game state =====
+    // Kitchen now uses the same global state as Shooter
+    this.state = this.game.model.gameState;
     this.menu = new MenuData();
-    this.time = "Night";
 
+    // ===== Core managers kept from old system =====
     this.taskList = new TaskList();
-    this.productionManager = new ProductionManager();
-    this.salesSystem = new SalesSystem();
-    this.phase = "PLANNING";
+    this.productionManager = new ProductionManager(this.game);
 
+    // ===== Main phase =====
+    this.phase = "PLANNING"; // PLANNING | PRODUCTION | END
+
+    // ===== Global kitchen timer =====
+    const difficulty = this.game.model.difficulty || "normal";
+    if (difficulty === "easy") {
+      this.kitchenTimeLimit = 75;
+    } else if (difficulty === "hard") {
+      this.kitchenTimeLimit = 45;
+    } else {
+      this.kitchenTimeLimit = 60;
+    }
+    this.kitchenTimer = this.kitchenTimeLimit;
+    this.timerStarted = false;
+
+    // ===== Order flow =====
+    this.orderQueue = [];
+    this.currentOrder = null;
+    this.success = false;
+    this.endTimer = 2;
+
+    // ===== Logging =====
     this._loggedDoneTaskIds = new Set();
 
-    // ===== UI panel states (default closed) =====
+    // ===== Message UI =====
+    this.message = "";
+    this.messageTimer = 0;
+
+    // ===== UI panel states =====
     this.isMenuOpen = false;
     this.isTaskListOpen = false;
 
     // ===== UI hitboxes =====
     this.menuButtons = [];
     this.menuHoverZones = [];
-
     this.menuCloseButton = null;
     this.taskCloseButton = null;
     this.menuOpenTab = null;
     this.taskOpenTab = null;
-
-    // ===== Selling flow state =====
-    this.saleInProgress = false;
-    this.saleStage = "IDLE"; // IDLE | ENTERING | TO_COUNTER | TO_SEAT | EATING | LEAVING
-    this.saleTimer = 0;
-    this.saleSettled = false;
-
-    // positions for customer selling animation
-    this.doorPos = new Vector2(15.2, 8.0);
-    this.counterServePos = new Vector2(12.2, 6.8);
-    this.seatPos = new Vector2(12.8, 2.4);
-    this.exitPos = new Vector2(16.2, 8.5);
-
-    console.log("[Kitchen] Current phase:", this.phase);
-    console.log("[Kitchen] TaskList:", this.taskList.getTasks());
-    console.log(
-      "[Kitchen] TaskList feasible:",
-      this.taskList.isFeasible(this.state.inventory, this.menu)
-    );
 
     // ===== Player =====
     this.player = new PlayerChef_MVP(game);
@@ -86,7 +91,6 @@ export class KitchenScene_MVP extends Scene {
 
     for (let i = 0; i < 5; i++) {
       const pos = new Vector2(startX, startY + i * verticalSpacing);
-
       const station = new KitchenStation_MVP(game, pos, stationTypes[i]);
       station.size = stationSize;
 
@@ -98,9 +102,10 @@ export class KitchenScene_MVP extends Scene {
     this.counter = new Counter_MVP(game, new Vector2(8.2, 0.8));
     this.counter.size = new Vector2(1.2, 7.4);
 
-    // ===== Customer (selling-stage visual role only) =====
-    this.customer = new Customer_MVP(game, this.doorPos, null);
-    this.customer.pos = new Vector2(this.doorPos.x, this.doorPos.y);
+    // ===== Customer =====
+    this.customer = new Customer_MVP(game, new Vector2(12.2, 6.8), null);
+    this.customer.isVisible = false;
+    this.customer.state = "WAITING";
 
     // ===== Colliders =====
     this.colliders = [
@@ -108,19 +113,33 @@ export class KitchenScene_MVP extends Scene {
       { pos: this.counter.pos, size: this.counter.size },
     ];
 
-    // ===== Register Remaining Entities =====
+    // ===== Register entities =====
     this.entities.push(
       this.player,
       this.counter,
       this.customer
     );
+
+    console.log("[Kitchen] Current phase:", this.phase);
+    console.log("[Kitchen] Difficulty:", difficulty);
   }
 
   update(events) {
     const oldPos = new Vector2(this.player.pos.x, this.player.pos.y);
 
-    super.update(events);
+    // Update entities manually so customer only updates during PRODUCTION/END
+    for (let entity of this.entities) {
+      if (entity === this.customer && this.phase === "PLANNING") {
+        continue;
+      }
+      entity.update(events);
+    }
 
+    for (let uielement of this.uielements) {
+      uielement.update(events);
+    }
+
+    // Player collision rollback
     for (const c of this.colliders) {
       if (this._aabbOverlap(this.player.pos, this.player.size, c.pos, c.size)) {
         this.player.pos.x = oldPos.x;
@@ -129,7 +148,129 @@ export class KitchenScene_MVP extends Scene {
       }
     }
 
+    // Message timer
+    if (this.messageTimer > 0) {
+      this.messageTimer--;
+    } else {
+      this.message = "";
+    }
+
+    // ===== Planning input =====
+    for (const event of events) {
+      // Panel open/close buttons
+      if (event.type === "click") {
+        if (this._isInside(mouseX, mouseY, this.menuCloseButton)) {
+          this.isMenuOpen = false;
+          return;
+        }
+
+        if (this._isInside(mouseX, mouseY, this.taskCloseButton)) {
+          this.isTaskListOpen = false;
+          return;
+        }
+
+        if (this._isInside(mouseX, mouseY, this.menuOpenTab)) {
+          this.isMenuOpen = true;
+          return;
+        }
+
+        if (this._isInside(mouseX, mouseY, this.taskOpenTab)) {
+          this.isTaskListOpen = true;
+          return;
+        }
+      }
+
+      // Keyboard panel toggles
+      if (event.key === "m" || event.key === "M") {
+        this.isMenuOpen = !this.isMenuOpen;
+      }
+
+      if (event.key === "t" || event.key === "T") {
+        this.isTaskListOpen = !this.isTaskListOpen;
+      }
+
+      // ===== PLANNING =====
+      if (this.phase === "PLANNING") {
+        if (event.key === "1") this.taskList.increase("rotten_burger", 1);
+        if (event.key === "2") this.taskList.increase("toxic_stew", 1);
+        if (event.key === "3") this.taskList.increase("bone_bbq", 1);
+        if (event.key === "4") this.taskList.increase("mutant_soup", 1);
+        if (event.key === "5") this.taskList.increase("ultimate_feast", 1);
+        if (event.key === "Backspace") this.taskList.clear();
+
+        if (event.type === "click") {
+          const clickedButton = this._getClickedMenuButton(mouseX, mouseY);
+
+          if (clickedButton) {
+            if (clickedButton.action === "increase") {
+              this.taskList.increase(clickedButton.recipeId, 1);
+            }
+
+            if (clickedButton.action === "decrease") {
+              this.taskList.decrease(clickedButton.recipeId, 1);
+            }
+          }
+        }
+
+        // Start kitchen timer and production
+        if (event.key === "p" || event.key === "P") {
+          const hasTasks = this._hasAnyPlannedTask();
+          const feasible = this.taskList.isFeasible(this.state.inventory, this.menu);
+
+          if (!hasTasks) {
+            this.showMessage("Plan at least one dish");
+            return;
+          }
+
+          if (!feasible) {
+            this.showMessage("Not enough ingredients");
+            return;
+          }
+
+          this.productionManager.createFromTaskList(this.taskList, this.menu);
+          this.orderQueue = this._buildOrderQueueFromTaskList();
+          this.phase = "PRODUCTION";
+          this.timerStarted = true;
+          this.kitchenTimer = this.kitchenTimeLimit;
+
+          this._spawnNextCustomerOrder();
+          this.showMessage("Cooking started");
+          console.log("[Kitchen] Entered PRODUCTION");
+        }
+      }
+
+      // ===== PRODUCTION =====
+      if (this.phase === "PRODUCTION") {
+        // E key: either cook/collect or serve
+        if (event.key === "e" || event.key === "E") {
+          // Try serve first if near counter
+          if (this.player.isNear(this.counter)) {
+            this._tryServeCurrentOrder();
+            continue;
+          }
+
+          // Otherwise try station interaction
+          this._handleProductionCook();
+        }
+      }
+    }
+
+    // ===== PRODUCTION LOOP =====
     if (this.phase === "PRODUCTION") {
+      // Global timer starts here and includes cooking + serving
+      if (this.timerStarted) {
+        this.kitchenTimer -= deltaTime / 1000;
+
+        if (this.kitchenTimer <= 0) {
+          this.kitchenTimer = 0;
+          this.success = false;
+          this.phase = "END";
+          this.showMessage("Time up!");
+          console.log("[Kitchen] Time up. Kitchen failed.");
+          return;
+        }
+      }
+
       this.productionManager.updateAll(0.02);
 
       for (const task of this.productionManager.getDoneTasks()) {
@@ -138,228 +279,32 @@ export class KitchenScene_MVP extends Scene {
           console.log("[Kitchen] Task is now DONE:", task);
         }
       }
+
+      // Keep customer visible during production
+      if (this.customer.isVisible && this.currentOrder) {
+        // Show the global kitchen timer under the customer
+        this.customer.waitTimer = this.kitchenTimer;
+      }
+
+      // After served customer finishes leaving, spawn next order or end
+      if (this.customer.isVisible === false && this.currentOrder === null) {
+        if (this.orderQueue.length > 0) {
+          this._spawnNextCustomerOrder();
+        } else {
+          this.success = true;
+          this.phase = "END";
+          this.showMessage("Night completed!");
+          console.log("[Kitchen] All orders served.");
+        }
+      }
     }
 
-    if (this.phase === "SELLING" && this.saleInProgress) {
-      this._updateSellingFlow();
-    }
+    // ===== END =====
+    if (this.phase === "END") {
+      this.endTimer -= deltaTime / 1000;
 
-    for (const event of events) {
-      // ===== Click: panel open/close buttons (all phases) =====
-      if (event.type === "click") {
-        if (this._isInside(mouseX, mouseY, this.menuCloseButton)) {
-          this.isMenuOpen = false;
-          console.log("[Kitchen] Menu panel:", this.isMenuOpen);
-          return;
-        }
-
-        if (this._isInside(mouseX, mouseY, this.taskCloseButton)) {
-          this.isTaskListOpen = false;
-          console.log("[Kitchen] Task list panel:", this.isTaskListOpen);
-          return;
-        }
-
-        if (this._isInside(mouseX, mouseY, this.menuOpenTab)) {
-          this.isMenuOpen = true;
-          console.log("[Kitchen] Menu panel:", this.isMenuOpen);
-          return;
-        }
-
-        if (this._isInside(mouseX, mouseY, this.taskOpenTab)) {
-          this.isTaskListOpen = true;
-          console.log("[Kitchen] Task list panel:", this.isTaskListOpen);
-          return;
-        }
-      }
-
-      // ===== Keyboard toggles still available in all phases =====
-      if (event.key === "m" || event.key === "M") {
-        this.isMenuOpen = !this.isMenuOpen;
-        console.log("[Kitchen] Menu panel:", this.isMenuOpen);
-      }
-
-      if (event.key === "t" || event.key === "T") {
-        this.isTaskListOpen = !this.isTaskListOpen;
-        console.log("[Kitchen] Task list panel:", this.isTaskListOpen);
-      }
-
-      // ===== Planning phase only =====
-      if (this.phase === "PLANNING") {
-        if (event.key === "1") {
-          this.taskList.increase("rotten_burger", 1);
-          console.log("[Kitchen] Added rotten_burger");
-        }
-        if (event.key === "2") {
-          this.taskList.increase("toxic_stew", 1);
-          console.log("[Kitchen] Added toxic_stew");
-        }
-        if (event.key === "3") {
-          this.taskList.increase("bone_bbq", 1);
-          console.log("[Kitchen] Added bone_bbq");
-        }
-        if (event.key === "4") {
-          this.taskList.increase("mutant_soup", 1);
-          console.log("[Kitchen] Added mutant_soup");
-        }
-        if (event.key === "5") {
-          this.taskList.increase("ultimate_feast", 1);
-          console.log("[Kitchen] Added ultimate_feast");
-        }
-        if (event.key === "Backspace") {
-          this.taskList.clear();
-          console.log("[Kitchen] Task list cleared");
-        }
-
-        // mouse click add/remove buttons
-        if (event.type === "click") {
-          const clickedButton = this._getClickedMenuButton(mouseX, mouseY);
-
-          if (clickedButton) {
-            if (clickedButton.action === "increase") {
-              this.taskList.increase(clickedButton.recipeId, 1);
-              console.log("[Kitchen] Added by mouse:", clickedButton.recipeId);
-            }
-
-            if (clickedButton.action === "decrease") {
-              this.taskList.decrease(clickedButton.recipeId, 1);
-              console.log("[Kitchen] Removed by mouse:", clickedButton.recipeId);
-            }
-          }
-        }
-      }
-
-      // ===== P: enter production phase =====
-      if ((event.key === "p" || event.key === "P") && this.phase === "PLANNING") {
-        console.log("[Kitchen] P key event received");
-
-        const hasTasks = this._hasAnyPlannedTask();
-        const feasible = this.taskList.isFeasible(this.state.inventory, this.menu);
-
-        console.log("[Kitchen] Has tasks =", hasTasks);
-        console.log("[Kitchen] Feasible =", feasible);
-
-        if (!hasTasks) {
-          console.log("[Kitchen] Task list is empty. Please plan at least one dish.");
-          return;
-        }
-
-        if (!feasible) {
-          console.log("[Kitchen] Task list is not feasible. Cannot start production.");
-          return;
-        }
-
-        this.productionManager.createFromTaskList(this.taskList, this.menu);
-        this.phase = "PRODUCTION";
-
-        console.log("[Kitchen] Entered production phase");
-        console.log("[Kitchen] Production tasks:", this.productionManager.getTasks());
-      }
-
-      // ===== E: interaction =====
-      if (event.key === "e" || event.key === "E") {
-        console.log("[Kitchen] E key event received");
-
-        if (this.phase === "PRODUCTION") {
-          const activeTask =
-            this.productionManager.getDoneTasks()[0] ||
-            this.productionManager.getPendingTasks()[0];
-
-          if (!activeTask) {
-            console.log("[Kitchen] No active production tasks.");
-            return;
-          }
-
-          const targetRecipeId = activeTask.recipeId;
-          console.log("[Kitchen] Current active task recipe:", targetRecipeId);
-          console.log("[Kitchen] Current active task status:", activeTask.status);
-
-          for (const station of this.stations) {
-            if (this.player.isNear(station)) {
-              console.log("[Kitchen] Player is near station:", station.stationType);
-
-              const recipe = this.menu.getRecipe(targetRecipeId);
-              if (!recipe) {
-                console.log("[Kitchen] Recipe not found for active task.");
-                return;
-              }
-
-              if (!station.canCook(recipe)) {
-                console.log("[Kitchen] This is not the correct station.");
-                return;
-              }
-
-              if (activeTask.status === "PENDING") {
-                const started = station.tryCook(
-                  this.state,
-                  this.menu,
-                  targetRecipeId
-                );
-
-                if (started) {
-                  activeTask.start();
-                  console.log("[Kitchen] Task started:", activeTask);
-                }
-                return;
-              }
-
-              if (activeTask.status === "DONE") {
-                if (this.player.heldDish) {
-                  console.log(
-                    "[Kitchen] Player is already holding a dish:",
-                    this.player.heldDish
-                  );
-                  return;
-                }
-
-                this.player.heldDish = activeTask.recipeId;
-                activeTask.collect();
-                console.log("[Kitchen] Task collected:", activeTask);
-                console.log("[Kitchen] Player now holds:", this.player.heldDish);
-                return;
-              }
-
-              if (activeTask.status === "COOKING") {
-                console.log("[Kitchen] This task is still cooking. Please wait.");
-                return;
-              }
-
-              if (activeTask.status === "COLLECTED") {
-                console.log("[Kitchen] This task has already been collected.");
-                return;
-              }
-            }
-          }
-
-          console.log("[Kitchen] Press E near the correct station.");
-          return;
-        }
-      }
-
-      // ===== S: start selling flow =====
-      if (event.key === "s" || event.key === "S") {
-        console.log("[Kitchen] S key event received");
-
-        if (!this.player.isNear(this.counter)) {
-          console.log("[Kitchen] Move near the counter to sell dishes.");
-          return;
-        }
-
-        if (!this.productionManager.allTasksCollected()) {
-          console.log("[Kitchen] Not all tasks are collected yet.");
-          return;
-        }
-
-        this.phase = "SELLING";
-        this.saleInProgress = true;
-        this.saleSettled = false;
-        this.saleStage = "ENTERING";
-        this.saleTimer = 0;
-
-        this.customer.pos.x = this.doorPos.x;
-        this.customer.pos.y = this.doorPos.y;
-
-        console.log("[Kitchen] Selling started. Customer enters from the door.");
-        return;
+      if (this.endTimer <= 0) {
+        this._resetAndReturnToShooter();
       }
     }
   }
@@ -379,10 +324,214 @@ export class KitchenScene_MVP extends Scene {
       this._drawTaskListPanel();
     }
 
-    if (this.phase === "SELLING") {
-      this._drawSellingHint();
+    this._drawMainHint();
+
+    if (this.message) {
+      push();
+      fill(255, 245, 200);
+      stroke(0);
+      rect(20, 500, 360, 30);
+      fill(0);
+      noStroke();
+      textSize(13);
+      textAlign(LEFT, CENTER);
+      text(this.message, 30, 515);
+      pop();
     }
   }
+
+  // =========================================================
+  // PRODUCTION LOGIC
+  // =========================================================
+
+  _buildOrderQueueFromTaskList() {
+    const queue = [];
+    const tasks = this.taskList.getTasks();
+
+    for (const [recipeId, quantity] of Object.entries(tasks)) {
+      for (let i = 0; i < quantity; i++) {
+        queue.push(recipeId);
+      }
+    }
+
+    // Shuffle so order order is not predictable
+    for (let i = queue.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [queue[i], queue[j]] = [queue[j], queue[i]];
+    }
+
+    return queue;
+  }
+
+  _spawnNextCustomerOrder() {
+    if (this.orderQueue.length === 0) {
+      this.currentOrder = null;
+      this.customer.order = null;
+      this.customer.isVisible = false;
+      return;
+    }
+
+    const recipeId = this.orderQueue.shift();
+    const recipe = this.menu.getRecipe(recipeId);
+
+    if (!recipe) {
+      console.log("[Kitchen] Invalid recipe for customer order:", recipeId);
+      this.currentOrder = null;
+      return;
+    }
+
+    this.currentOrder = new Order(recipe.id, recipe.rewardCoins);
+    this.customer.order = this.currentOrder;
+    this.customer.state = "WAITING";
+    this.customer.leaveTimer = 2;
+    this.customer.isVisible = true;
+    this.customer.pos.x = 12.2;
+    this.customer.pos.y = 6.8;
+
+    // Use global kitchen timer as the displayed countdown
+    this.customer.waitTimer = this.kitchenTimer;
+
+    console.log("[Kitchen] New customer order:", recipe.id);
+    this.showMessage(`Customer wants ${recipe.id}`);
+  }
+
+  _getRelevantTaskForCurrentOrder() {
+    if (!this.currentOrder) return null;
+    const recipeId = this.currentOrder.recipeId;
+    const tasks = this.productionManager.getTasks();
+
+    // Priority: DONE -> PENDING -> COOKING -> COLLECTED
+    let task = tasks.find(t => t.recipeId === recipeId && t.status === "DONE");
+    if (task) return task;
+
+    task = tasks.find(t => t.recipeId === recipeId && t.status === "PENDING");
+    if (task) return task;
+
+    task = tasks.find(t => t.recipeId === recipeId && t.status === "COOKING");
+    if (task) return task;
+
+    task = tasks.find(t => t.recipeId === recipeId && t.status === "COLLECTED");
+    if (task) return task;
+
+    return null;
+  }
+
+  _handleProductionCook() {
+    if (!this.currentOrder) {
+      this.showMessage("No current customer order");
+      return;
+    }
+
+    const activeTask = this._getRelevantTaskForCurrentOrder();
+    if (!activeTask) {
+      this.showMessage("No remaining task for this order");
+      return;
+    }
+
+    const targetRecipeId = activeTask.recipeId;
+
+    for (const station of this.stations) {
+      if (this.player.isNear(station)) {
+        const recipe = this.menu.getRecipe(targetRecipeId);
+        if (!recipe) {
+          this.showMessage("Recipe not found");
+          return;
+        }
+
+        if (!station.canCook(recipe)) {
+          this.showMessage("Wrong station");
+          return;
+        }
+
+        if (activeTask.status === "PENDING") {
+          const started = station.tryCook(this.state, this.menu, targetRecipeId);
+
+          if (started) {
+            activeTask.start();
+            this.showMessage(`Cooking ${targetRecipeId}`);
+          } else {
+            this.showMessage("Not enough ingredients");
+          }
+          return;
+        }
+
+        if (activeTask.status === "DONE") {
+          if (this.player.heldDish) {
+            this.showMessage("Already holding a dish");
+            return;
+          }
+
+          this.player.heldDish = activeTask.recipeId;
+          activeTask.collect();
+          this.showMessage(`Collected ${activeTask.recipeId}`);
+          return;
+        }
+
+        if (activeTask.status === "COOKING") {
+          this.showMessage("Still cooking");
+          return;
+        }
+
+        if (activeTask.status === "COLLECTED") {
+          this.showMessage("Dish ready - serve at counter");
+          return;
+        }
+      }
+    }
+
+    this.showMessage("Move near the correct station");
+  }
+
+  _tryServeCurrentOrder() {
+    if (!this.currentOrder) {
+      this.showMessage("No current order");
+      return;
+    }
+
+    const served = this.counter.tryServe(
+      this.player,
+      this.customer,
+      this.state,
+      {
+        completeOrder: (order, state) => {
+          if (order.status !== "ACCEPTED") return false;
+          state.addCoins(order.rewardCoins);
+          order.complete();
+          return true;
+        }
+      }
+    );
+
+    if (!served) {
+      this.showMessage("Wrong dish or no dish");
+      return;
+    }
+
+    // Remove one collected task matching the served dish
+    this._removeOneCollectedTask(this.currentOrder.recipeId);
+
+    console.log("[Kitchen] Served:", this.currentOrder.recipeId);
+    this.showMessage("Order served!");
+
+    this.currentOrder = null;
+    this.customer.order = null;
+    // Customer_MVP will switch from SERVED -> LEAVING -> invisible by itself
+  }
+
+  _removeOneCollectedTask(recipeId) {
+    const tasks = this.productionManager.tasks;
+    const index = tasks.findIndex(
+      task => task.recipeId === recipeId && task.status === "COLLECTED"
+    );
+
+    if (index !== -1) {
+      tasks.splice(index, 1);
+    }
+  }
+
+  // =========================================================
+  // UI DRAWING
+  // =========================================================
 
   _drawPhaseBar() {
     push();
@@ -395,8 +544,8 @@ export class KitchenScene_MVP extends Scene {
 
     const phases = [
       { label: "PLAN", value: "PLANNING" },
-      { label: "COOK", value: "PRODUCTION" },
-      { label: "SELL", value: "SELLING" },
+      { label: "COOK+SERVE", value: "PRODUCTION" },
+      { label: "END", value: "END" },
     ];
 
     for (let i = 0; i < phases.length; i++) {
@@ -409,7 +558,7 @@ export class KitchenScene_MVP extends Scene {
 
       fill(0);
       noStroke();
-      textSize(13);
+      textSize(12);
       textAlign(CENTER, CENTER);
       text(phases[i].label, x + boxW / 2, barY + boxH / 2);
     }
@@ -417,92 +566,36 @@ export class KitchenScene_MVP extends Scene {
     pop();
   }
 
-  _updateSellingFlow() {
-    if (this.saleStage === "ENTERING") {
-      this.saleStage = "TO_COUNTER";
-      console.log("[Kitchen] Customer is walking to the counter.");
-    }
-
-    if (this.saleStage === "TO_COUNTER") {
-      const arrived = this._moveToward(this.customer.pos, this.counterServePos, 0.03);
-      if (arrived) {
-        this.saleStage = "TO_SEAT";
-
-        if (!this.saleSettled) {
-          const earned = this.salesSystem.sellAllCollected(
-            this.productionManager,
-            this.menu,
-            this.state
-          );
-          this.saleSettled = true;
-          console.log("[Kitchen] Customer bought the food. Earned:", earned);
-        }
-
-        console.log("[Kitchen] Customer is walking to the seat.");
-      }
-      return;
-    }
-
-    if (this.saleStage === "TO_SEAT") {
-      const arrived = this._moveToward(this.customer.pos, this.seatPos, 0.03);
-      if (arrived) {
-        this.saleStage = "EATING";
-        this.saleTimer = 120;
-        console.log("[Kitchen] Customer is now eating.");
-      }
-      return;
-    }
-
-    if (this.saleStage === "EATING") {
-      this.saleTimer--;
-      if (this.saleTimer <= 0) {
-        this.saleStage = "LEAVING";
-        console.log("[Kitchen] Customer finished eating and is leaving.");
-      }
-      return;
-    }
-
-    if (this.saleStage === "LEAVING") {
-      const arrived = this._moveToward(this.customer.pos, this.exitPos, 0.04);
-      if (arrived) {
-        console.log("[Kitchen] Customer left the kitchen.");
-        this.saleInProgress = false;
-        this.saleStage = "IDLE";
-        this._resetKitchenAfterSelling();
-      }
-    }
-  }
-
-  _moveToward(pos, target, speed) {
-    const dx = target.x - pos.x;
-    const dy = target.y - pos.y;
-    const dist = Math.hypot(dx, dy);
-
-    if (dist < speed || dist < 0.02) {
-      pos.x = target.x;
-      pos.y = target.y;
-      return true;
-    }
-
-    pos.x += (dx / dist) * speed;
-    pos.y += (dy / dist) * speed;
-    return false;
-  }
-
-  _drawSellingHint() {
+  _drawMainHint() {
     push();
     fill(255, 255, 230);
     stroke(0);
-    rect(20, 540, 300, 55);
+    rect(20, 540, 380, 95);
 
     fill(0);
     noStroke();
     textSize(14);
     textAlign(LEFT, TOP);
-    text("SELLING PHASE", 30, 550);
 
-    textSize(12);
-    text(`Customer state: ${this.saleStage}`, 30, 572);
+    if (this.phase === "PLANNING") {
+      text("PLANNING PHASE", 30, 550);
+      textSize(12);
+      text("1~5 = plan dishes", 30, 572);
+      text("P = start cooking phase", 30, 592);
+      text("No timer in this phase", 30, 612);
+    } else if (this.phase === "PRODUCTION") {
+      text("COOK + SERVE PHASE", 30, 550);
+      textSize(12);
+      text(`Order: ${this.currentOrder ? this.currentOrder.recipeId : "None"}`, 30, 572);
+      text(`Timer: ${Math.ceil(this.kitchenTimer)}s`, 30, 592);
+      text(`Coins: ${this.state.coins}`, 30, 612);
+    } else {
+      text("ENDING...", 30, 550);
+      textSize(12);
+      text(this.success ? "Night success" : "Night failed", 30, 572);
+      text("Returning to Shooter...", 30, 592);
+    }
+
     pop();
   }
 
@@ -755,9 +848,7 @@ export class KitchenScene_MVP extends Scene {
         my >= button.y &&
         my <= button.y + button.h;
 
-      if (inside) {
-        return button;
-      }
+      if (inside) return button;
     }
 
     return null;
@@ -773,9 +864,7 @@ export class KitchenScene_MVP extends Scene {
         my >= zone.y &&
         my <= zone.y + zone.h;
 
-      if (inside) {
-        return zone.recipeId;
-      }
+      if (inside) return zone.recipeId;
     }
 
     return null;
@@ -803,37 +892,23 @@ export class KitchenScene_MVP extends Scene {
     );
   }
 
-  _resetKitchenAfterSelling() {
-    console.log("[Kitchen] Resetting kitchen state...");
+  showMessage(msg) {
+    this.message = msg;
+    this.messageTimer = 120;
+  }
 
+  _resetAndReturnToShooter() {
     this.player.heldDish = null;
-
     this.taskList.clear();
     this.productionManager.clear();
     this._loggedDoneTaskIds.clear();
 
-    this.saleInProgress = false;
-    this.saleStage = "IDLE";
-    this.saleTimer = 0;
-    this.saleSettled = false;
+    this.customer.isVisible = false;
+    this.customer.order = null;
+    this.customer.state = "WAITING";
 
-    // send customer back to the door
-    this.customer.pos.x = this.doorPos.x;
-    this.customer.pos.y = this.doorPos.y;
-
-    // temporary refill for repeated kitchen testing
-    this.state.inventory.add("zombie_meat", 2);
-    this.state.inventory.add("spice_powder", 1);
-
-    this.phase = "PLANNING";
-
-    console.log("[Kitchen] Kitchen reset complete.");
-    console.log("[Kitchen] Current phase:", this.phase);
-    console.log("[Kitchen] TaskList:", this.taskList.getTasks());
-    console.log(
-      "[Kitchen] TaskList feasible:",
-      this.taskList.isFeasible(this.state.inventory, this.menu)
-    );
+    this.game.model.gameState.phase++;
+    this.game.model.scene = new ShooterScene(this.game);
   }
 
   _aabbOverlap(aPos, aSize, bPos, bSize) {
