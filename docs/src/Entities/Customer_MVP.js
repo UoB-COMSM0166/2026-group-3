@@ -5,31 +5,30 @@ export class Customer_MVP extends Entity {
   constructor(game, pos, order) {
     super(game, pos, new Vector2(0.8, 0.8));
 
-    // Current order assigned to this customer
     this.order = order;
-
-    // Possible states: WAITING, SERVED, LEAVING
     this.state = "WAITING";
 
-    // Time (in seconds) before the customer leaves if not served
-    this.waitTimer = 15;
+    // 在第二版 kitchen 设计下，这个值主要用于显示，
+    // 真正的超时逻辑由 KitchenScene_MVP 的全局厨房计时器控制。
+    const difficulty = this.game.model.difficulty || "normal";
 
-    // Controls how long the customer remains after being served
+    if (difficulty === "easy") {
+      this.waitTimer = 20;
+    } else if (difficulty === "hard") {
+      this.waitTimer = 8;
+    } else {
+      this.waitTimer = 15;
+    }
+
     this.leaveTimer = 2;
+    this.isVisible = true;
   }
 
   update(events) {
     const deltaSeconds = deltaTime / 1000;
 
-    if (this.state === "WAITING") {
-      this.waitTimer -= deltaSeconds;
-
-      if (this.waitTimer <= 0) {
-        console.log("[Customer] Timed out. Leaving unhappy.");
-        this.state = "LEAVING";
-      }
-    }
-
+    // 第二版 kitchen 负责整体计时与失败判定，
+    // Customer 不再因为 waitTimer 自己超时离开。
     if (this.state === "SERVED") {
       this.leaveTimer -= deltaSeconds;
 
@@ -49,9 +48,20 @@ export class Customer_MVP extends Entity {
   }
 
   markServed() {
-    if (this.state === "WAITING") {
-      this.state = "SERVED";
-    }
+    if (this.state !== "WAITING") return false;
+
+    this.state = "SERVED";
+    this.leaveTimer = 2;
+    return true;
+  }
+
+  reset(order = null, x = 12.2, y = 6.8) {
+    this.order = order;
+    this.state = "WAITING";
+    this.leaveTimer = 2;
+    this.isVisible = true;
+    this.pos.x = x;
+    this.pos.y = y;
   }
 
   draw() {
@@ -81,6 +91,18 @@ export class Customer_MVP extends Entity {
         this.order.recipeId,
         relPos.x + relSize.x / 2,
         relPos.y - 5
+      );
+    }
+
+    if (this.state === "WAITING") {
+      fill(0);
+      noStroke();
+      textSize(10);
+      textAlign(CENTER, TOP);
+      text(
+        Math.ceil(Math.max(0, this.waitTimer)),
+        relPos.x + relSize.x / 2,
+        relPos.y + relSize.y + 2
       );
     }
   }
