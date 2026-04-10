@@ -18,6 +18,7 @@ export class ShooterScene extends Scene {
         super(game);
         this.isGameOver = false;
         this.isRoundWon = false;
+        this.game.model.gameState.time = "Night"
 
         this.rows = [1, 2.5, 4, 5.5, 7];
 

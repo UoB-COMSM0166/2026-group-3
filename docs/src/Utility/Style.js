@@ -11,5 +11,6 @@ export class Style {
         this.textAlign = new Vector2();
         this.textSize;
         this.textStyle;
+        this.rounding;
     }
 }

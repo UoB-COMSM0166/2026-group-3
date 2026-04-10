@@ -27,6 +27,7 @@ export class View {
         style.textAlign.y = CENTER;
         style.textSize = this.textSize;
         style.textStyle = NORMAL;
+        style.rounding = 5;
     }
 
     calculateWindowSize() {

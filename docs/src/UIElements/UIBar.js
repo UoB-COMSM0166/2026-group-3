@@ -61,7 +61,7 @@ export class UIBar extends Menu {
             dropCount.drop = drops[i];
 
             dropCount.update = function(events) {
-                this.label = this.game.model.gameState.inventory.get(this.drop);
+                this.label = str(this.game.model.gameState.inventory.get(this.drop))+" -";
             }
 
             this.elements.push(dropCount);
@@ -70,6 +70,7 @@ export class UIBar extends Menu {
                                             new Vector2("Left", "Top"),
                                             new Vector2(0,10));
             dropLabel.anchor.x = dropCount;
+            dropLabel.offset.x = -32
             dropLabel.expandToFit = new Vector2(true, true);
             dropLabel.image = drops[i];
             this.elements.push(dropLabel);

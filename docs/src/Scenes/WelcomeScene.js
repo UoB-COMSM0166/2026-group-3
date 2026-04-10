@@ -24,6 +24,7 @@ export class WelcomeScene extends Scene {
     this.title.style.textSize = 48;
     this.title.style.textColor = "#00FF00";
     this.title.style.textAlign = { x: "center", y: "center" };
+    this.title.textSizeOverride = true;
 
     //Main Menu Buttons 
     this.playButton = new Button(game, "Play", new Vector2(200, 50), new Vector2("Centre", "Top"), new Vector2(0, 320));
