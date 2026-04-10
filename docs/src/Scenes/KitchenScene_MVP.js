@@ -645,7 +645,7 @@ export class KitchenScene_MVP extends Scene {
     const totalW = 760;
     const totalH = 320;
     const baseX = width / 2 - totalW / 2;
-    const baseY = 90;
+    const baseY = 110;
 
     fill(15, 18, 28, 170);
     noStroke();
@@ -663,39 +663,46 @@ export class KitchenScene_MVP extends Scene {
   }
 
   _drawMainHint() {
-    push();
-    fill(255, 255, 230);
-    stroke(0);
-    rect(20, 540, 420, 125, 8);
+  push();
 
-    fill(0);
-    noStroke();
-    textSize(14);
-    textAlign(LEFT, TOP);
+  const barX = 250;
+  const barY = 12;
+  const boxW = 120;
+  const boxH = 34;
+  const gap = 12;
 
-    if (this.phase === "PLANNING") {
-      text("PLANNING PHASE", 30, 550);
-      textSize(12);
-      text("1~5 = plan dishes", 30, 574);
-      text("Click +/- to adjust plan", 30, 594);
-      text("Backspace = clear, P = start cooking", 30, 614);
-      text("N = skip kitchen and continue", 30, 634);
-    } else if (this.phase === "PRODUCTION") {
-      text("COOK + SERVE PHASE", 30, 550);
-      textSize(12);
-      text(`Order: ${this.currentOrder ? this.currentOrder.recipeId : "None"}`, 30, 574);
-      text(`Kitchen Timer: ${Math.ceil(this.kitchenTimer)}s`, 30, 594);
-      text("E = cook / collect / serve when in range", 30, 614);
-    } else {
-      text("ENDING...", 30, 550);
-      textSize(12);
-      text(this.success ? "Night success" : "Night failed", 30, 574);
-      text("Returning to Shooter...", 30, 594);
-    }
+  const hintX = barX + 3 * (boxW + gap) + 18;
+  const hintY = barY;
+  const hintW = Math.min(540, width - hintX - 270);
+  const hintH = 34;
 
-    pop();
+  fill(255, 244, 170, 235);
+  stroke(70, 60, 20);
+  strokeWeight(1.2);
+  rect(hintX, hintY, hintW, hintH, 8);
+
+  fill(35);
+  noStroke();
+  textAlign(LEFT, CENTER);
+  textSize(12);
+
+  let hintText = "";
+
+  if (this.phase === "PLANNING") {
+    hintText = "1~5 plan  •  Click +/- adjust  •  Backspace clear  •  P start  •  N skip";
+  } else if (this.phase === "PRODUCTION") {
+    hintText = `Order: ${this.currentOrder ? this.currentOrder.recipeId : "None"}  •  Timer: ${Math.ceil(this.kitchenTimer)}s  •  E cook / collect / serve`;
+  } else {
+    hintText = this.success
+      ? "Night success  •  Returning to Shooter..."
+      : "Night failed  •  Returning to Shooter...";
   }
 
+  text(hintText, hintX + 12, hintY + hintH / 2);
+
+  pop();
+}
+  
   _drawPanelTabs() {
     push();
 
@@ -1015,6 +1022,73 @@ _drawInventoryPanel() {
 
     pop();
   }
+
+  _drawStationCountdowns() {
+  if (this.phase !== "PRODUCTION") return;
+
+  const relevantTasks = this.productionManager
+    .getTasks()
+    .filter(task => task.status === "COOKING" || task.status === "DONE");
+
+  if (relevantTasks.length === 0) return;
+
+  for (const task of relevantTasks) {
+    const recipe = this.menu.getRecipe(task.recipeId);
+    if (!recipe) continue;
+
+    // 兼容不同 KitchenStation_MVP 写法
+    const station = this.stations.find(
+      s =>
+        s.type === recipe.stationType ||
+        s.stationType === recipe.stationType ||
+        s.kind === recipe.stationType
+    );
+
+    if (!station) continue;
+
+    const relPos = this.game.view.localToScreen(station.pos);
+    const relSize = this.game.view.localToScreen(station.size);
+
+    let labelText = "";
+    let badgeColor;
+
+    if (task.status === "COOKING") {
+      labelText = `Cooking ${this._getCookCountdownText(task)}`;
+      badgeColor = color(255, 244, 170, 235);
+    } else if (task.status === "DONE") {
+      labelText = "Ready - Pick up";
+      badgeColor =
+        frameCount % 30 < 15
+          ? color(190, 255, 190, 235)
+          : color(165, 245, 165, 235);
+    } else {
+      continue;
+    }
+
+    push();
+
+    // 直接画在 station 大盒子内部顶部
+    const badgeMarginX = 10;
+    const badgeMarginY = 8;
+    const badgeX = relPos.x + badgeMarginX;
+    const badgeY = relPos.y + badgeMarginY;
+    const badgeW = Math.max(80, relSize.x - badgeMarginX * 2);
+    const badgeH = 26;
+
+    fill(badgeColor);
+    stroke(60, 60, 60);
+    strokeWeight(1.2);
+    rect(badgeX, badgeY, badgeW, badgeH, 6);
+
+    fill(35);
+    noStroke();
+    textAlign(CENTER, CENTER);
+    textSize(13);
+    text(labelText, badgeX + badgeW / 2, badgeY + badgeH / 2);
+
+    pop();
+  }
+}
 
   _getCookCountdownText(task) {
     // 只读UI推断，不改你基础逻辑
