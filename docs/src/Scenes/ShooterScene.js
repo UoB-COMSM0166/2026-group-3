@@ -12,6 +12,7 @@ import { Fence } from "../Entities/Fence.js";
 import { TurretManager } from "../Entities/TurretManager.js";
 import { GameState } from "../Core/GameState.js";
 import {UIBar} from "../UIElements/UIBar.js"
+import { ShopMenu } from "../UIElements/ShopMenu.js";
 
 export class ShooterScene extends Scene {
     constructor(game) {
@@ -46,9 +47,9 @@ export class ShooterScene extends Scene {
 
 
         let startButton = new Button(game, "Start Wave", new Vector2(250, 60), new Vector2("Centre", "Bottom"));
-        startButton.style.fillColor = color(220,60,60);
-        startButton.style.textColor = color(0,0,0);
-        startButton.style.textSize = 30;
+        startButton.expandToFit = new Vector2(true, true)
+        startButton.textSizeOverride = true;
+        startButton.style.textSize = 40;
         startButton.id = "Start Button";
         startButton.onClick = function() {
             if (!this.game.model.scene.zombieManager.loaded) {return;}
@@ -64,92 +65,12 @@ export class ShooterScene extends Scene {
 
         this.addUIElement(fenceHealth);
 
-
-        let shop = new Menu(game, new Vector2(370,210), new Vector2("Centre","Centre"));
-        shop.style.fillColor = color(100);
+        let shop = new ShopMenu(game, this);
         shop.isVisible = false;
-        shop.id = "shop";
-        shop.offset.y = -200;
+        shop.offset.y = 100;
+        shop.offset.x = 100;
         this.addUIElement(shop);
 
-
-        //Shop Setup
-        let shopWeapons = ["Rifle", "Machine Gun", "The Big Gun"];
-        
-        for (let i=0; i<shopWeapons.length; i++){
-            let weapon = this.weaponManager.getWeapon(shopWeapons[i])
-            
-            let weaponLabel = new Label(game, weapon.name, new Vector2(200, 30), new Vector2("Left", "Top"));
-            weaponLabel.offset.x = 20;
-            weaponLabel.offset.y = 30+40*i;
-            weaponLabel.parent = shop;
-            shop.elements.push(weaponLabel);
-
-            let weaponPrice = new Label(game, weapon.price, new Vector2(70, 30), new Vector2("Left", "Top"));
-            weaponPrice.offset.x = 220;
-            weaponPrice.offset.y = 30+40*i;
-            weaponPrice.parent = shop;
-            shop.elements.push(weaponPrice);
-            
-            let weaponBuyButton = new Button(game, "BUY", new Vector2(50, 30), new Vector2("Left", "Top"));
-            weaponBuyButton.offset.x = 290;
-            weaponBuyButton.offset.y = 30+40*i;
-            weaponBuyButton.parent = shop;
-            weaponBuyButton.weapon = weapon;
-
-            weaponBuyButton.onClick = async function() {
-
-                if (this.game.model.gameState.coins >= weapon.price){
-                    this.game.model.gameState.coins -= weapon.price
-                    this.game.model.scene.getEntity("player").weapon = this.weapon;
-                    this.game.model.gameState.playerWeapon = this.weapon.name;
-                    this.game.model.scene.getUIElement("shop").isVisible = false;
-                    await this.game.soundManager.playSFX("buy");
-                } else {
-                    console.log("You can't afford "+this.weapon.name);
-                }
-            };
-
-            shop.elements.push(weaponBuyButton);
-        }
-        let weaponClose = new Button(game, "X", new Vector2(30, 30), new Vector2("Right", "Top"));
-        weaponClose.parent = shop; 
-        weaponClose.onClick = function() {
-            this.game.model.scene.getUIElement("shop").isVisible = false;
-        };
-
-        shop.elements.push(weaponClose);
-
-        //Turret Purchase Button Options
-        let turretLabel = new Label(game, "Turret", new Vector2(200, 30), new Vector2("Left", "Top"));
-        turretLabel.offset.x = 20;
-        turretLabel.offset.y = 150;
-        turretLabel.parent = shop;
-        shop.elements.push(turretLabel);
-
-        let turretPrice = new Label(game, this.turretManager.turretPrice, new Vector2(70, 30), new Vector2("Left", "Top"));
-        turretPrice.offset.x = 220;
-        turretPrice.offset.y = 150;
-        turretPrice.parent = shop;
-        shop.elements.push(turretPrice);
-
-        let turretBuyButton = new Button(game, "BUY", new Vector2(50, 30), new Vector2("Left", "Top"));
-        turretBuyButton.offset.x = 290;
-        turretBuyButton.offset.y = 150;
-        turretBuyButton.parent = shop;
-        turretBuyButton.weapon = weapon;
-        turretBuyButton.onClick = async function() {
-            if (this.game.model.gameState.coins >= this.game.model.scene.turretManager.turretPrice){
-                this.game.model.scene.getUIElement("shop").isVisible = false;
-                this.game.model.scene.turretManager.buyingTurret = true;
-                await this.game.soundManager.playSFX("buy");
-            } else {
-                console.log("You can't afford Turret");
-            }
-        };
-
-        shop.elements.push(turretBuyButton);
-        
     }
 
     startWave(){
@@ -283,19 +204,19 @@ export class ShooterScene extends Scene {
     }*/
 
     async roundWon(){
-    this.isRoundWon = true;
-    this.getUIElement("shop").isVisible = false;
+        this.isRoundWon = true;
+        this.getUIElement("shop").isVisible = false;
 
-    //Continue Button
-    this.game.model.gameState.phase++;
+        //Continue Button
+        this.game.model.gameState.phase++;
 
-    //Win sound 
-    await this.game.soundManager.playSFX("win");
+        //Win sound 
+        await this.game.soundManager.playSFX("win");
 
-    console.log("[Shooter] → Kitchen");
+        console.log("[Shooter] → Kitchen");
 
-    //continue to kitchen(CORE FUNCTIONALITY)
-    this.game.model.scene = new KitchenScene_MVP(this.game);
+        //continue to kitchen(CORE FUNCTIONALITY)
+        this.game.model.scene = new KitchenScene_MVP(this.game);
     }
 
 

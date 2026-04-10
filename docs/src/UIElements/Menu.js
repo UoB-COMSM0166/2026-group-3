@@ -16,8 +16,9 @@ export class Menu extends UIElement {
 
         fill(this.style.fillColor);
         stroke(this.style.outline);
+        strokeWeight(this.style.outlineWidth);
 
-        rect(this.pos.x, this.pos.y, this.size.x, this.size.y);
+        rect(this.pos.x, this.pos.y, this.size.x, this.size.y, this.style.rounding);
 
         for (let element of this.elements){
             element.draw();

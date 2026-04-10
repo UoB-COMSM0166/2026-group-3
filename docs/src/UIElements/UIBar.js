@@ -11,7 +11,6 @@ import {PhaseProgressBar} from "./PhaseProgressBar.js";
 export class UIBar extends Menu {
     constructor(game, scene){
         super(game, new Vector2(), new Vector2("Left","Top"))
-        this.game = game;
         this.scene = scene;
 
         this.style.fillColor = color(200);

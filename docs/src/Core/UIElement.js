@@ -41,6 +41,9 @@ export class UIElement {
                 pos.x = parentSize.x - this.anchor.x.pos.x - this.anchor.x.size.x
             } else if (this.sticky.x == "Right"){
                 pos.x = this.anchor.x.pos.x - this.size.x + this.offset.x
+            } else {
+                pos.x = this.anchor.x.pos.x + this.anchor.x.size.x + this.offset.x;
+                console.log("Unknown Sticky Value: ", this.sticky.y);
             }
         }
 
@@ -57,12 +60,15 @@ export class UIElement {
             }
         } else {
             this.anchor.y.resize()
-            if (this.sticky.y == "Left"){
+            if (this.sticky.y == "Top"){
                 pos.y = this.anchor.y.pos.y + this.anchor.y.size.y + this.offset.y;
             } else if (this.sticky.y == "Centre"){
                 pos.y = parentSize.y - this.anchor.y.pos.y - this.anchor.y.size.y
-            } else if (this.sticky.y == "Right"){
+            } else if (this.sticky.y == "Bottom"){
                 pos.y = this.anchor.y.pos.y - this.size.y + this.offset.y
+            } else {
+                pos.y = this.anchor.y.pos.y + this.anchor.y.size.y + this.offset.y;
+                console.log("Unknown Sticky Value: ", this.sticky.y);
             }
         }
 
