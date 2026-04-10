@@ -75,7 +75,8 @@ export class ZombieEntity extends Entity {
             this.game.model.gameState.phaseProgress = 1- (zombieManager.waveStrength / zombieManager.totalStrength)
 
             for (let drop of this.drops){
-                this.game.model.gameState.inventory.add(drop);
+                const itemKey = this._mapDropToInventoryKey(drop);
+                this.game.model.gameState.inventory.add(itemKey);
             }
 
 
