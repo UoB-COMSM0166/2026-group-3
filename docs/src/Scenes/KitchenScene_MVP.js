@@ -365,7 +365,7 @@ export class KitchenScene_MVP extends Scene {
     }
 
     this._drawInventoryPanel();
-    this._drawProductionStatusPanel();
+    this._drawStationCountdowns();
     this._drawCookingCountdownPanel();
     this._drawMainHint();
 
@@ -1012,48 +1012,6 @@ _drawInventoryPanel() {
     text(`Order: ${orderText}`, x + 12, y + 62);
     text(`Remaining Orders: ${queued}`, x + 12, y + 84);
     text(`Holding: ${heldDish}`, x + 12, y + 106);
-
-    pop();
-  }
-
-  _drawCookingCountdownPanel() {
-    if (this.phase !== "PRODUCTION") return;
-
-    const cookingTasks = this.productionManager
-      .getTasks()
-      .filter(task => task.status === "COOKING");
-
-    push();
-
-    const x = width - 290;
-    const y = 350;
-    const w = 260;
-    const h = Math.max(88, 52 + cookingTasks.length * 24);
-
-    fill(235, 255, 240, 235);
-    stroke(0);
-    rect(x, y, w, h, 10);
-
-    fill(0);
-    noStroke();
-    textAlign(LEFT, TOP);
-    textSize(15);
-    text("COOKING", x + 12, y + 12);
-
-    textSize(12);
-
-    if (cookingTasks.length === 0) {
-      text("No dish is currently cooking", x + 12, y + 42);
-      pop();
-      return;
-    }
-
-    let lineY = y + 42;
-    for (const task of cookingTasks) {
-      const countdownText = this._getCookCountdownText(task);
-      text(`${task.recipeId}: ${countdownText}`, x + 12, lineY);
-      lineY += 22;
-    }
 
     pop();
   }
