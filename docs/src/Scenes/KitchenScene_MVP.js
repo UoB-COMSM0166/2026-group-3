@@ -217,14 +217,13 @@ export class KitchenScene_MVP extends Scene {
         if (event.key === "5") this.taskList.increase("ultimate_feast", 1);
         if (event.key === "Backspace") this.taskList.clear();
 
-        // Skip kitchen and continue to next phase
-        if (event.key === "n" || event.key === "N") {
-          this.success = true;
-          this.phase = "END";
-          this.endTimer = 0.6;
-          this.showMessage("Skipped kitchen");
-          return;
-        }
+          if (event.key === "n" || event.key === "N") {
+            this.success = true;
+    this.phase = "END";
+    this.endTimer = 0.6;
+    this.showMessage("Skipped kitchen");
+    return;
+  }
 
         if (event.type === "click") {
           const clickedButton = this._getClickedMenuButton(mouseX, mouseY);
@@ -365,8 +364,8 @@ export class KitchenScene_MVP extends Scene {
     }
 
     this._drawInventoryPanel();
+    this._drawProductionStatusPanel();
     this._drawStationCountdowns();
-    this._drawCookingCountdownPanel();
     this._drawMainHint();
 
     if (this.message) {
@@ -702,7 +701,7 @@ export class KitchenScene_MVP extends Scene {
 
   pop();
 }
-  
+
   _drawPanelTabs() {
     push();
 
@@ -1023,7 +1022,7 @@ _drawInventoryPanel() {
     pop();
   }
 
-  _drawStationCountdowns() {
+_drawStationCountdowns() {
   if (this.phase !== "PRODUCTION") return;
 
   const relevantTasks = this.productionManager
