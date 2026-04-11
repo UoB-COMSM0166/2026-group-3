@@ -10,8 +10,8 @@ import { SettingsScene } from "../Scenes/SettingsScene.js";
 export class WelcomeScene extends Scene {
   constructor(game) {
     super(game);
-    this.showSettings = false; 
-    this.settingsOverlay = new SettingsScene(this.game);
+    this.settings = new SettingsScene(this.game);
+    this.settings.isVisible = false;
 
     // Title
     this.title = new Label(
@@ -27,25 +27,25 @@ export class WelcomeScene extends Scene {
     this.title.textSizeOverride = true;
 
     //Main Menu Buttons 
-    this.playButton = new Button(game, "Play", new Vector2(200, 50), new Vector2("Centre", "Top"), new Vector2(0, 320));
-    this.instructionsButton = new Button(game, "Instructions", new Vector2(200, 50), new Vector2("Centre", "Top"), new Vector2(0, 390));
-    this.settingsButton = new Button(game, "Settings", new Vector2(200, 50), new Vector2("Centre", "Top"), new Vector2(0, 460));
-    this.quitButton = new Button(game, "Quit", new Vector2(200, 50), new Vector2("Centre", "Top"), new Vector2(0, 530));
+    this.playButton = new Button(game, "Play", new Vector2(220, 50), new Vector2("Centre", "Top"), new Vector2(0, 320));
+    this.instructionsButton = new Button(game, "Instructions", new Vector2(220, 50), new Vector2("Centre", "Top"), new Vector2(0, 390));
+    this.settingsButton = new Button(game, "Settings", new Vector2(220, 50), new Vector2("Centre", "Top"), new Vector2(0, 460));
+    this.quitButton = new Button(game, "Quit", new Vector2(220, 50), new Vector2("Centre", "Top"), new Vector2(0, 530));
 
     // Test Kitchen Button (temporary debug access)
     this.testKitchenButton = new Button(
       game,
       "Test Kitchen",
-      new Vector2(200, 50),
+      new Vector2(220, 50),
       new Vector2("Centre", "Top"),
       new Vector2(0, 600)
     );
 
     //Difficulty Buttons
-    this.easyButton = new Button(game, "Easy", new Vector2(200, 50), new Vector2("Centre", "Top"), new Vector2(0, 320));
-    this.mediumButton = new Button(game, "Medium", new Vector2(200, 50), new Vector2("Centre", "Top"), new Vector2(0, 390));
-    this.hardButton = new Button(game, "Hard", new Vector2(200, 50), new Vector2("Centre", "Top"), new Vector2(0, 460));
-    this.backButton = new Button(game, "Back", new Vector2(200, 50), new Vector2("Centre", "Top"), new Vector2(0, 530));
+    this.easyButton = new Button(game, "Easy", new Vector2(220, 50), new Vector2("Centre", "Top"), new Vector2(0, 320));
+    this.mediumButton = new Button(game, "Medium", new Vector2(220, 50), new Vector2("Centre", "Top"), new Vector2(0, 390));
+    this.hardButton = new Button(game, "Hard", new Vector2(220, 50), new Vector2("Centre", "Top"), new Vector2(0, 460));
+    this.backButton = new Button(game, "Back", new Vector2(220, 50), new Vector2("Centre", "Top"), new Vector2(0, 530));
 
     //Hide difficulty buttons initially
     [this.easyButton, this.mediumButton, this.hardButton, this.backButton].forEach(b => b.isVisible = false);
@@ -77,18 +77,10 @@ export class WelcomeScene extends Scene {
     };
 
     // Settings Button: Go to settings
-    this.settingsButton.onClick = () => {
-      this.showSettings = true;
+    this.settingsButton.onClick = function(){
+      this.game.model.scene.settings.isVisible = true;
     };
 
-    // When settings off
-    this.settingsOverlay.whenClose = () => {
-    
-    this.showSettings = false;
-
-    // reset: ui elements reappear when reopening settings
-    this.settingsOverlay.getUIElements().forEach(el => el.isVisible = true);
-  };
 
     // Test Kitchen Button → Directly enter KitchenScene
     this.testKitchenButton.onClick = () => {
@@ -113,43 +105,25 @@ export class WelcomeScene extends Scene {
       this.easyButton,
       this.mediumButton,
       this.hardButton,
-      this.backButton
+      this.backButton,
+      this.settings
     ].forEach(el => this.addUIElement(el));
   }
 
+  draw() {
+    super.draw();
 
-update(events) {
-  if (this.showSettings) {
-  
-    this.settingsOverlay.update(events); 
-    
-   // Disable menu buttons
-    return; 
+    if (this.settings.isVisible) {
+      push();
+
+      // Grey overlay/brightness effect
+      fill(0, 50);
+      rect(0, 0, width, height); 
+
+      this.settings.draw(); 
+      pop();
+    }
   }
-
-  super.update(events);
-}
-
-   draw() {
-  super.draw();
-
-  if (this.showSettings) {
-    push();
-
-    // Grey overlay/brightness effect
-    fill(0, 100);
-    rect(0, 0, width, height); 
-
-    // Settings tab
-    rectMode(CENTER);
-    fill(255);
-    rect(width/2, height/2 , 500, 500, 15); 
-
-
-    this.settingsOverlay.draw(); 
-    pop();
-  }
-}
 
   //Start Shooter Scene 
   startGame(difficulty) {

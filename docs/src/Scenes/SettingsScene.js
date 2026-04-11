@@ -1,42 +1,53 @@
-import { Scene } from "../Core/Scene.js";
+import { Menu } from "../UIElements/Menu.js";
 import { Button } from "../UIElements/Button.js";
 import { Label } from "../UIElements/Label.js";
 import { Slider } from "../UIElements/Slider.js";
 import { Vector2 } from "../Utility/Vector2.js";
 
-export class SettingsScene extends Scene {
+export class SettingsScene extends Menu {
   constructor(game) {
-    super(game);
+    super(game, new Vector2(420,300));
+
+    this.style.fillColor = color(150);
+    this.style.outlineWidth = 3
+    this.id = "shop";
 
     // Settings title
     this.title = new Label(
       game,
       "SETTINGS",
-      new Vector2(200, 80),
-      new Vector2("Centre", "Centre"),
-      new Vector2(100, -210) 
+      new Vector2(420, 50),
+      new Vector2("Centre", "Top"),
+      new Vector2() 
     );
     this.title.style.textSize = 30;
+    this.title.textSizeOverride = true;
     this.title.style.textAlign = { x: "center", y: "center" };
+    this.title.parent = this;
 
     // SFX
     this.sfxSubTitle = new Label(
       game,
       "SFX",
-      new Vector2(110, 30),
-      new Vector2("Centre", "Centre"),
-      new Vector2(-60, -90) 
+      new Vector2(180, 30),
+      new Vector2("Left", "Top"),
+      new Vector2(10,30) 
     );
-    this.sfxSubTitle.style.textSize = 15;
+    this.sfxSubTitle.anchor.y = this.title
+    this.sfxSubTitle.parent = this;
+    this.sfxSubTitle.expandToFit.y = true;
 
     // SFX slider
     this.sfxSlider = new Slider(
       game,0, 1,
       this.game.soundManager.sfxVol,
-      new Vector2(200, 40),
-      new Vector2("Centre", "Centre"),
-      new Vector2(90, -100) 
+      new Vector2(200, 30),
+      new Vector2("Left", "Top"),
+      new Vector2(10, 30) 
     );
+    this.sfxSlider.parent = this
+    this.sfxSlider.anchor.x = this.sfxSubTitle
+    this.sfxSlider.anchor.y = this.title
 
     this.sfxSlider.onClick = (value) => {
       let amp = Math.sin((value * Math.PI) / 2); // smoother sound curve
@@ -47,20 +58,25 @@ export class SettingsScene extends Scene {
     this.musicSubTitle = new Label(
       game,
       "Music",
-      new Vector2(110, 30),
-      new Vector2("Centre", "Centre"),
-      new Vector2(-60, -40) 
+      new Vector2(180, 30),
+      new Vector2("Left", "Top"),
+      new Vector2(10, 80) 
     );
-    this.musicSubTitle.style.textSize = 15;
+    this.musicSubTitle.anchor.y = this.title
+    this.musicSubTitle.parent = this;
+    this.musicSubTitle.expandToFit.y = true;
 
     // Music slider
     this.musicSlider = new Slider(
       game, 0, 1,
       this.game.soundManager.musicVol,
-      new Vector2(200, 40),
-      new Vector2("Centre", "Centre"),
-      new Vector2(90, -50) 
+      new Vector2(200, 30),
+      new Vector2("Left", "Top"),
+      new Vector2(10, 80) 
     );
+    this.musicSlider.parent = this
+    this.musicSlider.anchor.x = this.musicSubTitle
+    this.musicSlider.anchor.y = this.title
 
     this.musicSlider.onClick = (value) => {
       const msliderVal = value;
@@ -71,20 +87,26 @@ export class SettingsScene extends Scene {
     // Text Resize
     this.textResizeSubTitle = new Label(
       game,
-      "Text Resize",
-      new Vector2(110, 30),
-      new Vector2("Centre", "Centre"),
-      new Vector2(-60, 60)
+      "Text Size",
+      new Vector2(180, 30),
+      new Vector2("Left", "Top"),
+      new Vector2(10, 130)
     );
-    this.textResizeSubTitle.style.textSize = 13;
+    this.textResizeSubTitle.anchor.y = this.title
+    this.textResizeSubTitle.parent = this;
+    this.textResizeSubTitle.expandToFit.y = true;
 
     // Text Resize slider
     this.textResizeSlider = new Slider(
       game, 10, 30, this.game.view.textSize,
-      new Vector2(200, 40),
-      new Vector2("Centre", "Centre"),
-      new Vector2(90, 47) 
+      new Vector2(200, 30),
+      new Vector2("Left", "Top"),
+      new Vector2(10, 130) 
     );
+    this.textResizeSlider.parent = this
+    this.textResizeSlider.anchor.x = this.textResizeSubTitle
+    this.textResizeSlider.anchor.y = this.title
+
     this.textResizeSlider.onClick = (value) => {
       this.game.view.textSize = value;
       this.game.view.resize();
@@ -94,19 +116,24 @@ export class SettingsScene extends Scene {
     this.brightnessSubTitle = new Label(
       game,
       "Brightness",
-      new Vector2(110, 30),
-      new Vector2("Centre", "Centre"),
-      new Vector2(-60, 110) 
+      new Vector2(180, 30),
+      new Vector2("Left", "Top"),
+      new Vector2(10, 180) 
     );
-    this.brightnessSubTitle.style.textSize = 13;
+    this.brightnessSubTitle.anchor.y = this.title
+    this.brightnessSubTitle.parent = this;
+    this.brightnessSubTitle.expandToFit.y = true;
 
     // Brightness slider
     this.brightnessSlider = new Slider(
-      game, 0, 1, 0.5,
-      new Vector2(200, 40),
-      new Vector2("Centre", "Centre"),
-      new Vector2(90, 98) 
+      game, 0, 1, 1,
+      new Vector2(200, 30),
+      new Vector2("Left", "Top"),
+      new Vector2(10, 180) 
     );
+    this.brightnessSlider.parent = this
+    this.brightnessSlider.anchor.x = this.brightnessSubTitle
+    this.brightnessSlider.anchor.y = this.title
 
     this.brightnessSlider.onClick = (value) => {
       this.game.brightness = value;
@@ -115,20 +142,19 @@ export class SettingsScene extends Scene {
     // Back button
     this.backButton = new Button(
       game,
-      "Back",
-      new Vector2(100, 35),
-      new Vector2("Left", "Top"),
-      new Vector2(20, 20)
+      "X",
+      new Vector2(50, 50),
+      new Vector2("Right", "Top"),
+      new Vector2()
     );
+    this.backButton.parent = this;
+    this.backButton.style.textSize = 30;
+    this.backButton.textSizeOverride = true;
 
-    this.backButton.onClick = () => {
+    this.backButton.onClick = function() {
       // Hide all SettingsScene UI elements
-      this.getUIElements().forEach((el) => (el.isVisible = false));
-
-      this.whenClose();
+      this.parent.isVisible = false;
     };
-
-    this.showSettings = false;
 
     // Add elements
     [
@@ -142,7 +168,7 @@ export class SettingsScene extends Scene {
       this.brightnessSubTitle,
       this.brightnessSlider,
       this.backButton,
-    ].forEach((el) => this.addUIElement(el));
+    ].forEach((el) => this.elements.push(el));
   }
 }
 
