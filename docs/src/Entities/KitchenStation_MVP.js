@@ -50,34 +50,33 @@ export class KitchenStation_MVP extends Entity {
     return true;
   }
 
+  _getStationLabel() {
+    if (this.stationType === "pot") return "Ramen";
+    if (this.stationType === "grill") return "BBQ";
+    if (this.stationType === "oven") return "Burger";
+    if (this.stationType === "prep") return "Fried";
+    if (this.stationType === "special") return "Keg";
+    return this.stationType;
+  }
+
+  _getStationColor() {
+    if (this.stationType === "grill") return color(255, 180, 120);
+    if (this.stationType === "pot") return color(120, 180, 255);
+    if (this.stationType === "oven") return color(255, 220, 120);
+    if (this.stationType === "prep") return color(180, 255, 180);
+    if (this.stationType === "special") return color(220, 160, 255);
+    return color(120, 200, 160);
+  }
+
   draw() {
     const relPos = this.game.view.localToScreen(this.pos);
     const relSize = this.game.view.localToScreen(this.size);
 
     stroke(0);
-
-    if (this.stationType === "grill") {
-      fill(255, 180, 120);
-    } else if (this.stationType === "pot") {
-      fill(120, 180, 255);
-    } else if (this.stationType === "oven") {
-      fill(255, 220, 120);
-    } else if (this.stationType === "prep") {
-      fill(180, 255, 180);
-    } else if (this.stationType === "special") {
-      fill(220, 160, 255);
-    } else {
-      fill(120, 200, 160);
-    }
-
+    fill(this._getStationColor());
     rect(relPos.x, relPos.y, relSize.x, relSize.y);
 
-    let label = this.stationType;
-    if (this.stationType === "grill") label = "Burger";
-    else if (this.stationType === "pot") label = "Stew";
-    else if (this.stationType === "oven") label = "BBQ";
-    else if (this.stationType === "prep") label = "Soup";
-    else if (this.stationType === "special") label = "Feast";
+    const label = this._getStationLabel();
 
     fill(0);
     noStroke();
