@@ -19,22 +19,21 @@ export class KitchenScene_MVP extends Scene {
 
     console.log("KitchenScene_MVP loaded");
 
-    // ===== Shared game state =====
-    // Kitchen now uses the same global state as Shooter
+    // Shared game state
     this.state = this.game.model.gameState;
     this.menu = new MenuData();
 
-    // ===== Added teammate change =====
+    // Time of day
     this.time = "Night";
 
-    // ===== Core managers kept from old system =====
+    // Core managers
     this.taskList = new TaskList();
     this.productionManager = new ProductionManager(this.game);
 
-    // ===== Main phase =====
+    // Main phase
     this.phase = "PLANNING"; // PLANNING | PRODUCTION | END
 
-    // ===== Global kitchen timer =====
+    // Global kitchen timer
     const difficulty = this.game.model.difficulty || "normal";
     if (difficulty === "easy") {
       this.kitchenTimeLimit = 75;
@@ -46,41 +45,53 @@ export class KitchenScene_MVP extends Scene {
     this.kitchenTimer = this.kitchenTimeLimit;
     this.timerStarted = false;
 
-    // ===== Order flow =====
+    // Order flow
     this.orderQueue = [];
     this.currentOrder = null;
     this.success = false;
     this.endTimer = 2;
 
-    // ===== Logging =====
+    // Logging
     this._loggedDoneTaskIds = new Set();
 
-    // ===== Message UI =====
+    // Message UI
     this.message = "";
     this.messageTimer = 0;
 
-    // ===== UI panel states =====
-    // Planning阶段默认打开，用户一进来就能看见怎么玩
+    // Planning UI state
     this.isMenuOpen = true;
     this.isTaskListOpen = true;
 
-    // ===== UI hitboxes =====
+    // UI hitboxes
     this.menuButtons = [];
-    this.menuHoverZones = [];
+    this.menuCardZones = [];
     this.menuCloseButton = null;
     this.taskCloseButton = null;
     this.menuOpenTab = null;
     this.taskOpenTab = null;
 
-    // ===== UI layout helpers =====
+    // UI layout helpers
     this.planningUIAutoVisible = true;
 
-    // ===== Player =====
+    // Pending dish editor state
+    this.pendingRecipeId = "rotten_burger";
+    this.pendingQuantity = 0;
+
+    // Fixed placeholder descriptions
+    this.recipeDescriptions = {
+      rotten_burger: "Description coming soon.",
+      toxic_stew: "Description coming soon.",
+      bone_bbq: "Description coming soon.",
+      mutant_soup: "Description coming soon.",
+      ultimate_feast: "Description coming soon.",
+    };
+
+    // Player
     this.player = new PlayerChef_MVP(game);
     this.player.pos = new Vector2(6.2, 7.0);
     this.player.size = new Vector2(0.7, 0.7);
 
-    // ===== Kitchen Stations =====
+    // Kitchen stations
     this.stations = [];
 
     const stationSize = new Vector2(2.0, 1.2);
@@ -88,13 +99,7 @@ export class KitchenScene_MVP extends Scene {
     const startY = 0.8;
     const verticalSpacing = 1.6;
 
-    const stationTypes = [
-      "grill",
-      "pot",
-      "oven",
-      "prep",
-      "special"
-    ];
+    const stationTypes = ["grill", "pot", "oven", "prep", "special"];
 
     for (let i = 0; i < 5; i++) {
       const pos = new Vector2(startX, startY + i * verticalSpacing);
@@ -105,27 +110,23 @@ export class KitchenScene_MVP extends Scene {
       this.entities.push(station);
     }
 
-    // ===== Counter =====
+    // Counter
     this.counter = new Counter_MVP(game, new Vector2(8.2, 0.8));
     this.counter.size = new Vector2(1.2, 7.4);
 
-    // ===== Customer =====
+    // Customer
     this.customer = new Customer_MVP(game, new Vector2(12.2, 6.8), null);
     this.customer.isVisible = false;
     this.customer.state = "WAITING";
 
-    // ===== Colliders =====
+    // Colliders
     this.colliders = [
       { pos: new Vector2(0, 0), size: new Vector2(4.8, 9) },
       { pos: this.counter.pos, size: this.counter.size },
     ];
 
-    // ===== Register entities =====
-    this.entities.push(
-      this.player,
-      this.counter,
-      this.customer
-    );
+    // Register entities
+    this.entities.push(this.player, this.counter, this.customer);
 
     console.log("[Kitchen] Current phase:", this.phase);
     console.log("[Kitchen] Difficulty:", difficulty);
@@ -135,7 +136,7 @@ export class KitchenScene_MVP extends Scene {
   update(events) {
     const oldPos = new Vector2(this.player.pos.x, this.player.pos.y);
 
-    // Update entities manually so customer only updates during PRODUCTION/END
+    // Update entities manually so the customer does not update during planning
     for (let entity of this.entities) {
       if (entity === this.customer && this.phase === "PLANNING") {
         continue;
@@ -147,7 +148,7 @@ export class KitchenScene_MVP extends Scene {
       uielement.update(events);
     }
 
-    // Player collision rollback
+    // Roll back player movement on collision
     for (const c of this.colliders) {
       if (this._aabbOverlap(this.player.pos, this.player.size, c.pos, c.size)) {
         this.player.pos.x = oldPos.x;
@@ -163,37 +164,41 @@ export class KitchenScene_MVP extends Scene {
       this.message = "";
     }
 
-    // Planning阶段自动保持显示；进入生产后自动隐藏
+    // Keep planning panels visible during planning
     if (this.phase === "PLANNING" && this.planningUIAutoVisible) {
       this.isMenuOpen = true;
       this.isTaskListOpen = true;
     }
 
+    // Hide planning panels outside planning
     if (this.phase !== "PLANNING") {
       this.isMenuOpen = false;
       this.isTaskListOpen = false;
     }
 
-    // ===== Planning input =====
+    // Input handling
     for (const event of events) {
-      // Panel open/close buttons
+      const mx = event?.x ?? mouseX;
+      const my = event?.y ?? mouseY;
+
+      // Panel open or close buttons
       if (event.type === "click") {
-        if (this._isInside(mouseX, mouseY, this.menuCloseButton)) {
+        if (this._isInside(mx, my, this.menuCloseButton)) {
           this.isMenuOpen = false;
           return;
         }
 
-        if (this._isInside(mouseX, mouseY, this.taskCloseButton)) {
+        if (this._isInside(mx, my, this.taskCloseButton)) {
           this.isTaskListOpen = false;
           return;
         }
 
-        if (this._isInside(mouseX, mouseY, this.menuOpenTab)) {
+        if (this._isInside(mx, my, this.menuOpenTab)) {
           this.isMenuOpen = true;
           return;
         }
 
-        if (this._isInside(mouseX, mouseY, this.taskOpenTab)) {
+        if (this._isInside(mx, my, this.taskOpenTab)) {
           this.isTaskListOpen = true;
           return;
         }
@@ -208,38 +213,65 @@ export class KitchenScene_MVP extends Scene {
         this.isTaskListOpen = !this.isTaskListOpen;
       }
 
-      // ===== PLANNING =====
+      // Planning phase
       if (this.phase === "PLANNING") {
-        if (event.key === "1") this.taskList.increase("rotten_burger", 1);
-        if (event.key === "2") this.taskList.increase("toxic_stew", 1);
-        if (event.key === "3") this.taskList.increase("bone_bbq", 1);
-        if (event.key === "4") this.taskList.increase("mutant_soup", 1);
-        if (event.key === "5") this.taskList.increase("ultimate_feast", 1);
-        if (event.key === "Backspace") this.taskList.clear();
+        if (event.key === "1") this._selectRecipe("rotten_burger");
+        if (event.key === "2") this._selectRecipe("toxic_stew");
+        if (event.key === "3") this._selectRecipe("bone_bbq");
+        if (event.key === "4") this._selectRecipe("mutant_soup");
+        if (event.key === "5") this._selectRecipe("ultimate_feast");
 
-          if (event.key === "n" || event.key === "N") {
-            this.success = true;
-    this.phase = "END";
-    this.endTimer = 0.6;
-    this.showMessage("Skipped kitchen");
-    return;
-  }
+        if (event.key === "=" || event.key === "+") {
+          this._tryIncreasePending();
+        }
+
+        if (event.key === "-" || event.key === "_") {
+          this._decreasePending();
+        }
+
+        if (event.key === "Backspace") {
+          this.taskList.clear();
+          this.pendingQuantity = 0;
+        }
+
+        if (event.key === "Enter") {
+          this._confirmPendingDish();
+        }
+
+        if (event.key === "n" || event.key === "N") {
+          this.success = true;
+          this.phase = "END";
+          this.endTimer = 0.6;
+          this.showMessage("Skipped kitchen");
+          return;
+        }
 
         if (event.type === "click") {
-          const clickedButton = this._getClickedMenuButton(mouseX, mouseY);
+          const clickedButton = this._getClickedMenuButton(mx, my);
+          const clickedCard = this._getClickedMenuCard(mx, my);
+
+          if (clickedCard) {
+            this._selectRecipe(clickedCard.recipeId);
+          }
 
           if (clickedButton) {
+            this._selectRecipe(clickedButton.recipeId);
+
             if (clickedButton.action === "increase") {
-              this.taskList.increase(clickedButton.recipeId, 1);
+              this._tryIncreasePending();
             }
 
             if (clickedButton.action === "decrease") {
-              this.taskList.decrease(clickedButton.recipeId, 1);
+              this._decreasePending();
+            }
+
+            if (clickedButton.action === "confirm") {
+              this._confirmPendingDish();
             }
           }
         }
 
-        // Start kitchen timer and production
+        // Start production
         if (event.key === "p" || event.key === "P") {
           const hasTasks = this._hasAnyPlannedTask();
           const feasible = this.taskList.isFeasible(this.state.inventory, this.menu);
@@ -260,7 +292,6 @@ export class KitchenScene_MVP extends Scene {
           this.timerStarted = true;
           this.kitchenTimer = this.kitchenTimeLimit;
 
-          // 开始后自动关闭规划面板
           this.isMenuOpen = false;
           this.isTaskListOpen = false;
 
@@ -270,25 +301,21 @@ export class KitchenScene_MVP extends Scene {
         }
       }
 
-      // ===== PRODUCTION =====
+      // Production phase
       if (this.phase === "PRODUCTION") {
-        // E key: either cook/collect or serve
         if (event.key === "e" || event.key === "E") {
-          // Try serve first if near counter
           if (this.player.isNear(this.counter)) {
             this._tryServeCurrentOrder();
             continue;
           }
 
-          // Otherwise try station interaction
           this._handleProductionCook();
         }
       }
     }
 
-    // ===== PRODUCTION LOOP =====
+    // Production loop
     if (this.phase === "PRODUCTION") {
-      // Global timer starts here and includes cooking + serving
       if (this.timerStarted) {
         this.kitchenTimer -= deltaTime / 1000;
 
@@ -311,13 +338,10 @@ export class KitchenScene_MVP extends Scene {
         }
       }
 
-      // Keep customer visible during production
       if (this.customer.isVisible && this.currentOrder) {
-        // Show the global kitchen timer under the customer
         this.customer.waitTimer = this.kitchenTimer;
       }
 
-      // After served customer finishes leaving, spawn next order or end
       if (this.customer.isVisible === false && this.currentOrder === null) {
         if (this.orderQueue.length > 0) {
           this._spawnNextCustomerOrder();
@@ -330,7 +354,7 @@ export class KitchenScene_MVP extends Scene {
       }
     }
 
-    // ===== END =====
+    // End phase
     if (this.phase === "END") {
       this.endTimer -= deltaTime / 1000;
 
@@ -348,22 +372,19 @@ export class KitchenScene_MVP extends Scene {
 
     if (this.phase === "PLANNING") {
       this._drawPlanningCenterCards();
-    }
-
-    if (this.phase === "PLANNING") {
       this._drawPanelTabs();
-
-      if (this.isMenuOpen) {
-        this._drawMenuPanel();
-        this._drawMenuHoverCard();
-      }
 
       if (this.isTaskListOpen) {
         this._drawTaskListPanel();
       }
+
+      if (this.isMenuOpen) {
+        this._drawMenuPanel();
+      }
+
+      this._drawDishDetailsPanel();
     }
 
-    this._drawInventoryPanel();
     this._drawProductionStatusPanel();
     this._drawStationCountdowns();
     this._drawMainHint();
@@ -383,7 +404,7 @@ export class KitchenScene_MVP extends Scene {
   }
 
   // =========================================================
-  // PRODUCTION LOGIC
+  // Production logic
   // =========================================================
 
   _buildOrderQueueFromTaskList() {
@@ -396,7 +417,6 @@ export class KitchenScene_MVP extends Scene {
       }
     }
 
-    // Shuffle so order order is not predictable
     for (let i = queue.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [queue[i], queue[j]] = [queue[j], queue[i]];
@@ -429,8 +449,6 @@ export class KitchenScene_MVP extends Scene {
     this.customer.isVisible = true;
     this.customer.pos.x = 12.2;
     this.customer.pos.y = 6.8;
-
-    // Use global kitchen timer as the displayed countdown
     this.customer.waitTimer = this.kitchenTimer;
 
     console.log("[Kitchen] New customer order:", recipe.id);
@@ -442,7 +460,6 @@ export class KitchenScene_MVP extends Scene {
     const recipeId = this.currentOrder.recipeId;
     const tasks = this.productionManager.getTasks();
 
-    // Priority: DONE -> PENDING -> COOKING -> COLLECTED
     let task = tasks.find(t => t.recipeId === recipeId && t.status === "DONE");
     if (task) return task;
 
@@ -549,7 +566,6 @@ export class KitchenScene_MVP extends Scene {
       return;
     }
 
-    // Remove one collected task matching the served dish
     this._removeOneCollectedTask(this.currentOrder.recipeId);
 
     console.log("[Kitchen] Served:", this.currentOrder.recipeId);
@@ -557,7 +573,6 @@ export class KitchenScene_MVP extends Scene {
 
     this.currentOrder = null;
     this.customer.order = null;
-    // Customer_MVP will switch from SERVED -> LEAVING -> invisible by itself
   }
 
   _removeOneCollectedTask(recipeId) {
@@ -572,7 +587,126 @@ export class KitchenScene_MVP extends Scene {
   }
 
   // =========================================================
-  // UI DRAWING
+  // Planning helpers
+  // =========================================================
+
+  _selectRecipe(recipeId) {
+    if (this.pendingRecipeId !== recipeId) {
+      this.pendingRecipeId = recipeId;
+      this.pendingQuantity = 0;
+    }
+  }
+
+  _tryIncreasePending() {
+    if (this._canIncreasePending(this.pendingRecipeId, this.pendingQuantity + 1)) {
+      this.pendingQuantity += 1;
+    } else {
+      this.showMessage("Not enough ingredients for this dish");
+    }
+  }
+
+  _decreasePending() {
+    this.pendingQuantity = Math.max(0, this.pendingQuantity - 1);
+  }
+
+  _confirmPendingDish() {
+    if (!this.pendingRecipeId) return;
+
+    if (this.pendingQuantity <= 0) {
+      this.showMessage("Set a quantity before confirming");
+      return;
+    }
+
+    this.taskList.increase(this.pendingRecipeId, this.pendingQuantity);
+    this.showMessage(`Added ${this.pendingQuantity} ${this._getDisplayName(this.pendingRecipeId)}`);
+    this.pendingQuantity = 0;
+  }
+
+  _canIncreasePending(recipeId, nextPendingQuantity) {
+    const recipe = this.menu.getRecipe(recipeId);
+    if (!recipe) return false;
+
+    const inventoryItems = this.state?.inventory?.items || {};
+    const confirmedRequirements = this.taskList.getTotalRequirements(this.menu);
+
+    for (const [ingredient, perDishNeed] of Object.entries(recipe.requirements)) {
+      const totalHave = inventoryItems[ingredient] || 0;
+      const confirmedUsed = confirmedRequirements[ingredient] || 0;
+      const remainingAfterConfirmed = totalHave - confirmedUsed;
+      const totalPendingNeed = perDishNeed * nextPendingQuantity;
+
+      if (remainingAfterConfirmed < totalPendingNeed) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  _getPlannedMenuEntries() {
+    const tasks = this.taskList.getTasks();
+
+    const orderedRecipeIds = [
+      "rotten_burger",
+      "toxic_stew",
+      "bone_bbq",
+      "mutant_soup",
+      "ultimate_feast"
+    ];
+
+    const result = [];
+
+    for (const recipeId of orderedRecipeIds) {
+      const quantity = tasks[recipeId] || 0;
+      if (quantity > 0) {
+        result.push({ recipeId, quantity });
+      }
+    }
+
+    while (result.length < 5) {
+      result.push(null);
+    }
+
+    return result;
+  }
+
+  _getDisplayName(recipeId) {
+    const recipe = this.menu.getRecipe(recipeId);
+    if (!recipe) return recipeId;
+    return recipe.name || recipeId;
+  }
+
+  _getDescription(recipeId) {
+    return this.recipeDescriptions[recipeId] || "Description coming soon.";
+  }
+
+  _getPendingNeedMap(recipeId, pendingQuantity) {
+    const recipe = this.menu.getRecipe(recipeId);
+    const result = {};
+
+    if (!recipe) return result;
+
+    for (const [ingredient, amount] of Object.entries(recipe.requirements)) {
+      result[ingredient] = amount * pendingQuantity;
+    }
+
+    return result;
+  }
+
+  _getConfirmedRemainingMap() {
+    const inventoryItems = this.state?.inventory?.items || {};
+    const confirmedRequirements = this.taskList.getTotalRequirements(this.menu);
+    const result = {};
+
+    for (const [name, amount] of Object.entries(inventoryItems)) {
+      result[name] = Math.max(0, amount - (confirmedRequirements[name] || 0));
+    }
+
+    return result;
+  }
+
+  // =========================================================
+  // UI drawing
   // =========================================================
 
   _drawTopHUD() {
@@ -641,10 +775,10 @@ export class KitchenScene_MVP extends Scene {
   _drawPlanningCenterCards() {
     push();
 
-    const totalW = 760;
-    const totalH = 320;
+    const totalW = 1030;
+    const totalH = 420;
     const baseX = width / 2 - totalW / 2;
-    const baseY = 110;
+    const baseY = 95;
 
     fill(15, 18, 28, 170);
     noStroke();
@@ -653,54 +787,58 @@ export class KitchenScene_MVP extends Scene {
     fill(255);
     textAlign(CENTER, TOP);
     textSize(22);
-    text("Night Prep", width / 2, baseY + 16);
+    text("Night Prep", width / 2, baseY + 14);
 
     textSize(12);
-    text("Plan dishes first. Then press P to enter cooking.", width / 2, baseY + 48);
+    text(
+      "Use the middle panel to edit quantity. Press Enter to confirm into Today's Menu. Press P to start cooking.",
+      width / 2,
+      baseY + 46
+    );
 
     pop();
   }
 
   _drawMainHint() {
-  push();
+    push();
 
-  const barX = 250;
-  const barY = 12;
-  const boxW = 120;
-  const boxH = 34;
-  const gap = 12;
+    const barX = 250;
+    const barY = 12;
+    const boxW = 120;
+    const boxH = 34;
+    const gap = 12;
 
-  const hintX = barX + 3 * (boxW + gap) + 18;
-  const hintY = barY;
-  const hintW = Math.min(540, width - hintX - 270);
-  const hintH = 34;
+    const hintX = barX + 3 * (boxW + gap) + 18;
+    const hintY = barY;
+    const hintW = Math.min(620, width - hintX - 40);
+    const hintH = 34;
 
-  fill(255, 244, 170, 235);
-  stroke(70, 60, 20);
-  strokeWeight(1.2);
-  rect(hintX, hintY, hintW, hintH, 8);
+    fill(255, 244, 170, 235);
+    stroke(70, 60, 20);
+    strokeWeight(1.2);
+    rect(hintX, hintY, hintW, hintH, 8);
 
-  fill(35);
-  noStroke();
-  textAlign(LEFT, CENTER);
-  textSize(12);
+    fill(35);
+    noStroke();
+    textAlign(LEFT, CENTER);
+    textSize(12);
 
-  let hintText = "";
+    let hintText = "";
 
-  if (this.phase === "PLANNING") {
-    hintText = "1~5 plan  •  Click +/- adjust  •  Backspace clear  •  P start  •  N skip";
-  } else if (this.phase === "PRODUCTION") {
-    hintText = `Order: ${this.currentOrder ? this.currentOrder.recipeId : "None"}  •  Timer: ${Math.ceil(this.kitchenTimer)}s  •  E cook / collect / serve`;
-  } else {
-    hintText = this.success
-      ? "Night success  •  Returning to Shooter..."
-      : "Night failed  •  Returning to Shooter...";
+    if (this.phase === "PLANNING") {
+      hintText = "1~5 select dish  •  +/- edit pending qty  •  Enter confirm  •  Backspace clear all  •  P start  •  N skip";
+    } else if (this.phase === "PRODUCTION") {
+      hintText = `Order: ${this.currentOrder ? this.currentOrder.recipeId : "None"}  •  Timer: ${Math.ceil(this.kitchenTimer)}s  •  E cook / collect / serve`;
+    } else {
+      hintText = this.success
+        ? "Night success  •  Returning to Shooter..."
+        : "Night failed  •  Returning to Shooter...";
+    }
+
+    text(hintText, hintX + 12, hintY + hintH / 2);
+
+    pop();
   }
-
-  text(hintText, hintX + 12, hintY + hintH / 2);
-
-  pop();
-}
 
   _drawPanelTabs() {
     push();
@@ -716,7 +854,7 @@ export class KitchenScene_MVP extends Scene {
       noStroke();
       textSize(12);
       textAlign(CENTER, CENTER);
-      text("Menu", this.menuOpenTab.x + this.menuOpenTab.w / 2, this.menuOpenTab.y + this.menuOpenTab.h / 2);
+      text("Dishes", this.menuOpenTab.x + this.menuOpenTab.w / 2, this.menuOpenTab.y + this.menuOpenTab.h / 2);
     } else {
       this.menuOpenTab = null;
     }
@@ -732,7 +870,7 @@ export class KitchenScene_MVP extends Scene {
       noStroke();
       textSize(12);
       textAlign(CENTER, CENTER);
-      text("Tasks", this.taskOpenTab.x + this.taskOpenTab.w / 2, this.taskOpenTab.y + this.taskOpenTab.h / 2);
+      text("Menu", this.taskOpenTab.x + this.taskOpenTab.w / 2, this.taskOpenTab.y + this.taskOpenTab.h / 2);
     } else {
       this.taskOpenTab = null;
     }
@@ -743,11 +881,10 @@ export class KitchenScene_MVP extends Scene {
   _drawMenuPanel() {
     push();
 
-    // 规划阶段放在中央偏左
-    const panelX = width / 2 - 370;
+    const panelX = width / 2 - 40;
     const panelY = 140;
-    const panelW = 350;
-    const panelH = 240;
+    const panelW = 300;
+    const panelH = 360;
 
     fill(255, 245, 220);
     stroke(0);
@@ -768,138 +905,134 @@ export class KitchenScene_MVP extends Scene {
     noStroke();
     textSize(18);
     textAlign(LEFT, TOP);
-    text("MENU", panelX + 14, panelY + 12);
+    text("AVAILABLE DISHES", panelX + 14, panelY + 12);
 
     const items = [
-      { key: "1", name: "Rotten Burger", recipeId: "rotten_burger", y: panelY + 48 },
-      { key: "2", name: "Toxic Stew", recipeId: "toxic_stew", y: panelY + 82 },
-      { key: "3", name: "Bone BBQ", recipeId: "bone_bbq", y: panelY + 116 },
-      { key: "4", name: "Mutant Soup", recipeId: "mutant_soup", y: panelY + 150 },
-      { key: "5", name: "Ultimate Feast", recipeId: "ultimate_feast", y: panelY + 184 },
+      { key: "1", name: "Rotten Burger", recipeId: "rotten_burger", y: panelY + 52 },
+      { key: "2", name: "Toxic Stew", recipeId: "toxic_stew", y: panelY + 114 },
+      { key: "3", name: "Bone BBQ", recipeId: "bone_bbq", y: panelY + 176 },
+      { key: "4", name: "Mutant Soup", recipeId: "mutant_soup", y: panelY + 238 },
+      { key: "5", name: "Ultimate Feast", recipeId: "ultimate_feast", y: panelY + 300 },
     ];
 
     this.menuButtons = [];
-    this.menuHoverZones = [];
+    this.menuCardZones = [];
 
     for (const item of items) {
       const recipe = this.menu.getRecipe(item.recipeId);
-      const cookTime = recipe ? recipe.cookTime : "-";
+      const isSelected = this.pendingRecipeId === item.recipeId;
+      const pendingShown = isSelected ? this.pendingQuantity : 0;
+      const canAdd = isSelected
+        ? this._canIncreasePending(item.recipeId, this.pendingQuantity + 1)
+        : this._canIncreasePending(item.recipeId, 1);
+
+      const cardX = panelX + 10;
+      const cardY = item.y - 6;
+      const cardW = 278;
+      const cardH = 52;
+
+      fill(isSelected ? color(250, 232, 180) : color(245, 235, 210));
+      stroke(0);
+      rect(cardX, cardY, cardW, cardH, 8);
+
+      this.menuCardZones.push({
+        recipeId: item.recipeId,
+        x: cardX,
+        y: cardY,
+        w: cardW,
+        h: cardH
+      });
 
       fill(0);
       noStroke();
       textSize(13);
       textAlign(LEFT, TOP);
-      text(`${item.key}. ${item.name}`, panelX + 14, item.y);
+      text(`${item.key}. ${item.name}`, panelX + 16, item.y);
+
       textSize(11);
       fill(80);
-      text(`Cook ${cookTime}s`, panelX + 180, item.y + 1);
+      text(`Profit ${recipe ? recipe.rewardCoins : "-"}`, panelX + 16, item.y + 18);
 
-      this.menuHoverZones.push({
-        recipeId: item.recipeId,
-        x: panelX + 10,
-        y: item.y,
-        w: 210,
-        h: 20
-      });
-
+      // Decrease button
       fill(220);
       stroke(0);
-      rect(panelX + 265, item.y - 2, 26, 20, 4);
+      rect(panelX + 198, item.y + 6, 22, 18, 4);
 
       fill(0);
       noStroke();
       textSize(14);
       textAlign(CENTER, CENTER);
-      text("-", panelX + 278, item.y + 8);
+      text("-", panelX + 209, item.y + 15);
 
       this.menuButtons.push({
         recipeId: item.recipeId,
         action: "decrease",
-        x: panelX + 265,
-        y: item.y - 2,
-        w: 26,
-        h: 20
+        x: panelX + 198,
+        y: item.y + 6,
+        w: 22,
+        h: 18
       });
 
-      fill(220);
-      stroke(0);
-      rect(panelX + 299, item.y - 2, 26, 20, 4);
-
+      // Pending quantity
       fill(0);
       noStroke();
       textSize(14);
       textAlign(CENTER, CENTER);
-      text("+", panelX + 312, item.y + 8);
+      text(pendingShown, panelX + 234, item.y + 15);
+
+      // Increase button
+      fill(canAdd ? color(220) : color(170));
+      stroke(0);
+      rect(panelX + 246, item.y + 6, 22, 18, 4);
+
+      fill(canAdd ? color(0) : color(90));
+      noStroke();
+      textSize(14);
+      textAlign(CENTER, CENTER);
+      text("+", panelX + 257, item.y + 15);
 
       this.menuButtons.push({
         recipeId: item.recipeId,
         action: "increase",
-        x: panelX + 299,
-        y: item.y - 2,
-        w: 26,
-        h: 20
+        x: panelX + 246,
+        y: item.y + 6,
+        w: 22,
+        h: 18
+      });
+
+      // Confirm button
+      fill(isSelected && pendingShown > 0 ? color(215, 235, 205) : color(200));
+      stroke(0);
+      rect(panelX + 270, item.y + 6, 12, 18, 4);
+
+      fill(0);
+      noStroke();
+      textSize(10);
+      textAlign(CENTER, CENTER);
+      text("✓", panelX + 276, item.y + 15);
+
+      this.menuButtons.push({
+        recipeId: item.recipeId,
+        action: "confirm",
+        x: panelX + 270,
+        y: item.y + 6,
+        w: 12,
+        h: 18
       });
     }
-
-    fill(70);
-    noStroke();
-    textSize(11);
-    textAlign(LEFT, TOP);
-    text("Hover a dish to preview ingredients / cook time / reward", panelX + 14, panelY + 210);
-
-    pop();
-  }
-
-  _drawMenuHoverCard() {
-    const hoveredRecipeId = this._getHoveredMenuRecipe(mouseX, mouseY);
-    if (!hoveredRecipeId) return;
-
-    const recipe = this.menu.getRecipe(hoveredRecipeId);
-    if (!recipe) return;
-
-    const reqText = Object.entries(recipe.requirements)
-      .map(([name, amount]) => `${name}: ${amount}`)
-      .join(", ");
-
-    const cardX = Math.min(mouseX + 12, width - 280);
-    const cardY = Math.min(mouseY + 12, height - 130);
-
-    push();
-    fill(255);
-    stroke(0);
-    rect(cardX, cardY, 270, 112, 8);
-
-    fill(0);
-    noStroke();
-    textSize(14);
-    textAlign(LEFT, TOP);
-    text(recipe.name, cardX + 10, cardY + 10);
-
-    textSize(11);
-    text(`Cook Time: ${recipe.cookTime}s`, cardX + 10, cardY + 35);
-    text(`Profit: ${recipe.rewardCoins}`, cardX + 10, cardY + 55);
-    text(`Needs: ${reqText}`, cardX + 10, cardY + 75, 248);
 
     pop();
   }
 
   _drawTaskListPanel() {
-    const tasks = this.taskList.getTasks();
-    const profit = this.taskList.getEstimatedProfit(this.menu);
-    const feasible = this.taskList.isFeasible(this.state.inventory, this.menu);
-    const requirements = this.taskList.getTotalRequirements(this.menu);
-
-    const reqLines = Object.entries(requirements).length > 0
-      ? Object.entries(requirements).map(([name, amount]) => `${name}: ${amount}`)
-      : ["None"];
+    const plannedEntries = this._getPlannedMenuEntries();
 
     push();
 
-    // 规划阶段放在中央偏右
-    const panelX = width / 2 + 20;
+    const panelX = width / 2 - 360;
     const panelY = 140;
-    const panelW = 360;
-    const panelH = 240;
+    const panelW = 280;
+    const panelH = 360;
 
     fill(220, 240, 255);
     stroke(0);
@@ -920,73 +1053,142 @@ export class KitchenScene_MVP extends Scene {
     noStroke();
     textSize(18);
     textAlign(LEFT, TOP);
-    text("TASK LIST", panelX + 14, panelY + 12);
+    text("TODAY'S MENU", panelX + 14, panelY + 12);
 
-    textSize(12);
-    textAlign(LEFT, TOP);
+    const slotX = panelX + 16;
+    const slotW = panelW - 32;
+    const slotH = 52;
+    const gap = 12;
 
-    text(`Burger: ${tasks.rotten_burger}`, panelX + 14, panelY + 48);
-    text(`Stew: ${tasks.toxic_stew}`, panelX + 14, panelY + 74);
-    text(`BBQ: ${tasks.bone_bbq}`, panelX + 14, panelY + 100);
-    text(`Soup: ${tasks.mutant_soup}`, panelX + 14, panelY + 126);
-    text(`Feast: ${tasks.ultimate_feast}`, panelX + 14, panelY + 152);
+    for (let i = 0; i < 5; i++) {
+      const slotY = panelY + 52 + i * (slotH + gap);
+      const entry = plannedEntries[i];
 
-    text(`Profit: ${profit}`, panelX + 14, panelY + 184);
+      fill(245, 235, 210);
+      stroke(0);
+      rect(slotX, slotY, slotW, slotH, 8);
 
-    fill(feasible ? color(0, 130, 0) : color(200, 0, 0));
-    text(`Feasible: ${feasible}`, panelX + 14, panelY + 208);
-    fill(0);
+      fill(0);
+      noStroke();
+      textAlign(LEFT, CENTER);
 
-    text("Required Ingredients:", panelX + 165, panelY + 48);
+      if (entry) {
+        const name = this._getDisplayName(entry.recipeId);
+        textSize(14);
+        text(name, slotX + 16, slotY + 20);
 
-    let y = panelY + 74;
-    for (const line of reqLines) {
-      text(line, panelX + 165, y);
-      y += 20;
+        textSize(12);
+        fill(70);
+        text(`Quantity: ${entry.quantity}`, slotX + 16, slotY + 38);
+      } else {
+        textSize(18);
+        text("+ Add Menu", slotX + 16, slotY + slotH / 2);
+      }
     }
 
     pop();
   }
 
-_drawInventoryPanel() {
-  const inventoryObj = this.state?.inventory?.items || {};
+  _drawDishDetailsPanel() {
+    if (this.phase !== "PLANNING") return;
 
-  push();
+    const recipe = this.menu.getRecipe(this.pendingRecipeId);
+    if (!recipe) return;
 
-  const x = width - 250;
-  const y = 18;
-  const w = 220;
-  const h = 170;
+    const confirmedRemaining = this._getConfirmedRemainingMap();
+    const reqEntries = Object.entries(recipe.requirements);
+    const quantityForDisplay = this.pendingQuantity > 0 ? this.pendingQuantity : 1;
+    const pendingNeedMap = this._getPendingNeedMap(this.pendingRecipeId, quantityForDisplay);
 
-  fill(25, 30, 42, 220);
-  stroke(255, 255, 255, 40);
-  rect(x, y, w, h, 12);
+    push();
 
-  fill(255);
-  noStroke();
-  textAlign(LEFT, TOP);
-  textSize(15);
-  text("INGREDIENTS", x + 12, y + 12);
+    const panelX = width / 2 + 290;
+    const panelY = 140;
+    const panelW = 280;
+    const panelH = 360;
 
-  const entries = Object.entries(inventoryObj);
-  let lineY = y + 40;
+    fill(255, 245, 220);
+    stroke(0);
+    rect(panelX, panelY, panelW, panelH, 12);
 
-  textSize(12);
+    fill(0);
+    noStroke();
+    textSize(18);
+    textAlign(LEFT, TOP);
+    text("DISH DETAILS", panelX + 14, panelY + 12);
 
-  if (entries.length === 0) {
-    text("No ingredients", x + 12, lineY);
-  } else {
-    for (let i = 0; i < entries.length; i++) {
-      const [name, amount] = entries[i];
-      text(`${name}: ${amount}`, x + 12, lineY);
-      lineY += 18;
+    // Image placeholder box
+    fill(240);
+    stroke(0);
+    rect(panelX + 18, panelY + 44, 90, 90, 8);
 
-      if (lineY > y + h - 18) break;
+    fill(0);
+    noStroke();
+    textSize(11);
+    textAlign(CENTER, CENTER);
+    text("IMAGE", panelX + 63, panelY + 89);
+
+    // Name and profit
+    fill(0);
+    noStroke();
+    textAlign(LEFT, TOP);
+    textSize(18);
+    text(this._getDisplayName(this.pendingRecipeId), panelX + 122, panelY + 52);
+
+    textSize(16);
+    text(`G${recipe.rewardCoins}`, panelX + 122, panelY + 84);
+
+    // Description area
+    fill(245, 245, 245);
+    stroke(0);
+    rect(panelX + 18, panelY + 150, panelW - 36, 78, 8);
+
+    fill(0);
+    noStroke();
+    textSize(12);
+    textAlign(LEFT, TOP);
+    text(
+      this._getDescription(this.pendingRecipeId),
+      panelX + 28,
+      panelY + 160,
+      panelW - 56,
+      58
+    );
+
+    // Ingredient title
+    fill(0);
+    noStroke();
+    textSize(15);
+    textAlign(LEFT, TOP);
+    text("INGREDIENTS", panelX + 18, panelY + 240);
+
+    // Ingredient list box
+    fill(250);
+    stroke(0);
+    rect(panelX + 18, panelY + 266, panelW - 36, 82, 8);
+
+    let y = panelY + 278;
+    for (const [name] of reqEntries) {
+      const remaining = confirmedRemaining[name] || 0;
+      const need = pendingNeedMap[name] || 0;
+
+      fill(0);
+      noStroke();
+      textSize(12);
+      textAlign(LEFT, TOP);
+      text(`${name}  ${remaining}/${need}`, panelX + 28, y);
+      y += 20;
     }
-  }
 
-  pop();
-}
+    // Pending quantity info
+    fill(70);
+    noStroke();
+    textSize(11);
+    textAlign(LEFT, TOP);
+    text(`Pending quantity: ${this.pendingQuantity}`, panelX + 18, panelY + 352);
+
+    pop();
+  }
 
   _drawProductionStatusPanel() {
     if (this.phase !== "PRODUCTION") return;
@@ -1022,76 +1224,72 @@ _drawInventoryPanel() {
     pop();
   }
 
-_drawStationCountdowns() {
-  if (this.phase !== "PRODUCTION") return;
+  _drawStationCountdowns() {
+    if (this.phase !== "PRODUCTION") return;
 
-  const relevantTasks = this.productionManager
-    .getTasks()
-    .filter(task => task.status === "COOKING" || task.status === "DONE");
+    const relevantTasks = this.productionManager
+      .getTasks()
+      .filter(task => task.status === "COOKING" || task.status === "DONE");
 
-  if (relevantTasks.length === 0) return;
+    if (relevantTasks.length === 0) return;
 
-  for (const task of relevantTasks) {
-    const recipe = this.menu.getRecipe(task.recipeId);
-    if (!recipe) continue;
+    for (const task of relevantTasks) {
+      const recipe = this.menu.getRecipe(task.recipeId);
+      if (!recipe) continue;
 
-    // 兼容不同 KitchenStation_MVP 写法
-    const station = this.stations.find(
-      s =>
-        s.type === recipe.stationType ||
-        s.stationType === recipe.stationType ||
-        s.kind === recipe.stationType
-    );
+      const station = this.stations.find(
+        s =>
+          s.type === recipe.stationType ||
+          s.stationType === recipe.stationType ||
+          s.kind === recipe.stationType
+      );
 
-    if (!station) continue;
+      if (!station) continue;
 
-    const relPos = this.game.view.localToScreen(station.pos);
-    const relSize = this.game.view.localToScreen(station.size);
+      const relPos = this.game.view.localToScreen(station.pos);
+      const relSize = this.game.view.localToScreen(station.size);
 
-    let labelText = "";
-    let badgeColor;
+      let labelText = "";
+      let badgeColor;
 
-    if (task.status === "COOKING") {
-      labelText = `Cooking ${this._getCookCountdownText(task)}`;
-      badgeColor = color(255, 244, 170, 235);
-    } else if (task.status === "DONE") {
-      labelText = "Ready - Pick up";
-      badgeColor =
-        frameCount % 30 < 15
-          ? color(190, 255, 190, 235)
-          : color(165, 245, 165, 235);
-    } else {
-      continue;
+      if (task.status === "COOKING") {
+        labelText = `Cooking ${this._getCookCountdownText(task)}`;
+        badgeColor = color(255, 244, 170, 235);
+      } else if (task.status === "DONE") {
+        labelText = "Ready - Pick up";
+        badgeColor =
+          frameCount % 30 < 15
+            ? color(190, 255, 190, 235)
+            : color(165, 245, 165, 235);
+      } else {
+        continue;
+      }
+
+      push();
+
+      const badgeMarginX = 10;
+      const badgeMarginY = 8;
+      const badgeX = relPos.x + badgeMarginX;
+      const badgeY = relPos.y + badgeMarginY;
+      const badgeW = Math.max(80, relSize.x - badgeMarginX * 2);
+      const badgeH = 26;
+
+      fill(badgeColor);
+      stroke(60, 60, 60);
+      strokeWeight(1.2);
+      rect(badgeX, badgeY, badgeW, badgeH, 6);
+
+      fill(35);
+      noStroke();
+      textAlign(CENTER, CENTER);
+      textSize(13);
+      text(labelText, badgeX + badgeW / 2, badgeY + badgeH / 2);
+
+      pop();
     }
-
-    push();
-
-    // 直接画在 station 大盒子内部顶部
-    const badgeMarginX = 10;
-    const badgeMarginY = 8;
-    const badgeX = relPos.x + badgeMarginX;
-    const badgeY = relPos.y + badgeMarginY;
-    const badgeW = Math.max(80, relSize.x - badgeMarginX * 2);
-    const badgeH = 26;
-
-    fill(badgeColor);
-    stroke(60, 60, 60);
-    strokeWeight(1.2);
-    rect(badgeX, badgeY, badgeW, badgeH, 6);
-
-    fill(35);
-    noStroke();
-    textAlign(CENTER, CENTER);
-    textSize(13);
-    text(labelText, badgeX + badgeW / 2, badgeY + badgeH / 2);
-
-    pop();
   }
-}
 
   _getCookCountdownText(task) {
-    // 只读UI推断，不改你基础逻辑
-    // 尽量兼容队友/已有Task实现中的不同字段命名
     if (!task) return "...";
 
     if (typeof task.remainingTime === "number") {
@@ -1118,7 +1316,6 @@ _drawStationCountdowns() {
       return `${Math.max(0, Math.ceil(task.totalTime - task.progress))}s`;
     }
 
-    // 再退一层：从recipe静态时间做保守展示
     const recipe = this.menu.getRecipe(task.recipeId);
     if (recipe && typeof recipe.cookTime === "number") {
       return `~${Math.ceil(recipe.cookTime)}s`;
@@ -1143,17 +1340,17 @@ _drawStationCountdowns() {
     return null;
   }
 
-  _getHoveredMenuRecipe(mx, my) {
+  _getClickedMenuCard(mx, my) {
     if (!this.isMenuOpen) return null;
 
-    for (const zone of this.menuHoverZones) {
+    for (const zone of this.menuCardZones) {
       const inside =
         mx >= zone.x &&
         mx <= zone.x + zone.w &&
         my >= zone.y &&
         my <= zone.y + zone.h;
 
-      if (inside) return zone.recipeId;
+      if (inside) return zone;
     }
 
     return null;
