@@ -8,8 +8,8 @@ export class Customer_MVP extends Entity {
     this.order = order;
     this.state = "WAITING";
 
-    // 在第二版 kitchen 设计下，这个值主要用于显示，
-    // 真正的超时逻辑由 KitchenScene_MVP 的全局厨房计时器控制。
+    // In the current kitchen flow, the global kitchen timer controls failure.
+    // This timer is only used for on-screen display.
     const difficulty = this.game.model.difficulty || "normal";
 
     if (difficulty === "easy") {
@@ -24,11 +24,23 @@ export class Customer_MVP extends Entity {
     this.isVisible = true;
   }
 
+  _getDisplayName(recipeId) {
+    const displayNameMap = {
+      toxic_stew: "ZOMMEN",
+      bone_bbq: "ZOMBBQ",
+      rotten_burger: "ZOMBURGER",
+      mutant_soup: "DFD",
+      ultimate_feast: "ZOMBBER",
+    };
+
+    return displayNameMap[recipeId] || recipeId;
+  }
+
   update(events) {
     const deltaSeconds = deltaTime / 1000;
 
-    // 第二版 kitchen 负责整体计时与失败判定，
-    // Customer 不再因为 waitTimer 自己超时离开。
+    // Customer no longer times out by itself.
+    // KitchenScene_MVP handles the real failure condition.
     if (this.state === "SERVED") {
       this.leaveTimer -= deltaSeconds;
 
@@ -88,7 +100,7 @@ export class Customer_MVP extends Entity {
       textSize(10);
       textAlign(CENTER, BOTTOM);
       text(
-        this.order.recipeId,
+        this._getDisplayName(this.order.recipeId),
         relPos.x + relSize.x / 2,
         relPos.y - 5
       );
