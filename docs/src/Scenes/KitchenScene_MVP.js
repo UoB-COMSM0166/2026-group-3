@@ -389,7 +389,7 @@ export class KitchenScene_MVP extends Scene {
       this._drawPlanningInstructionsInsideBoard();
     }
 
-    this._drawProductionStatusPanel();
+    //this._drawProductionStatusPanel();
     this._drawStationCountdowns();
 
     if (this.message) {
