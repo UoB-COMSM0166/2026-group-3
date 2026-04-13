@@ -74,9 +74,9 @@ export class SettingsScene extends Menu {
       new Vector2("Left", "Top"),
       new Vector2(10, 80) 
     );
-    this.musicSlider.parent = this
-    this.musicSlider.anchor.x = this.musicSubTitle
-    this.musicSlider.anchor.y = this.title
+    this.musicSlider.parent = this;
+    this.musicSlider.anchor.x = this.musicSubTitle;
+    this.musicSlider.anchor.y = this.title;
 
     this.musicSlider.onClick = (value) => {
       const msliderVal = value;
@@ -92,7 +92,7 @@ export class SettingsScene extends Menu {
       new Vector2("Left", "Top"),
       new Vector2(10, 130)
     );
-    this.textResizeSubTitle.anchor.y = this.title
+    this.textResizeSubTitle.anchor.y = this.title;
     this.textResizeSubTitle.parent = this;
     this.textResizeSubTitle.expandToFit.y = true;
 
@@ -103,9 +103,9 @@ export class SettingsScene extends Menu {
       new Vector2("Left", "Top"),
       new Vector2(10, 130) 
     );
-    this.textResizeSlider.parent = this
-    this.textResizeSlider.anchor.x = this.textResizeSubTitle
-    this.textResizeSlider.anchor.y = this.title
+    this.textResizeSlider.parent = this;
+    this.textResizeSlider.anchor.x = this.textResizeSubTitle;
+    this.textResizeSlider.anchor.y = this.title;
 
     this.textResizeSlider.onClick = (value) => {
       this.game.view.textSize = value;
@@ -120,7 +120,7 @@ export class SettingsScene extends Menu {
       new Vector2("Left", "Top"),
       new Vector2(10, 180) 
     );
-    this.brightnessSubTitle.anchor.y = this.title
+    this.brightnessSubTitle.anchor.y = this.title;
     this.brightnessSubTitle.parent = this;
     this.brightnessSubTitle.expandToFit.y = true;
 
@@ -131,9 +131,9 @@ export class SettingsScene extends Menu {
       new Vector2("Left", "Top"),
       new Vector2(10, 180) 
     );
-    this.brightnessSlider.parent = this
-    this.brightnessSlider.anchor.x = this.brightnessSubTitle
-    this.brightnessSlider.anchor.y = this.title
+    this.brightnessSlider.parent = this;
+    this.brightnessSlider.anchor.x = this.brightnessSubTitle;
+    this.brightnessSlider.anchor.y = this.title;
 
     this.brightnessSlider.onClick = (value) => {
       this.game.brightness = value;
@@ -152,7 +152,8 @@ export class SettingsScene extends Menu {
     this.backButton.textSizeOverride = true;
 
     this.backButton.onClick = function() {
-      // Hide all SettingsScene UI elements
+
+      // Hide all SettingsScene 
       this.parent.isVisible = false;
     };
 

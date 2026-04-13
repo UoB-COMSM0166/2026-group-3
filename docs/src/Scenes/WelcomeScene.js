@@ -6,12 +6,17 @@ import { ShooterScene } from "../Scenes/ShooterScene.js";
 import { KitchenScene_MVP } from "../Scenes/KitchenScene_MVP.js";
 import { Inventory } from "../Core/Inventory.js";
 import { SettingsScene } from "../Scenes/SettingsScene.js";
+import { InstructionsScene } from "../Scenes/InstructionsScene.js";
 
 export class WelcomeScene extends Scene {
   constructor(game) {
     super(game);
     this.settings = new SettingsScene(this.game);
     this.settings.isVisible = false;
+    this.instructions = new InstructionsScene(this.game);
+    this.instructions.isVisible = false;
+
+
 
     // Title
     this.title = new Label(
@@ -82,6 +87,21 @@ export class WelcomeScene extends Scene {
     };
 
 
+ this.instructionsButton.onClick = () => {
+
+      // Hide all SettingsScene UI elements
+      this.getUIElements().forEach((el) => (el.isVisible = false));
+
+      
+    };
+
+
+     // Instructions Button: go to instructions
+    this.instructionsButton.onClick = function(){
+      this.game.model.scene.instructions.isVisible = true;
+    };
+
+
     // Test Kitchen Button → Directly enter KitchenScene
     this.testKitchenButton.onClick = () => {
       this.game.model.difficulty = "normal";
@@ -106,9 +126,27 @@ export class WelcomeScene extends Scene {
       this.mediumButton,
       this.hardButton,
       this.backButton,
-      this.settings
+      this.settings,
+      this.instructions,
     ].forEach(el => this.addUIElement(el));
   }
+
+
+  // Disable Welcome Scene buttons while menus are open
+update(events) {
+
+  if (this.settings.isVisible) {
+    this.settings.update(events);
+    return;
+  }
+
+  if (this.instructions.isVisible) {
+    this.instructions.update(events);
+    return;
+  }
+
+  super.update(events);
+}
 
   draw() {
     super.draw();
