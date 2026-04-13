@@ -199,15 +199,6 @@ export class KitchenScene_MVP extends Scene {
 
       // Panel open or close buttons
       if (event.type === "click") {
-        if (this._isInside(mx, my, this.menuCloseButton)) {
-          this.isMenuOpen = false;
-          return;
-        }
-
-        if (this._isInside(mx, my, this.taskCloseButton)) {
-          this.isTaskListOpen = false;
-          return;
-        }
 
         if (this._isInside(mx, my, this.menuOpenTab)) {
           this.isMenuOpen = true;
@@ -856,16 +847,7 @@ export class KitchenScene_MVP extends Scene {
   stroke(0);
   rect(panelX, panelY, panelW, panelH, 12);
 
-  this.menuCloseButton = { x: panelX + panelW - 30, y: panelY + 10, w: 20, h: 20 };
-  fill(230);
-  stroke(0);
-  rect(this.menuCloseButton.x, this.menuCloseButton.y, this.menuCloseButton.w, this.menuCloseButton.h, 4);
-
-  fill(0);
-  noStroke();
-  textSize(12);
-  textAlign(CENTER, CENTER);
-  text("X", this.menuCloseButton.x + 10, this.menuCloseButton.y + 10);
+  this.menuCloseButton = null;
 
   fill(0);
   noStroke();
@@ -1002,16 +984,7 @@ export class KitchenScene_MVP extends Scene {
   stroke(0);
   rect(panelX, panelY, panelW, panelH, 12);
 
-  this.taskCloseButton = { x: panelX + panelW - 30, y: panelY + 10, w: 20, h: 20 };
-  fill(230);
-  stroke(0);
-  rect(this.taskCloseButton.x, this.taskCloseButton.y, this.taskCloseButton.w, this.taskCloseButton.h, 4);
-
-  fill(0);
-  noStroke();
-  textSize(12);
-  textAlign(CENTER, CENTER);
-  text("X", this.taskCloseButton.x + 10, this.taskCloseButton.y + 10);
+  this.taskCloseButton = null;
 
   fill(0);
   noStroke();
