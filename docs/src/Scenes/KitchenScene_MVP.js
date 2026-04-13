@@ -24,7 +24,7 @@ export class KitchenScene_MVP extends Scene {
     this.state = this.game.model.gameState;
     this.menu = new MenuData();
 
-    // Time of day
+    // Force kitchen to always use night time
     this.time = "Night";
     this.game.model.gameState.time = "Night";
 
@@ -76,7 +76,7 @@ export class KitchenScene_MVP extends Scene {
     this.planningUIAutoVisible = true;
 
     // Pending dish editor state
-    this.pendingRecipeId = "rotten_burger";
+    this.pendingRecipeId = "toxic_stew";
     this.pendingQuantity = 0;
 
     // Fixed placeholder descriptions
@@ -110,7 +110,9 @@ export class KitchenScene_MVP extends Scene {
     const startY = 0.8;
     const verticalSpacing = 1.6;
 
-    const stationTypes = ["grill", "pot", "oven", "prep", "special"];
+    // Top-to-bottom station order:
+    // Ramen, BBQ, Burger, Fried, Keg
+    const stationTypes = ["pot", "grill", "oven", "prep", "special"];
 
     for (let i = 0; i < 5; i++) {
       const pos = new Vector2(startX, startY + i * verticalSpacing);
@@ -146,11 +148,15 @@ export class KitchenScene_MVP extends Scene {
 
   update(events) {
     this.time = "Night";
-    this.game.model.gameState.time = "Night"; 
+    this.state.time = "Night";
+    this.game.model.gameState.time = "Night";
 
     const oldPos = new Vector2(this.player.pos.x, this.player.pos.y);
 
-    this.state.time = "Night";
+    // Keep shooter top bar on moon
+    if (this.game.model.gameState.phaseProgress >= 0.5) {
+      this.game.model.gameState.phaseProgress = 0.25;
+    }
 
     // Update entities manually so the customer does not update during planning
     for (let entity of this.entities) {
@@ -197,9 +203,7 @@ export class KitchenScene_MVP extends Scene {
       const mx = event?.x ?? mouseX;
       const my = event?.y ?? mouseY;
 
-      // Panel open or close buttons
       if (event.type === "click") {
-
         if (this._isInside(mx, my, this.menuOpenTab)) {
           this.isMenuOpen = true;
           return;
@@ -222,10 +226,12 @@ export class KitchenScene_MVP extends Scene {
 
       // Planning phase
       if (this.phase === "PLANNING") {
+        // The keyboard order follows your station order:
+        // 1 Ramen, 2 BBQ, 3 Burger, 4 Fried, 5 Keg
         if (event.key === "1") this._selectRecipe("rotten_burger");
-        if (event.key === "2") this._selectRecipe("toxic_stew");
-        if (event.key === "3") this._selectRecipe("bone_bbq");
-        if (event.key === "4") this._selectRecipe("mutant_soup");
+        if (event.key === "2") this._selectRecipe("mutant_soup");
+        if (event.key === "3") this._selectRecipe("toxic_stew");
+        if (event.key === "4") this._selectRecipe("bone_bbq");
         if (event.key === "5") this._selectRecipe("ultimate_feast");
 
         if (event.key === "=" || event.key === "+") {
@@ -389,7 +395,6 @@ export class KitchenScene_MVP extends Scene {
       this._drawPlanningInstructionsInsideBoard();
     }
 
-    //this._drawProductionStatusPanel();
     this._drawStationCountdowns();
 
     if (this.message) {
@@ -455,7 +460,7 @@ export class KitchenScene_MVP extends Scene {
     this.customer.waitTimer = this.kitchenTimer;
 
     console.log("[Kitchen] New customer order:", recipe.id);
-    this.showMessage(`Customer wants ${recipe.id}`);
+    this.showMessage(`Customer wants ${this._getDisplayName(recipe.id)}`);
   }
 
   _getRelevantTaskForCurrentOrder() {
@@ -510,7 +515,7 @@ export class KitchenScene_MVP extends Scene {
 
           if (started) {
             activeTask.start();
-            this.showMessage(`Cooking ${targetRecipeId}`);
+            this.showMessage(`Cooking ${this._getDisplayName(targetRecipeId)}`);
           } else {
             this.showMessage("Not enough ingredients");
           }
@@ -525,7 +530,7 @@ export class KitchenScene_MVP extends Scene {
 
           this.player.heldDish = activeTask.recipeId;
           activeTask.collect();
-          this.showMessage(`Collected ${activeTask.recipeId}`);
+          this.showMessage(`Collected ${this._getDisplayName(activeTask.recipeId)}`);
           return;
         }
 
@@ -647,37 +652,43 @@ export class KitchenScene_MVP extends Scene {
   }
 
   _getPlannedMenuEntries() {
-    const tasks = this.taskList.getTasks();
+  const tasks = this.taskList.getTasks();
 
-    const orderedRecipeIds = [
-      "rotten_burger",
-      "toxic_stew",
-      "bone_bbq",
-      "mutant_soup",
-      "ultimate_feast"
-    ];
+  const orderedRecipeIds = [
+    "rotten_burger",
+    "mutant_soup",
+    "toxic_stew",
+    "bone_bbq",
+    "ultimate_feast"
+  ];
 
-    const result = [];
+  const result = [];
 
-    for (const recipeId of orderedRecipeIds) {
-      const quantity = tasks[recipeId] || 0;
-      if (quantity > 0) {
-        result.push({ recipeId, quantity });
-      }
+  for (const recipeId of orderedRecipeIds) {
+    const quantity = tasks[recipeId] || 0;
+    if (quantity > 0) {
+      result.push({ recipeId, quantity });
     }
-
-    while (result.length < 5) {
-      result.push(null);
-    }
-
-    return result;
   }
+
+  while (result.length < 5) {
+    result.push(null);
+  }
+
+  return result;
+}
 
   _getDisplayName(recipeId) {
-    const recipe = this.menu.getRecipe(recipeId);
-    if (!recipe) return recipeId;
-    return recipe.name || recipeId;
-  }
+  const displayNameMap = {
+    rotten_burger: "ZOMBURGER",
+    mutant_soup: "DFD",
+    toxic_stew: "ZOMMEN",
+    bone_bbq: "ZOMBBQ",
+    ultimate_feast: "ZOMBEER",
+  };
+
+  return displayNameMap[recipeId] || recipeId;
+}
 
   _getDescription(recipeId) {
     return this.recipeDescriptions[recipeId] || "Description coming soon.";
@@ -713,87 +724,87 @@ export class KitchenScene_MVP extends Scene {
   // =========================================================
 
   _getPlanningBoardLayout() {
-  const boardW = 1120;
-  const boardH = 760;
-  const boardX = width / 2 - boardW / 2;
-  const boardY = 40;
+    const boardW = 1120;
+    const boardH = 760;
+    const boardX = width / 2 - boardW / 2;
+    const boardY = 40;
 
-  return {
-    boardX,
-    boardY,
-    boardW,
-    boardH,
-    panelGap: 28,
-    leftW: 280,
-    midW: 300,
-    rightW: 280,
-    panelH: 500,
+    return {
+      boardX,
+      boardY,
+      boardW,
+      boardH,
+      panelGap: 28,
+      leftW: 280,
+      midW: 300,
+      rightW: 280,
+      panelH: 500,
 
-    panelY: boardY + 90,
+      panelY: boardY + 90,
 
-    controlsX: boardX + 24,
-    controlsY: boardY + 620,
-    controlsW: boardW - 48,
-    controlsH: 100,
-  };
-}
+      controlsX: boardX + 24,
+      controlsY: boardY + 620,
+      controlsW: boardW - 48,
+      controlsH: 100,
+    };
+  }
 
   // =========================================================
   // UI drawing
   // =========================================================
 
   _drawPlanningCenterCards() {
-  const layout = this._getPlanningBoardLayout();
+    const layout = this._getPlanningBoardLayout();
 
-  push();
+    push();
 
-  fill(15, 18, 28, 170);
-  noStroke();
-  rect(layout.boardX, layout.boardY, layout.boardW, layout.boardH, 18);
+    fill(15, 18, 28, 170);
+    noStroke();
+    rect(layout.boardX, layout.boardY, layout.boardW, layout.boardH, 18);
 
-  fill(255);
-  textAlign(CENTER, TOP);
-  textSize(22);
-  text("Night Prep", width / 2, layout.boardY + 16);
+    fill(255);
+    textAlign(CENTER, TOP);
+    textSize(22);
+    text("Night Prep", width / 2, layout.boardY + 16);
 
-  pop();
-}
+    pop();
+  }
 
   _drawPlanningInstructionsInsideBoard() {
-  if (this.phase !== "PLANNING") return;
+    if (this.phase !== "PLANNING") return;
 
-  const layout = this._getPlanningBoardLayout();
+    const layout = this._getPlanningBoardLayout();
 
-  push();
+    push();
 
-  const boxX = layout.controlsX;
-  const boxY = layout.controlsY;
-  const boxW = layout.controlsW;
-  const boxH = layout.controlsH;
+    const boxX = layout.controlsX;
+    const boxY = layout.controlsY;
+    const boxW = layout.controlsW;
+    const boxH = layout.controlsH;
 
-  fill(40, 40, 40, 230);
-  stroke(70);
-  rect(boxX, boxY, boxW, boxH, 8);
+    fill(40, 40, 40, 230);
+    stroke(70);
+    rect(boxX, boxY, boxW, boxH, 8);
 
-  fill(255);
-  noStroke();
+    fill(255);
+    noStroke();
 
-  textAlign(LEFT, TOP);
-  textSize(14);
-  text("Controls", boxX + 14, boxY + 10);
+    textAlign(LEFT, TOP);
+    textSize(14);
+    text("Controls", boxX + 14, boxY + 10);
 
-  textSize(12);
-  text("Select dishes in the middle panel.", boxX + 14, boxY + 40);
-  text("Use + / - to change pending quantity.", boxX + 14, boxY + 62);
-  text("Press Enter or click ✓ to confirm into Today's Menu.", boxX + 14, boxY + 84);
+    textSize(12);
+    text("Select dishes in the middle panel.", boxX + 14, boxY + 40);
+    text("Use + / - to change pending quantity.", boxX + 14, boxY + 62);
+    text("Press Enter or click ✓ to confirm into Today's Menu.", boxX + 14, boxY + 84);
 
-  textAlign(RIGHT, TOP);
-  text("Backspace = Clear full plan", boxX + boxW - 18, boxY + 40);
-  text("P = Start cooking", boxX + boxW - 18, boxY + 62);
-  text("N = Skip kitchen", boxX + boxW - 18, boxY + 84);
+    textAlign(RIGHT, TOP);
+    text("Backspace = Clear full plan", boxX + boxW - 18, boxY + 40);
+    text("P = Start cooking", boxX + boxW - 18, boxY + 62);
+    text("N = Skip kitchen", boxX + boxW - 18, boxY + 84);
 
-  pop();
-}
+    pop();
+  }
 
   _drawPanelTabs() {
     push();
@@ -855,12 +866,18 @@ export class KitchenScene_MVP extends Scene {
   textAlign(LEFT, TOP);
   text("AVAILABLE DISHES", panelX + 14, panelY + 12);
 
+  // Menu order must match the reference image:
+  // 1 ZOMBURGER
+  // 2 DFD
+  // 3 ZOMMEN
+  // 4 ZOMBBQ
+  // 5 ZOMBEER
   const items = [
-    { key: "1", name: "Rotten Burger", recipeId: "rotten_burger", y: panelY + 60 },
-    { key: "2", name: "Toxic Stew", recipeId: "toxic_stew", y: panelY + 150 },
-    { key: "3", name: "Bone BBQ", recipeId: "bone_bbq", y: panelY + 240 },
-    { key: "4", name: "Mutant Soup", recipeId: "mutant_soup", y: panelY + 330 },
-    { key: "5", name: "Ultimate Feast", recipeId: "ultimate_feast", y: panelY + 420 },
+    { key: "1", name: "ZOMBURGER", recipeId: "rotten_burger",  y: panelY + 60 },
+    { key: "2", name: "DFD",       recipeId: "mutant_soup",    y: panelY + 150 },
+    { key: "3", name: "ZOMMEN",    recipeId: "toxic_stew",     y: panelY + 240 },
+    { key: "4", name: "ZOMBBQ",    recipeId: "bone_bbq",       y: panelY + 330 },
+    { key: "5", name: "ZOMBEER",   recipeId: "ultimate_feast", y: panelY + 420 },
   ];
 
   this.menuButtons = [];
@@ -969,196 +986,156 @@ export class KitchenScene_MVP extends Scene {
 }
 
   _drawTaskListPanel() {
-  const plannedEntries = this._getPlannedMenuEntries();
-
-  push();
-
-  const layout = this._getPlanningBoardLayout();
-
-  const panelX = width / 2 - layout.midW / 2 - layout.panelGap - layout.leftW;
-  const panelY = layout.panelY;
-  const panelW = layout.leftW;
-  const panelH = layout.panelH;
-
-  fill(220, 240, 255);
-  stroke(0);
-  rect(panelX, panelY, panelW, panelH, 12);
-
-  this.taskCloseButton = null;
-
-  fill(0);
-  noStroke();
-  textSize(18);
-  textAlign(LEFT, TOP);
-  text("TODAY'S MENU", panelX + 14, panelY + 12);
-
-  const slotX = panelX + 16;
-  const slotW = panelW - 32;
-  const slotH = 64;
-  const gap = 16;
-
-  for (let i = 0; i < 5; i++) {
-    const slotY = panelY + 58 + i * (slotH + gap);
-    const entry = plannedEntries[i];
-
-    fill(245, 235, 210);
-    stroke(0);
-    rect(slotX, slotY, slotW, slotH, 8);
-
-    fill(0);
-    noStroke();
-    textAlign(LEFT, CENTER);
-
-    if (entry) {
-      const name = this._getDisplayName(entry.recipeId);
-      textSize(14);
-      text(name, slotX + 16, slotY + 22);
-
-      textSize(12);
-      fill(70);
-      text(`Quantity: ${entry.quantity}`, slotX + 16, slotY + 44);
-    } else {
-      textSize(18);
-      text("+ Add Menu", slotX + 16, slotY + slotH / 2);
-    }
-  }
-
-  pop();
-}
-
-  _drawDishDetailsPanel() {
-  if (this.phase !== "PLANNING") return;
-
-  const recipe = this.menu.getRecipe(this.pendingRecipeId);
-  if (!recipe) return;
-
-  const confirmedRemaining = this._getConfirmedRemainingMap();
-  const reqEntries = Object.entries(recipe.requirements);
-  const quantityForDisplay = this.pendingQuantity > 0 ? this.pendingQuantity : 1;
-  const pendingNeedMap = this._getPendingNeedMap(this.pendingRecipeId, quantityForDisplay);
-
-  push();
-
-  const layout = this._getPlanningBoardLayout();
-
-  const panelX = width / 2 + layout.midW / 2 + layout.panelGap;
-  const panelY = layout.panelY;
-  const panelW = layout.rightW;
-  const panelH = layout.panelH;
-
-  fill(255, 245, 220);
-  stroke(0);
-  rect(panelX, panelY, panelW, panelH, 12);
-
-  fill(0);
-  noStroke();
-  textSize(18);
-  textAlign(LEFT, TOP);
-  text("DISH DETAILS", panelX + 14, panelY + 12);
-
-  // Image placeholder
-  fill(240);
-  stroke(0);
-  rect(panelX + 18, panelY + 44, 90, 90, 8);
-
-  fill(0);
-  noStroke();
-  textSize(11);
-  textAlign(CENTER, CENTER);
-  text("IMAGE", panelX + 63, panelY + 89);
-
-  // Dish name and profit
-  fill(0);
-  noStroke();
-  textAlign(LEFT, TOP);
-  textSize(18);
-  text(this._getDisplayName(this.pendingRecipeId), panelX + 128, panelY + 54);
-
-  textSize(16);
-  text(`G${recipe.rewardCoins}`, panelX + 128, panelY + 96);
-
-  // Description box
-  fill(245, 245, 245);
-  stroke(0);
-  rect(panelX + 18, panelY + 160, panelW - 36, 110, 8);
-
-  fill(0);
-  noStroke();
-  textSize(12);
-  textAlign(LEFT, TOP);
-  text(
-    this._getDescription(this.pendingRecipeId),
-    panelX + 28,
-    panelY + 174,
-    panelW - 56,
-    82
-  );
-
-  // Ingredients title
-  fill(0);
-  noStroke();
-  textSize(15);
-  textAlign(LEFT, TOP);
-  text("INGREDIENTS", panelX + 18, panelY + 292);
-
-  // Ingredients box
-  fill(250);
-  stroke(0);
-  rect(panelX + 18, panelY + 326, panelW - 36, 128, 8);
-
-  let y = panelY + 340;
-  for (const [name] of reqEntries) {
-    const remaining = confirmedRemaining[name] || 0;
-    const need = pendingNeedMap[name] || 0;
-
-    fill(0);
-    noStroke();
-    textSize(12);
-    textAlign(LEFT, TOP);
-    text(`${name}  ${remaining}/${need}`, panelX + 28, y);
-    y += 22;
-  }
-
-  // Pending quantity info
-  fill(70);
-  noStroke();
-  textSize(11);
-  textAlign(LEFT, TOP);
-  text(`Pending quantity: ${this.pendingQuantity}`, panelX + 18, panelY + 466);
-
-  pop();
-}
-
-  _drawProductionStatusPanel() {
-    if (this.phase !== "PRODUCTION") return;
+    const plannedEntries = this._getPlannedMenuEntries();
 
     push();
 
-    const x = width - 290;
-    const y = 205;
-    const w = 260;
-    const h = 130;
+    const layout = this._getPlanningBoardLayout();
 
-    fill(255, 251, 236, 235);
+    const panelX = width / 2 - layout.midW / 2 - layout.panelGap - layout.leftW;
+    const panelY = layout.panelY;
+    const panelW = layout.leftW;
+    const panelH = layout.panelH;
+
+    fill(220, 240, 255);
     stroke(0);
-    rect(x, y, w, h, 10);
+    rect(panelX, panelY, panelW, panelH, 12);
+
+    this.taskCloseButton = null;
+
+    fill(0);
+    noStroke();
+    textSize(18);
+    textAlign(LEFT, TOP);
+    text("TODAY'S MENU", panelX + 14, panelY + 12);
+
+    const slotX = panelX + 16;
+    const slotW = panelW - 32;
+    const slotH = 64;
+    const gap = 16;
+
+    for (let i = 0; i < 5; i++) {
+      const slotY = panelY + 58 + i * (slotH + gap);
+      const entry = plannedEntries[i];
+
+      fill(245, 235, 210);
+      stroke(0);
+      rect(slotX, slotY, slotW, slotH, 8);
+
+      fill(0);
+      noStroke();
+      textAlign(LEFT, CENTER);
+
+      if (entry) {
+        const name = this._getDisplayName(entry.recipeId);
+        textSize(14);
+        text(name, slotX + 16, slotY + 22);
+
+        textSize(12);
+        fill(70);
+        text(`Quantity: ${entry.quantity}`, slotX + 16, slotY + 44);
+      } else {
+        textSize(18);
+        text("+ Add Menu", slotX + 16, slotY + slotH / 2);
+      }
+    }
+
+    pop();
+  }
+
+  _drawDishDetailsPanel() {
+    if (this.phase !== "PLANNING") return;
+
+    const recipe = this.menu.getRecipe(this.pendingRecipeId);
+    if (!recipe) return;
+
+    const confirmedRemaining = this._getConfirmedRemainingMap();
+    const reqEntries = Object.entries(recipe.requirements);
+    const quantityForDisplay = this.pendingQuantity > 0 ? this.pendingQuantity : 1;
+    const pendingNeedMap = this._getPendingNeedMap(this.pendingRecipeId, quantityForDisplay);
+
+    push();
+
+    const layout = this._getPlanningBoardLayout();
+
+    const panelX = width / 2 + layout.midW / 2 + layout.panelGap;
+    const panelY = layout.panelY;
+    const panelW = layout.rightW;
+    const panelH = layout.panelH;
+
+    fill(255, 245, 220);
+    stroke(0);
+    rect(panelX, panelY, panelW, panelH, 12);
+
+    fill(0);
+    noStroke();
+    textSize(18);
+    textAlign(LEFT, TOP);
+    text("DISH DETAILS", panelX + 14, panelY + 12);
+
+    fill(240);
+    stroke(0);
+    rect(panelX + 18, panelY + 44, 90, 90, 8);
+
+    fill(0);
+    noStroke();
+    textSize(11);
+    textAlign(CENTER, CENTER);
+    text("IMAGE", panelX + 63, panelY + 89);
 
     fill(0);
     noStroke();
     textAlign(LEFT, TOP);
-    textSize(15);
-    text("CURRENT STATUS", x + 12, y + 12);
+    textSize(18);
+    text(this._getDisplayName(this.pendingRecipeId), panelX + 128, panelY + 54);
 
+    textSize(16);
+    text(`G${recipe.rewardCoins}`, panelX + 128, panelY + 96);
+
+    fill(245, 245, 245);
+    stroke(0);
+    rect(panelX + 18, panelY + 160, panelW - 36, 110, 8);
+
+    fill(0);
+    noStroke();
     textSize(12);
+    textAlign(LEFT, TOP);
+    text(
+      this._getDescription(this.pendingRecipeId),
+      panelX + 28,
+      panelY + 174,
+      panelW - 56,
+      82
+    );
 
-    const orderText = this.currentOrder ? this.currentOrder.recipeId : "None";
-    const queued = this.orderQueue ? this.orderQueue.length : 0;
-    const heldDish = this.player && this.player.heldDish ? this.player.heldDish : "None";
+    fill(0);
+    noStroke();
+    textSize(15);
+    textAlign(LEFT, TOP);
+    text("INGREDIENTS", panelX + 18, panelY + 292);
 
-    text(`Night: ${this.time}`, x + 12, y + 40);
-    text(`Order: ${orderText}`, x + 12, y + 62);
-    text(`Remaining Orders: ${queued}`, x + 12, y + 84);
-    text(`Holding: ${heldDish}`, x + 12, y + 106);
+    fill(250);
+    stroke(0);
+    rect(panelX + 18, panelY + 326, panelW - 36, 128, 8);
+
+    let y = panelY + 340;
+    for (const [name] of reqEntries) {
+      const remaining = confirmedRemaining[name] || 0;
+      const need = pendingNeedMap[name] || 0;
+
+      fill(0);
+      noStroke();
+      textSize(12);
+      textAlign(LEFT, TOP);
+      text(`${name}  ${remaining}/${need}`, panelX + 28, y);
+      y += 22;
+    }
+
+    fill(70);
+    noStroke();
+    textSize(11);
+    textAlign(LEFT, TOP);
+    text(`Pending quantity: ${this.pendingQuantity}`, panelX + 18, panelY + 466);
 
     pop();
   }
