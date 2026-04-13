@@ -5,41 +5,40 @@ export class MenuData {
         id: "rotten_burger",
         name: "Rotten Burger",
         requirements: {
-          zombie_meat: 2
+          "Zombie Mince": 2
         },
         cookTime: 4,
-        rewardCoins: 20,
+        rewardCoins: 18,
         stationType: "grill"
       },
       {
         id: "toxic_stew",
         name: "Toxic Stew",
         requirements: {
-          zombie_meat: 1,
-          toxic_slime: 1,
-          spice_powder: 1
+          "Zombie Mince": 1,
+          "Zombie Belly": 1
         },
         cookTime: 6,
-        rewardCoins: 35,
+        rewardCoins: 30,
         stationType: "pot"
       },
       {
         id: "bone_bbq",
         name: "Bone BBQ",
         requirements: {
-          zombie_meat: 1,
-          bone_fragments: 2
+          "Zombie Mince": 1,
+          "Prime Bone": 1
         },
         cookTime: 7,
-        rewardCoins: 40,
+        rewardCoins: 38,
         stationType: "oven"
       },
       {
         id: "mutant_soup",
         name: "Mutant Soup",
         requirements: {
-          toxic_slime: 2,
-          spice_powder: 1
+          "Zombie Belly": 1,
+          "Zombie Juice": 1
         },
         cookTime: 8,
         rewardCoins: 45,
@@ -49,10 +48,10 @@ export class MenuData {
         id: "ultimate_feast",
         name: "Ultimate Zombie Feast",
         requirements: {
-          zombie_meat: 2,
-          toxic_slime: 1,
-          bone_fragments: 1,
-          mutant_core: 1
+          "Zombie Mince": 2,
+          "Zombie Belly": 1,
+          "Prime Bone": 1,
+          "Zombie Drumstick": 1
         },
         cookTime: 12,
         rewardCoins: 100,
