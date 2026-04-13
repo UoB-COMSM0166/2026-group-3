@@ -3,17 +3,17 @@ export class MenuData {
     this.recipes = [
       {
         id: "rotten_burger",
-        name: "Rotten Burger",
+        name: "ZOMBURGER",
         requirements: {
           "Zombie Mince": 2
         },
         cookTime: 4,
         rewardCoins: 18,
-        stationType: "grill"
+        stationType: "oven"
       },
       {
         id: "toxic_stew",
-        name: "Toxic Stew",
+        name: "ZOMMEN",
         requirements: {
           "Zombie Mince": 1,
           "Zombie Belly": 1
@@ -24,18 +24,18 @@ export class MenuData {
       },
       {
         id: "bone_bbq",
-        name: "Bone BBQ",
+        name: "ZOMBBQ",
         requirements: {
           "Zombie Mince": 1,
           "Prime Bone": 1
         },
         cookTime: 7,
         rewardCoins: 38,
-        stationType: "oven"
+        stationType: "grill"
       },
       {
         id: "mutant_soup",
-        name: "Mutant Soup",
+        name: "DFD",
         requirements: {
           "Zombie Belly": 1,
           "Zombie Juice": 1
@@ -46,7 +46,7 @@ export class MenuData {
       },
       {
         id: "ultimate_feast",
-        name: "Ultimate Zombie Feast",
+        name: "ZOMBBER",
         requirements: {
           "Zombie Mince": 2,
           "Zombie Belly": 1,
