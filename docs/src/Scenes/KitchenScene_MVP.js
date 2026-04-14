@@ -45,11 +45,30 @@ export class KitchenScene_MVP extends Scene {
     this.kitchenTimer = this.kitchenTimeLimit;
     this.timerStarted = false;
 
-    // Order flow
+    // Order / customer flow
     this.orderQueue = [];
     this.currentOrder = null;
     this.success = false;
     this.endTimer = 2;
+
+    // Multiple random customers
+    this.customers = [];
+    this.maxCustomersOnScreen = 3;
+    this.customerSpawnTimer = 1.2;
+    this.customerSpawnIntervalMin = 3.2;
+    this.customerSpawnIntervalMax = 5.8;
+    this.totalOrdersToServe = 0;
+    this.servedOrdersCount = 0;
+    this.nextCustomerId = 1;
+
+    this.customerTargetSlots = [
+      new Vector2(12.2, 2.3),
+      new Vector2(12.2, 4.5),
+      new Vector2(12.2, 6.7),
+    ];
+    this.customerSpawnX = 14.2;
+    this.customerLeaveX = 15.4;
+    this.customerMoveSpeed = 2.6;
 
     // Logging
     this._loggedDoneTaskIds = new Set();
@@ -70,7 +89,7 @@ export class KitchenScene_MVP extends Scene {
     this.menuOpenTab = null;
     this.taskOpenTab = null;
 
-    //Image
+    // Keep your original background key
     this.background = "Kitchen Background";
 
     // UI layout helpers
@@ -86,6 +105,7 @@ export class KitchenScene_MVP extends Scene {
     this.holdCookStation = null;
     this.holdCookProgress = 0;
     this.holdCookDuration = 0;
+    this.holdCookCustomerId = null;
     this.spaceLastFrame = false;
 
     // Placeholder descriptions
@@ -95,6 +115,15 @@ export class KitchenScene_MVP extends Scene {
       bone_bbq: "Description coming soon.",
       mutant_soup: "Description coming soon.",
       ultimate_feast: "Description coming soon.",
+    };
+
+    // Station labels shown below each station
+    this.stationDishLabels = {
+      pot: "ZOMMEN",
+      grill: "ZOMBBQ",
+      oven: "ZOMBURGER",
+      prep: "DFD",
+      special: "ZOMBEER",
     };
 
     // Reuse shooter top bar
@@ -113,17 +142,18 @@ export class KitchenScene_MVP extends Scene {
     // Kitchen stations
     this.stations = [];
 
-    const stationSize = new Vector2(1.8, 2.0);
-    const startX = 0.4;
-    const startY = 1.2;
-    const verticalSpacing = 1.6;
+    // Spread stations apart so interaction zones do not chain together
+    const stationSize = new Vector2(1.45, 1.15);
+    const startX = 0.55;
+    const startY = 1.0;
+    const stationGap = 1.48;
 
-    // Top-to-bottom station order:
+    // Keep your intended top-to-bottom order:
     // Ramen, BBQ, Burger, Fried, Keg
     const stationTypes = ["pot", "grill", "oven", "prep", "special"];
 
     for (let i = 0; i < 5; i++) {
-      const pos = new Vector2(startX, startY + i * 0.8 * verticalSpacing);
+      const pos = new Vector2(startX, startY + i * stationGap);
       const station = new KitchenStation_MVP(game, pos, stationTypes[i]);
       station.size = stationSize;
 
@@ -132,38 +162,31 @@ export class KitchenScene_MVP extends Scene {
     }
 
     // Counter
-    this.counter = new Counter_MVP(game, new Vector2(4.5, 1.8));
-    this.counter.size = new Vector2(2.0, 5.7);
-
-    // Customer
-    this.customer = new Customer_MVP(game, new Vector2(12.2, 6.8), null);
-    this.customer.isVisible = false;
-    this.customer.state = "WAITING";
+    this.counter = new Counter_MVP(game, new Vector2(4.55, 1.65));
+    this.counter.size = new Vector2(1.9, 5.85);
 
     // Colliders
     this.colliders = [
-      { pos: new Vector2(0, 0), size: new Vector2(stationSize.x + startX - 0.6, 9) },
+      { pos: new Vector2(0, 0), size: new Vector2(1.45, 9) },
       { pos: this.counter.pos.add(new Vector2(1.0, 0)), size: this.counter.size.add(new Vector2(-1.0, -1.5)) },
     ];
 
-    // Register entities
-    this.entities.push(this.counter, this.player, this.customer);
+    // Register fixed entities
+    this.entities.push(this.counter, this.player);
 
     console.log("[Kitchen] Current phase:", this.phase);
     console.log("[Kitchen] Difficulty:", difficulty);
-    console.log("[Kitchen] Time of day:", this.time);
   }
 
   async update(events) {
-    
-
     const oldPos = new Vector2(this.player.pos.x, this.player.pos.y);
 
-    this.game.model.gameState.phaseProgress = 1 - (this.kitchenTimer / this.kitchenTimeLimit)
+    this.game.model.gameState.phaseProgress =
+      1 - (this.kitchenTimer / this.kitchenTimeLimit);
 
-    // Update entities manually so the customer does not update during planning
+    // Update entities manually so customers do not update during planning
     for (let entity of this.entities) {
-      if (entity === this.customer && this.phase === "PLANNING") {
+      if (entity instanceof Customer_MVP && this.phase === "PLANNING") {
         continue;
       }
       entity.update(events);
@@ -229,6 +252,7 @@ export class KitchenScene_MVP extends Scene {
 
       // Planning phase
       if (this.phase === "PLANNING") {
+        // Keep your original menu order
         if (event.key === "1") this._selectRecipe("rotten_burger");
         if (event.key === "2") this._selectRecipe("mutant_soup");
         if (event.key === "3") this._selectRecipe("toxic_stew");
@@ -236,12 +260,12 @@ export class KitchenScene_MVP extends Scene {
         if (event.key === "5") this._selectRecipe("ultimate_feast");
 
         if (event.key === "=" || event.key === "+") {
-        await this.game.soundManager.playSFX("woodButton");
+          await this.game.soundManager.playSFX("woodButton");
           this._tryIncreasePending();
         }
 
         if (event.key === "-" || event.key === "_") {
-            await this.game.soundManager.playSFX("woodButton");
+          await this.game.soundManager.playSFX("woodButton");
           this._decreasePending();
         }
 
@@ -274,17 +298,17 @@ export class KitchenScene_MVP extends Scene {
             this._selectRecipe(clickedButton.recipeId);
 
             if (clickedButton.action === "increase") {
-                  await this.game.soundManager.playSFX("woodButton");
+              await this.game.soundManager.playSFX("woodButton");
               this._tryIncreasePending();
             }
 
             if (clickedButton.action === "decrease") {
-                  await this.game.soundManager.playSFX("woodButton");
+              await this.game.soundManager.playSFX("woodButton");
               this._decreasePending();
             }
 
             if (clickedButton.action === "confirm") {
-               await this.game.soundManager.playSFX("kitchenDing");
+              await this.game.soundManager.playSFX("kitchenDing");
               this._confirmPendingDish();
             }
           }
@@ -307,6 +331,19 @@ export class KitchenScene_MVP extends Scene {
 
           this.productionManager.createFromTaskList(this.taskList, this.menu);
           this.orderQueue = this._buildOrderQueueFromTaskList();
+
+          this.totalOrdersToServe = this.orderQueue.length;
+          this.servedOrdersCount = 0;
+          this.customerSpawnTimer = 0.4;
+          this.currentOrder = null;
+
+          // clear old customers if any
+          for (const customer of this.customers) {
+            const idx = this.entities.indexOf(customer);
+            if (idx !== -1) this.entities.splice(idx, 1);
+          }
+          this.customers = [];
+
           this.phase = "PRODUCTION";
           this.timerStarted = true;
           this.kitchenTimer = this.kitchenTimeLimit;
@@ -315,7 +352,7 @@ export class KitchenScene_MVP extends Scene {
           this.isTaskListOpen = false;
 
           this._resetHoldCooking();
-          this._spawnNextCustomerOrder();
+          this._spawnRandomCustomerIfPossible();
           this.showMessage("Cooking started");
           console.log("[Kitchen] Entered PRODUCTION");
         }
@@ -338,26 +375,31 @@ export class KitchenScene_MVP extends Scene {
         }
       }
 
-      // Keep this if your ProductionManager has other housekeeping logic.
-      // In this design, cooking no longer uses async task timers.
       this.productionManager.updateAll(deltaTime / 1000);
 
-      this._updateHoldCooking();
+      this._updateCustomerMovement();
+      this._updateCustomerSpawning();
+      this._refreshCurrentOrderReference();
+      await this._updateHoldCooking();
 
-      if (this.customer.isVisible && this.currentOrder) {
-        this.customer.waitTimer = this.kitchenTimer;
+      for (const customer of this.customers) {
+        if (customer.isVisible && customer.order && customer._phase === "WAITING") {
+          customer.waitTimer = this.kitchenTimer;
+        }
       }
 
-      if (this.customer.isVisible === false && this.currentOrder === null) {
-        if (this.orderQueue.length > 0) {
-          this._spawnNextCustomerOrder();
-        } else {
-          this.success = true;
-          this.phase = "END";
-          this._resetHoldCooking();
-          this.showMessage("Night completed!");
-          console.log("[Kitchen] All orders served.");
-        }
+      const visibleCustomers = this.customers.filter(c => c.isVisible);
+
+      if (
+        this.servedOrdersCount >= this.totalOrdersToServe &&
+        this.orderQueue.length === 0 &&
+        visibleCustomers.length === 0
+      ) {
+        this.success = true;
+        this.phase = "END";
+        this._resetHoldCooking();
+        this.showMessage("Night completed!");
+        console.log("[Kitchen] All orders served.");
       }
     }
 
@@ -372,12 +414,22 @@ export class KitchenScene_MVP extends Scene {
   }
 
   draw() {
-
-    let background = this.game.assetManager.getImage(this.background);
-    image(background, 0, this.uiBar.size.y, this.game.view.size.x, this.game.view.size.y - this.uiBar.size.y);
-
+    const background = this.game.assetManager.getImage(this.background);
+    if (background) {
+      image(
+        background,
+        0,
+        this.uiBar.size.y,
+        this.game.view.size.x,
+        this.game.view.size.y - this.uiBar.size.y
+      );
+    }
 
     super.draw();
+
+    // station labels go below the stations
+    this._drawCustomerOrderLabels();
+    this._drawStationDishLabels();
 
     if (this.phase === "PLANNING") {
       this._drawPlanningCenterCards();
@@ -411,6 +463,10 @@ export class KitchenScene_MVP extends Scene {
     }
   }
 
+  // =========================================================
+  // CUSTOMER / ORDER FLOW
+  // =========================================================
+
   _buildOrderQueueFromTaskList() {
     const queue = [];
     const tasks = this.taskList.getTasks();
@@ -429,56 +485,187 @@ export class KitchenScene_MVP extends Scene {
     return queue;
   }
 
-  _spawnNextCustomerOrder() {
-    if (this.orderQueue.length === 0) {
-      this.currentOrder = null;
-      this.customer.order = null;
-      this.customer.isVisible = false;
-      return;
+  _getRandomSpawnInterval() {
+    return random(this.customerSpawnIntervalMin, this.customerSpawnIntervalMax);
+  }
+
+  _getAvailableCustomerSlotIndex() {
+    const occupied = new Set();
+
+    for (const customer of this.customers) {
+      if (customer.isVisible && typeof customer._slotIndex === "number") {
+        occupied.add(customer._slotIndex);
+      }
     }
+
+    const available = [];
+    for (let i = 0; i < this.customerTargetSlots.length; i++) {
+      if (!occupied.has(i)) available.push(i);
+    }
+
+    if (available.length === 0) return -1;
+    return random(available);
+  }
+
+  _spawnRandomCustomerIfPossible() {
+    if (this.orderQueue.length === 0) return false;
+
+    const visibleCount = this.customers.filter(c => c.isVisible).length;
+    if (visibleCount >= this.maxCustomersOnScreen) return false;
+
+    const slotIndex = this._getAvailableCustomerSlotIndex();
+    if (slotIndex === -1) return false;
 
     const recipeId = this.orderQueue.shift();
     const recipe = this.menu.getRecipe(recipeId);
+    if (!recipe) return false;
 
-    if (!recipe) {
-      console.log("[Kitchen] Invalid recipe for customer order:", recipeId);
-      this.currentOrder = null;
+    const targetPos = this.customerTargetSlots[slotIndex];
+
+    const customer = new Customer_MVP(
+      this.game,
+      new Vector2(this.customerSpawnX, targetPos.y),
+      null
+    );
+
+    customer.isVisible = true;
+    customer.order = new Order(recipe.id, recipe.rewardCoins);
+    customer.waitTimer = this.kitchenTimer;
+
+    // scene-controlled motion
+    customer._slotIndex = slotIndex;
+    customer._targetPos = new Vector2(targetPos.x, targetPos.y);
+    customer._phase = "ENTERING";
+    customer._customerId = this.nextCustomerId++;
+    customer.state = "ENTERING";
+
+    this.customers.push(customer);
+    this.entities.push(customer);
+
+    this.customerSpawnTimer = this._getRandomSpawnInterval();
+
+    console.log("[Kitchen] Spawned customer:", customer._customerId, recipe.id);
+    this.showMessage(`Customer wants ${this._getDisplayName(recipe.id)}`);
+    return true;
+  }
+
+  _updateCustomerSpawning() {
+    if (this.orderQueue.length === 0) return;
+
+    if (this.customers.filter(c => c.isVisible).length >= this.maxCustomersOnScreen) {
       return;
     }
 
-    this.currentOrder = new Order(recipe.id, recipe.rewardCoins);
-    this.customer.order = this.currentOrder;
-    this.customer.state = "WAITING";
-    this.customer.leaveTimer = 2;
-    this.customer.isVisible = true;
-    this.customer.pos.x = 12.2;
-    this.customer.pos.y = 6.8;
-    this.customer.waitTimer = this.kitchenTimer;
-
-    this._resetHoldCooking();
-
-    console.log("[Kitchen] New customer order:", recipe.id);
-    this.showMessage(`Customer wants ${this._getDisplayName(recipe.id)}`);
+    this.customerSpawnTimer -= deltaTime / 1000;
+    if (this.customerSpawnTimer <= 0) {
+      this._spawnRandomCustomerIfPossible();
+    }
   }
 
-  _getRelevantTaskForCurrentOrder() {
-    if (!this.currentOrder) return null;
+  _updateCustomerMovement() {
+    const dt = deltaTime / 1000;
 
-    const recipeId = this.currentOrder.recipeId;
+    for (const customer of this.customers) {
+      if (!customer.isVisible) continue;
+
+      if (customer._phase === "ENTERING") {
+        customer.pos.x -= this.customerMoveSpeed * dt;
+        customer.pos.y = customer._targetPos.y;
+
+        if (customer.pos.x <= customer._targetPos.x) {
+          customer.pos.x = customer._targetPos.x;
+          customer._phase = "WAITING";
+          customer.state = "WAITING";
+        }
+      } else if (customer._phase === "LEAVING") {
+        customer.pos.x += this.customerMoveSpeed * dt;
+
+        if (customer.pos.x >= this.customerLeaveX) {
+          customer.isVisible = false;
+          customer.order = null;
+        }
+      }
+    }
+
+    // remove invisible customers from entity list + array
+    const stillVisible = [];
+    for (const customer of this.customers) {
+      if (customer.isVisible) {
+        stillVisible.push(customer);
+      } else {
+        const idx = this.entities.indexOf(customer);
+        if (idx !== -1) this.entities.splice(idx, 1);
+      }
+    }
+    this.customers = stillVisible;
+  }
+
+  _getVisibleWaitingCustomers() {
+    return this.customers
+      .filter(c => c.isVisible && c.order && c._phase === "WAITING")
+      .sort((a, b) => a._customerId - b._customerId);
+  }
+
+  _refreshCurrentOrderReference() {
+    const waitingCustomers = this._getVisibleWaitingCustomers();
+    this.currentOrder = waitingCustomers.length > 0 ? waitingCustomers[0].order : null;
+  }
+
+  _findMatchingCustomerForHeldDish(recipeId) {
+    const waitingCustomers = this._getVisibleWaitingCustomers();
+    return waitingCustomers.find(c => c.order.recipeId === recipeId) || null;
+  }
+
+  _getRelevantTaskForCurrentCustomers() {
+    const waitingCustomers = this._getVisibleWaitingCustomers();
     const tasks = this.productionManager.getTasks();
 
-    return tasks.find(t => t.recipeId === recipeId && t.status === "PENDING") || null;
+    for (const customer of waitingCustomers) {
+      const recipeId = customer.order.recipeId;
+      const task = tasks.find(t => t.recipeId === recipeId && t.status === "PENDING");
+      if (task) {
+        return { customer, task };
+      }
+    }
+
+    return null;
+  }
+
+  _spawnNextCustomerOrder() {
+    // compatibility wrapper if any old code still calls this
+    this._spawnRandomCustomerIfPossible();
+  }
+
+  // =========================================================
+  // COOK / SERVE LOGIC
+  // =========================================================
+
+  _getStationType(station) {
+    return station.type || station.stationType || station.kind || null;
   }
 
   _getNearbyMatchingStation(recipe) {
     if (!recipe) return null;
 
+    let bestStation = null;
+    let bestDistance = Infinity;
+
     for (const station of this.stations) {
+      const stationType = this._getStationType(station);
+      if (stationType !== recipe.stationType) continue;
       if (!this.player.isNear(station)) continue;
-      if (station.canCook(recipe)) return station;
+
+      const dx = this.player.pos.x - station.pos.x;
+      const dy = this.player.pos.y - station.pos.y;
+      const distSq = dx * dx + dy * dy;
+
+      if (distSq < bestDistance) {
+        bestDistance = distSq;
+        bestStation = station;
+      }
     }
 
-    return null;
+    return bestStation;
   }
 
   _isInteractHeld() {
@@ -495,6 +682,7 @@ export class KitchenScene_MVP extends Scene {
     this.holdCookStation = null;
     this.holdCookProgress = 0;
     this.holdCookDuration = 0;
+    this.holdCookCustomerId = null;
   }
 
   _tryConsumeIngredientsForRecipe(recipeId) {
@@ -532,7 +720,6 @@ export class KitchenScene_MVP extends Scene {
     const spaceDown = this._isInteractHeld();
     this.spaceLastFrame = spaceDown;
 
-    // Stop hold if space is released
     if (!spaceDown) {
       if (this.holdCookProgress > 0) {
         this.showMessage("Cooking interrupted");
@@ -541,49 +728,35 @@ export class KitchenScene_MVP extends Scene {
       return;
     }
 
-    // If already holding the correct dish and standing near counter, serve directly
-    if (
-      this.currentOrder &&
-      this.player.heldDish &&
-      this.player.heldDish === this.currentOrder.recipeId &&
-      this.player.isNear(this.counter)
-    ) {
-      this._resetHoldCooking();
-      this._tryServeCurrentOrder();
-      return;
-    }
-
-    // No current order
-    if (!this.currentOrder) {
-      this._resetHoldCooking();
-      this.showMessage("No current order");
-      return;
-    }
-
-    // Already holding some dish: only next valid action is serve
+    // If holding a dish, try to serve a matching customer at the counter
     if (this.player.heldDish) {
+      const matchingCustomer = this._findMatchingCustomerForHeldDish(this.player.heldDish);
       this._resetHoldCooking();
 
-      if (this.player.heldDish === this.currentOrder.recipeId) {
-        if (this.player.isNear(this.counter)) {
-          this._tryServeCurrentOrder();
-        } else {
-          this.showMessage(`Serve ${this._getDisplayName(this.player.heldDish)} at counter`);
-        }
+      if (!matchingCustomer) {
+        this.showMessage("No customer wants this dish");
+        return;
+      }
+
+      if (this.player.isNear(this.counter)) {
+        this._tryServeMatchingCustomer(matchingCustomer);
       } else {
-        this.showMessage("Wrong dish in hand");
+        this.showMessage(`Serve ${this._getDisplayName(this.player.heldDish)} at counter`);
       }
       return;
     }
 
-    const activeTask = this._getRelevantTaskForCurrentOrder();
-    if (!activeTask) {
+    const target = this._getRelevantTaskForCurrentCustomers();
+    if (!target) {
       this._resetHoldCooking();
-      this.showMessage("No remaining task for this order");
+      this.showMessage("No remaining task for waiting customers");
       return;
     }
 
+    const activeTask = target.task;
+    const targetCustomer = target.customer;
     const recipe = this.menu.getRecipe(activeTask.recipeId);
+
     if (!recipe) {
       this._resetHoldCooking();
       this.showMessage("Recipe not found");
@@ -593,20 +766,22 @@ export class KitchenScene_MVP extends Scene {
     const station = this._getNearbyMatchingStation(recipe);
     if (!station) {
       this._resetHoldCooking();
-      this.showMessage("Move near the correct station");
+      this.showMessage(`Move near ${this._getDisplayName(activeTask.recipeId)} station`);
       return;
     }
 
-    // Start a new hold session
-    if (this.holdCookTaskId !== activeTask.id) {
+    if (
+      this.holdCookTaskId !== activeTask.id ||
+      this.holdCookCustomerId !== targetCustomer._customerId
+    ) {
       this.holdCookTaskId = activeTask.id;
       this.holdCookRecipeId = activeTask.recipeId;
       this.holdCookStation = station;
       this.holdCookProgress = 0;
       this.holdCookDuration = recipe.cookTime || 1;
+      this.holdCookCustomerId = targetCustomer._customerId;
     }
 
-    // If player moved away from the original station, cancel hold
     if (this.holdCookStation !== station) {
       this._resetHoldCooking();
       this.showMessage("Cooking interrupted");
@@ -624,8 +799,6 @@ export class KitchenScene_MVP extends Scene {
       return;
     }
 
-    // HOLD TIME IS THE FULL COOK TIME:
-    // once finished, consume ingredients and directly put dish in player's hand
     const cooked = this._tryConsumeIngredientsForRecipe(activeTask.recipeId);
 
     if (!cooked) {
@@ -638,21 +811,21 @@ export class KitchenScene_MVP extends Scene {
     this._completeHeldDishTask(activeTask);
 
     this._resetHoldCooking();
-    await this.game.soundManager.playSFX("kitchenDing"); 
+    await this.game.soundManager.playSFX("kitchenDing");
     this.showMessage(`Cooked ${this._getDisplayName(activeTask.recipeId)}`);
   }
 
-  _tryServeCurrentOrder() {
-    if (!this.currentOrder) {
-      this.showMessage("No current order");
+  _tryServeMatchingCustomer(customer) {
+    if (!customer || !customer.order) {
+      this.showMessage("No matching customer");
       return;
     }
 
-    const servedRecipeId = this.currentOrder.recipeId;
+    const servedRecipeId = customer.order.recipeId;
 
     const served = this.counter.tryServe(
       this.player,
-      this.customer,
+      customer,
       this.state,
       {
         completeOrder: (order, state) => {
@@ -669,13 +842,30 @@ export class KitchenScene_MVP extends Scene {
       return;
     }
 
-    console.log("[Kitchen] Served:", servedRecipeId);
+    this.servedOrdersCount += 1;
+    customer._phase = "LEAVING";
+    customer.state = "SERVED";
+
+    console.log("[Kitchen] Served:", servedRecipeId, "for customer", customer._customerId);
     this.showMessage(`Served ${this._getDisplayName(servedRecipeId)}!`);
 
-    this.currentOrder = null;
-    this.customer.order = null;
-
     this._resetHoldCooking();
+  }
+
+  _tryServeCurrentOrder() {
+    // compatibility wrapper
+    if (!this.player.heldDish) {
+      this.showMessage("Wrong dish or no dish");
+      return;
+    }
+
+    const customer = this._findMatchingCustomerForHeldDish(this.player.heldDish);
+    if (!customer) {
+      this.showMessage("No customer wants this dish");
+      return;
+    }
+
+    this._tryServeMatchingCustomer(customer);
   }
 
   _removeOneCollectedTask(recipeId) {
@@ -688,6 +878,10 @@ export class KitchenScene_MVP extends Scene {
       tasks.splice(index, 1);
     }
   }
+
+  // =========================================================
+  // PLANNING HELPERS
+  // =========================================================
 
   _selectRecipe(recipeId) {
     if (this.pendingRecipeId !== recipeId) {
@@ -836,6 +1030,10 @@ export class KitchenScene_MVP extends Scene {
     };
   }
 
+  // =========================================================
+  // UI DRAWING
+  // =========================================================
+
   _drawPlanningCenterCards() {
     const layout = this._getPlanningBoardLayout();
 
@@ -850,6 +1048,37 @@ export class KitchenScene_MVP extends Scene {
     text("Night Prep", width / 2, layout.boardY + 16);
     pop();
   }
+
+  _drawCustomerOrderLabels() {
+  if (this.phase !== "PRODUCTION") return;
+  if (!this.customers || this.customers.length === 0) return;
+
+  push();
+
+  for (const customer of this.customers) {
+    if (!customer.isVisible || !customer.order) continue;
+
+    const relPos = this.game.view.localToScreen(customer.pos);
+    const dishName = this._getDisplayName(customer.order.recipeId);
+
+    const boxW = 120;
+    const boxH = 28;
+    const boxX = relPos.x - boxW / 2;
+    const boxY = relPos.y - 38;
+
+    fill(255, 248, 220, 235);
+    stroke(80, 60, 20);
+    rect(boxX, boxY, boxW, boxH, 6);
+
+    fill(20);
+    noStroke();
+    textAlign(CENTER, CENTER);
+    textSize(13);
+    text(dishName, boxX + boxW / 2, boxY + boxH / 2);
+  }
+
+  pop();
+}
 
   _drawPlanningInstructionsInsideBoard() {
     if (this.phase !== "PLANNING") return;
@@ -1217,7 +1446,9 @@ export class KitchenScene_MVP extends Scene {
     if (this.holdCookProgress <= 0) return;
 
     const relPos = this.game.view.localToScreen(this.holdCookStation.pos);
-    const relSize = this.game.view.localToScreen(this.holdCookStation.size);
+    const scale = this._getWorldScale();
+    const drawW = this.holdCookStation.size.x * scale.x;
+    const drawH = this.holdCookStation.size.y * scale.y;
 
     const remain = Math.max(0, this.holdCookDuration - this.holdCookProgress);
     const labelText = `Cooking ${remain.toFixed(1)}s`;
@@ -1228,7 +1459,7 @@ export class KitchenScene_MVP extends Scene {
     const badgeMarginY = 8;
     const badgeX = relPos.x + badgeMarginX;
     const badgeY = relPos.y + badgeMarginY;
-    const badgeW = Math.max(80, relSize.x - badgeMarginX * 2);
+    const badgeW = Math.max(80, drawW - badgeMarginX * 2);
     const badgeH = 26;
 
     fill(255, 244, 170, 235);
@@ -1245,40 +1476,51 @@ export class KitchenScene_MVP extends Scene {
     pop();
   }
 
-  _getCookCountdownText(task) {
-    if (!task) return "...";
+  _drawStationDishLabels() {
+    push();
 
-    if (typeof task.remainingTime === "number") {
-      return `${Math.max(0, Math.ceil(task.remainingTime))}s`;
+    const scale = this._getWorldScale();
+
+    for (const station of this.stations) {
+      const stationType = this._getStationType(station);
+      const label = this.stationDishLabels[stationType] || stationType || "STATION";
+
+      const relPos = this.game.view.localToScreen(station.pos);
+      const drawW = station.size.x * scale.x;
+      const drawH = station.size.y * scale.y;
+
+      const labelW = 116;
+      const labelH = 26;
+      const labelX = relPos.x + drawW / 2 - labelW / 2;
+      const labelY = relPos.y + drawH + 8;
+
+      fill(255, 248, 220, 235);
+      stroke(80, 60, 20);
+      rect(labelX, labelY, labelW, labelH, 6);
+
+      fill(20);
+      noStroke();
+      textAlign(CENTER, CENTER);
+      textSize(13);
+      text(label, labelX + labelW / 2, labelY + labelH / 2);
     }
 
-    if (typeof task.timeLeft === "number") {
-      return `${Math.max(0, Math.ceil(task.timeLeft))}s`;
-    }
-
-    if (typeof task.cookTimer === "number") {
-      return `${Math.max(0, Math.ceil(task.cookTimer))}s`;
-    }
-
-    if (typeof task.timer === "number") {
-      return `${Math.max(0, Math.ceil(task.timer))}s`;
-    }
-
-    if (typeof task.elapsedTime === "number" && typeof task.totalTime === "number") {
-      return `${Math.max(0, Math.ceil(task.totalTime - task.elapsedTime))}s`;
-    }
-
-    if (typeof task.progress === "number" && typeof task.totalTime === "number") {
-      return `${Math.max(0, Math.ceil(task.totalTime - task.progress))}s`;
-    }
-
-    const recipe = this.menu.getRecipe(task.recipeId);
-    if (recipe && typeof recipe.cookTime === "number") {
-      return `~${Math.ceil(recipe.cookTime)}s`;
-    }
-
-    return "Cooking...";
+    pop();
   }
+
+  _getWorldScale() {
+    const origin = this.game.view.localToScreen(new Vector2(0, 0));
+    const one = this.game.view.localToScreen(new Vector2(1, 1));
+
+    return {
+      x: Math.abs(one.x - origin.x),
+      y: Math.abs(one.y - origin.y),
+    };
+  }
+
+  // =========================================================
+  // SMALL HELPERS
+  // =========================================================
 
   _getClickedMenuButton(mx, my) {
     if (!this.isMenuOpen) return null;
@@ -1345,9 +1587,12 @@ export class KitchenScene_MVP extends Scene {
     this.productionManager.clear();
     this._loggedDoneTaskIds.clear();
 
-    this.customer.isVisible = false;
-    this.customer.order = null;
-    this.customer.state = "WAITING";
+    for (const customer of this.customers) {
+      const idx = this.entities.indexOf(customer);
+      if (idx !== -1) this.entities.splice(idx, 1);
+    }
+    this.customers = [];
+    this.currentOrder = null;
 
     this._resetHoldCooking();
 
@@ -1373,5 +1618,4 @@ export class KitchenScene_MVP extends Scene {
       aMaxY > bMinY
     );
   }
-  
 }
