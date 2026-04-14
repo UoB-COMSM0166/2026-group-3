@@ -3,7 +3,7 @@ import { Vector2 } from "../Utility/Vector2.js";
 
 export class KitchenStation_MVP extends Entity {
   constructor(game, pos, stationType) {
-    super(game, pos, new Vector2(1.2, 1.0));
+    super(game, pos, new Vector2());
 
     this.stationType = stationType;
     this.currentTask = null;
@@ -72,16 +72,20 @@ export class KitchenStation_MVP extends Entity {
     const relPos = this.game.view.localToScreen(this.pos);
     const relSize = this.game.view.localToScreen(this.size);
 
-    stroke(0);
-    fill(this._getStationColor());
-    rect(relPos.x, relPos.y, relSize.x, relSize.y);
+    let sprite = this.game.assetManager.getImage(this._getStationLabel());
+    image(sprite, relPos.x, relPos.y, relSize.x, relSize.y);
 
-    const label = this._getStationLabel();
 
-    fill(0);
-    noStroke();
-    textSize(12);
-    textAlign(CENTER, BOTTOM);
-    text(label, relPos.x + relSize.x / 2, relPos.y - 4);
+    // stroke(0);
+    // fill(this._getStationColor());
+    // rect(relPos.x, relPos.y, relSize.x, relSize.y);
+
+    // const label = this._getStationLabel();
+
+    // fill(0);
+    // noStroke();
+    // textSize(12);
+    // textAlign(CENTER, BOTTOM);
+    // text(label, relPos.x + relSize.x / 2, relPos.y - 4);
   }
 }

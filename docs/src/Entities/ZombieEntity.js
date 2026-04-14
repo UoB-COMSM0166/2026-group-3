@@ -67,7 +67,7 @@ export class ZombieEntity extends Entity {
         if (this.health<=0) {
 
             //Temp Code to add Money on Death
-            this.game.model.gameState.coins+=Math.floor(random(3, 8));
+            //this.game.model.gameState.coins+=Math.floor(random(3, 8));
 
             let zombieManager = this.game.model.scene.zombieManager
 

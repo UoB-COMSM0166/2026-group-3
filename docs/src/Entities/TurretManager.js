@@ -31,12 +31,12 @@ export class TurretManager extends Entity{
             if (targetPos.withinBox(pos, this.spaceSize)){
                 if (this.scene.getEntities("Turret") != null){
                     for (let placedTurret of this.scene.getEntities("Turret")){
-                        if (placedTurret.pos.y - 0.25 == pos.y){
+                        if (placedTurret.pos.y == pos.y){
                             return null;
                         }
                     }
                 }
-                return pos.add(new Vector2(0.25,0.25));
+                return pos;
             }
         }
         return null;

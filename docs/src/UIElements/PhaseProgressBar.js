@@ -28,8 +28,7 @@ export class PhaseProgressBar extends UIElement {
 
 
         let dayNightBoundary = xMin + (xSize * phaseProgress)
-
-        line(dayNightBoundary, this.pos.y, dayNightBoundary, this.pos.y + this.size.y);
+        
 
         let sunPos = null;
         let moonPos = null
@@ -67,6 +66,11 @@ export class PhaseProgressBar extends UIElement {
         strokeWeight(this.style.outlineWidth);
 
         rect(this.pos.x, this.pos.y, this.size.x, this.size.y, this.style.rounding);
+
+        stroke(color(200,50,50))
+        strokeWeight((3))
+
+        line(dayNightBoundary, this.pos.y, dayNightBoundary, this.pos.y + this.size.y);
 
 
         

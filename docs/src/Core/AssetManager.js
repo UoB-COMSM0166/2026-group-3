@@ -12,6 +12,9 @@ export class AssetManager {
         //Add all image loads here:
 
         this.loadImage("ChefShootingIdle","./assets/chefshootingidle.png");
+        this.loadImage("Chef Cooking","./assets/chefcooking.gif");
+        this.loadImage("Chef Walking","./assets/chefwalking.gif");
+        this.loadImage("Turret", "./assets/turret.gif");
 
         //Zombie Sprites
         this.loadImage("BasicZombieWalking","./assets/zombiewalking.gif");
@@ -26,6 +29,19 @@ export class AssetManager {
         this.loadImage("Zombie Drumstick","./assets/drops/zombieDrumstick.png");
         this.loadImage("Zombie Juice","./assets/drops/zombieJuice.png");
         this.loadImage("Zombie Mince","./assets/drops/zombieMince.png");
+
+        //Kitchen Scene Assets
+        this.loadImage("Kitchen Background","./assets/kitchen/background.png")
+        this.loadImage("BBQ","./assets/kitchen/bbq.png")
+        this.loadImage("Burger","./assets/kitchen/burgerstation.png")
+        this.loadImage("Fried","./assets/kitchen/fried.png")
+        this.loadImage("Keg","./assets/kitchen/keg.png")
+        this.loadImage("Ramen","./assets/kitchen/ramenpot.png")
+        this.loadImage("Counter","./assets/kitchen/counter.png")
+
+
+
+
 
         // for testing loading:
 

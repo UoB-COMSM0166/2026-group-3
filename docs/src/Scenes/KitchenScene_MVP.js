@@ -22,11 +22,8 @@ export class KitchenScene_MVP extends Scene {
 
     // Shared game state
     this.state = this.game.model.gameState;
+    this.state.time = "Day";
     this.menu = new MenuData();
-
-    // Force kitchen to always use night time
-    this.time = "Night";
-    this.game.model.gameState.time = "Night";
 
     // Core managers
     this.taskList = new TaskList();
@@ -73,6 +70,9 @@ export class KitchenScene_MVP extends Scene {
     this.menuOpenTab = null;
     this.taskOpenTab = null;
 
+    //Image
+    this.background = "Kitchen Background";
+
     // UI layout helpers
     this.planningUIAutoVisible = true;
 
@@ -108,15 +108,14 @@ export class KitchenScene_MVP extends Scene {
 
     // Player
     this.player = new PlayerChef_MVP(game);
-    this.player.pos = new Vector2(6.2, 7.0);
-    this.player.size = new Vector2(0.7, 0.7);
+    this.player.pos = new Vector2(2.2, 4.0);
 
     // Kitchen stations
     this.stations = [];
 
-    const stationSize = new Vector2(2.0, 1.2);
-    const startX = 3.0;
-    const startY = 0.8;
+    const stationSize = new Vector2(1.8, 2.0);
+    const startX = 0.4;
+    const startY = 1.2;
     const verticalSpacing = 1.6;
 
     // Top-to-bottom station order:
@@ -124,7 +123,7 @@ export class KitchenScene_MVP extends Scene {
     const stationTypes = ["pot", "grill", "oven", "prep", "special"];
 
     for (let i = 0; i < 5; i++) {
-      const pos = new Vector2(startX, startY + i * verticalSpacing);
+      const pos = new Vector2(startX, startY + i * 0.8 * verticalSpacing);
       const station = new KitchenStation_MVP(game, pos, stationTypes[i]);
       station.size = stationSize;
 
@@ -133,8 +132,8 @@ export class KitchenScene_MVP extends Scene {
     }
 
     // Counter
-    this.counter = new Counter_MVP(game, new Vector2(8.2, 0.8));
-    this.counter.size = new Vector2(1.2, 7.4);
+    this.counter = new Counter_MVP(game, new Vector2(4.5, 1.8));
+    this.counter.size = new Vector2(2.0, 5.7);
 
     // Customer
     this.customer = new Customer_MVP(game, new Vector2(12.2, 6.8), null);
@@ -143,12 +142,12 @@ export class KitchenScene_MVP extends Scene {
 
     // Colliders
     this.colliders = [
-      { pos: new Vector2(0, 0), size: new Vector2(4.8, 9) },
-      { pos: this.counter.pos, size: this.counter.size },
+      { pos: new Vector2(0, 0), size: new Vector2(stationSize.x + startX - 0.6, 9) },
+      { pos: this.counter.pos.add(new Vector2(1.0, 0)), size: this.counter.size.add(new Vector2(-1.0, -1.5)) },
     ];
 
     // Register entities
-    this.entities.push(this.player, this.counter, this.customer);
+    this.entities.push(this.counter, this.player, this.customer);
 
     console.log("[Kitchen] Current phase:", this.phase);
     console.log("[Kitchen] Difficulty:", difficulty);
@@ -156,16 +155,11 @@ export class KitchenScene_MVP extends Scene {
   }
 
   update(events) {
-    this.time = "Night";
-    this.state.time = "Night";
-    this.game.model.gameState.time = "Night";
+    
 
     const oldPos = new Vector2(this.player.pos.x, this.player.pos.y);
 
-    // Keep shooter progress bar on moon
-    if (this.game.model.gameState.phaseProgress >= 0.5) {
-      this.game.model.gameState.phaseProgress = 0.25;
-    }
+    this.game.model.gameState.phaseProgress = 1 - (this.kitchenTimer / this.kitchenTimeLimit)
 
     // Update entities manually so the customer does not update during planning
     for (let entity of this.entities) {
@@ -373,6 +367,11 @@ export class KitchenScene_MVP extends Scene {
   }
 
   draw() {
+
+    let background = this.game.assetManager.getImage(this.background);
+    image(background, 0, this.uiBar.size.y, this.game.view.size.x, this.game.view.size.y - this.uiBar.size.y);
+
+
     super.draw();
 
     if (this.phase === "PLANNING") {

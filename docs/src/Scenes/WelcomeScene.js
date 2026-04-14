@@ -106,7 +106,7 @@ export class WelcomeScene extends Scene {
     this.testKitchenButton.onClick = () => {
       this.game.model.difficulty = "normal";
       this.game.model.gameState.inventory = new Inventory({
-            zombie_meat: 3,
+            "Zombie Mince": 6,
             toxic_slime: 1,
             bone_fragments: 1,
             spice_powder: 2,

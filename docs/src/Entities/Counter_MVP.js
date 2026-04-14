@@ -4,6 +4,7 @@ import { Vector2 } from "../Utility/Vector2.js";
 export class Counter_MVP extends Entity {
   constructor(game, pos) {
     super(game, pos, new Vector2(3.0, 0.8));
+    this.sprite = "Counter";
   }
 
   tryServe(player, customer, state, orderSystem) {
@@ -46,8 +47,8 @@ export class Counter_MVP extends Entity {
     const relPos = this.game.view.localToScreen(this.pos);
     const relSize = this.game.view.localToScreen(this.size);
 
-    stroke(0);
-    fill(180, 160, 220);
-    rect(relPos.x, relPos.y, relSize.x, relSize.y);
+    let sprite = this.game.assetManager.getImage(this.sprite);
+    image(sprite, relPos.x, relPos.y, relSize.x, relSize.y);
+  
   }
 }
