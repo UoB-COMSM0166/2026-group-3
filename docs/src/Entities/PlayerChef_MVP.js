@@ -2,10 +2,56 @@ import { Entity } from "../Core/Entity.js";
 import { Vector2 } from "../Utility/Vector2.js";
 
 export class PlayerChef_MVP extends Entity {
+  static keysDown = {};
+  static inputInitialized = false;
+
+  static initInput() {
+    if (PlayerChef_MVP.inputInitialized) return;
+    PlayerChef_MVP.inputInitialized = true;
+
+    window.addEventListener("keydown", (e) => {
+      PlayerChef_MVP.keysDown[e.code] = true;
+
+      if (
+        e.code === "ArrowLeft" ||
+        e.code === "ArrowRight" ||
+        e.code === "ArrowUp" ||
+        e.code === "ArrowDown" ||
+        e.code === "KeyW" ||
+        e.code === "KeyA" ||
+        e.code === "KeyS" ||
+        e.code === "KeyD" ||
+        e.code === "Space"
+      ) {
+        e.preventDefault();
+      }
+    });
+
+    window.addEventListener("keyup", (e) => {
+      PlayerChef_MVP.keysDown[e.code] = false;
+
+      if (
+        e.code === "ArrowLeft" ||
+        e.code === "ArrowRight" ||
+        e.code === "ArrowUp" ||
+        e.code === "ArrowDown" ||
+        e.code === "KeyW" ||
+        e.code === "KeyA" ||
+        e.code === "KeyS" ||
+        e.code === "KeyD" ||
+        e.code === "Space"
+      ) {
+        e.preventDefault();
+      }
+    });
+  }
+
   constructor(game) {
     super(game, new Vector2(15, 8), new Vector2(0.7, 0.7));
     this.speed = 0.1;
-    this.heldDish = null; // recipeId string
+    this.heldDish = null;
+
+    PlayerChef_MVP.initInput();
   }
 
   isNear(target, padding = 0.2) {
@@ -24,11 +70,37 @@ export class PlayerChef_MVP extends Entity {
     return overlapX && overlapY;
   }
 
+  isInteractHeld() {
+    return !!PlayerChef_MVP.keysDown["Space"];
+  }
+
   update(events) {
-    if (keyIsDown(LEFT_ARROW)) this.pos.x -= this.speed;
-    if (keyIsDown(RIGHT_ARROW)) this.pos.x += this.speed;
-    if (keyIsDown(UP_ARROW)) this.pos.y -= this.speed;
-    if (keyIsDown(DOWN_ARROW)) this.pos.y += this.speed;
+    let dx = 0;
+    let dy = 0;
+
+    const left =
+      PlayerChef_MVP.keysDown["ArrowLeft"] ||
+      PlayerChef_MVP.keysDown["KeyA"];
+
+    const right =
+      PlayerChef_MVP.keysDown["ArrowRight"] ||
+      PlayerChef_MVP.keysDown["KeyD"];
+
+    const up =
+      PlayerChef_MVP.keysDown["ArrowUp"] ||
+      PlayerChef_MVP.keysDown["KeyW"];
+
+    const down =
+      PlayerChef_MVP.keysDown["ArrowDown"] ||
+      PlayerChef_MVP.keysDown["KeyS"];
+
+    if (left) dx -= 1;
+    if (right) dx += 1;
+    if (up) dy -= 1;
+    if (down) dy += 1;
+
+    this.pos.x += dx * this.speed;
+    this.pos.y += dy * this.speed;
 
     const maxX = this.game.gridSize.x - this.size.x;
     const maxY = this.game.gridSize.y - this.size.y;
