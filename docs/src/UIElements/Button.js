@@ -13,7 +13,7 @@ export class Button extends Label {
 
     onClick(){}
 
-    update(events){
+    async update(events){
         if (!this.isVisible || !this.active) { return; }
         if (this.parent!=this.game.view && !this.parent.isVisible) { return; }
 
@@ -25,9 +25,14 @@ export class Button extends Label {
         for (let event of events){
             if (event.type == "click"){
                 if (mousePos.withinBox(this.pos, this.size)){
-                    this.onClick();
+                   await this.game.soundManager.playSFX("woodButton");
+                    this.onClick();        
                 }
             }
         }
     }
-}
+    
+    }
+
+  
+    

@@ -154,7 +154,7 @@ export class KitchenScene_MVP extends Scene {
     console.log("[Kitchen] Time of day:", this.time);
   }
 
-  update(events) {
+  async update(events) {
     
 
     const oldPos = new Vector2(this.player.pos.x, this.player.pos.y);
@@ -236,10 +236,12 @@ export class KitchenScene_MVP extends Scene {
         if (event.key === "5") this._selectRecipe("ultimate_feast");
 
         if (event.key === "=" || event.key === "+") {
+        await this.game.soundManager.playSFX("woodButton");
           this._tryIncreasePending();
         }
 
         if (event.key === "-" || event.key === "_") {
+            await this.game.soundManager.playSFX("woodButton");
           this._decreasePending();
         }
 
@@ -272,14 +274,17 @@ export class KitchenScene_MVP extends Scene {
             this._selectRecipe(clickedButton.recipeId);
 
             if (clickedButton.action === "increase") {
+                  await this.game.soundManager.playSFX("woodButton");
               this._tryIncreasePending();
             }
 
             if (clickedButton.action === "decrease") {
+                  await this.game.soundManager.playSFX("woodButton");
               this._decreasePending();
             }
 
             if (clickedButton.action === "confirm") {
+               await this.game.soundManager.playSFX("kitchenDing");
               this._confirmPendingDish();
             }
           }
@@ -523,7 +528,7 @@ export class KitchenScene_MVP extends Scene {
     }
   }
 
-  _updateHoldCooking() {
+  async _updateHoldCooking() {
     const spaceDown = this._isInteractHeld();
     this.spaceLastFrame = spaceDown;
 
@@ -633,6 +638,7 @@ export class KitchenScene_MVP extends Scene {
     this._completeHeldDishTask(activeTask);
 
     this._resetHoldCooking();
+    await this.game.soundManager.playSFX("kitchenDing"); 
     this.showMessage(`Cooked ${this._getDisplayName(activeTask.recipeId)}`);
   }
 
@@ -1367,4 +1373,5 @@ export class KitchenScene_MVP extends Scene {
       aMaxY > bMinY
     );
   }
+  
 }
