@@ -44,6 +44,7 @@ export class KitchenScene_MVP extends Scene {
     } else {
       this.kitchenTimeLimit = 60;
     }
+
     this.kitchenTimer = this.kitchenTimeLimit;
     this.timerStarted = false;
 
@@ -78,6 +79,14 @@ export class KitchenScene_MVP extends Scene {
     // Pending dish editor state
     this.pendingRecipeId = "toxic_stew";
     this.pendingQuantity = 0;
+
+    // Hold-to-cook state
+    this.holdCookTaskId = null;
+    this.holdCookRecipeId = null;
+    this.holdCookStation = null;
+    this.holdCookProgress = 0;
+    this.holdCookDuration = 0;
+    this.spaceLastFrame = false;
 
     // Placeholder descriptions
     this.recipeDescriptions = {
@@ -153,7 +162,7 @@ export class KitchenScene_MVP extends Scene {
 
     const oldPos = new Vector2(this.player.pos.x, this.player.pos.y);
 
-    // Keep shooter top bar on moon
+    // Keep shooter progress bar on moon
     if (this.game.model.gameState.phaseProgress >= 0.5) {
       this.game.model.gameState.phaseProgress = 0.25;
     }
@@ -306,23 +315,10 @@ export class KitchenScene_MVP extends Scene {
           this.isMenuOpen = false;
           this.isTaskListOpen = false;
 
+          this._resetHoldCooking();
           this._spawnNextCustomerOrder();
           this.showMessage("Cooking started");
           console.log("[Kitchen] Entered PRODUCTION");
-        }
-      }
-
-      // Production phase
-      if (this.phase === "PRODUCTION") {
-        const isSpacePressed = event.key === " " || event.keyCode === 32;
-
-        if (isSpacePressed) {
-          if (this.player.isNear(this.counter)) {
-            this._tryServeCurrentOrder();
-            continue;
-          }
-
-          this._handleProductionCook();
         }
       }
     }
@@ -336,20 +332,18 @@ export class KitchenScene_MVP extends Scene {
           this.kitchenTimer = 0;
           this.success = false;
           this.phase = "END";
+          this._resetHoldCooking();
           this.showMessage("Time up!");
           console.log("[Kitchen] Time up. Kitchen failed.");
           return;
         }
       }
 
+      // Keep this if your ProductionManager has other housekeeping logic.
+      // In this design, cooking no longer uses async task timers.
       this.productionManager.updateAll(deltaTime / 1000);
 
-      for (const task of this.productionManager.getDoneTasks()) {
-        if (!this._loggedDoneTaskIds.has(task.id)) {
-          this._loggedDoneTaskIds.add(task.id);
-          console.log("[Kitchen] Task is now DONE:", task);
-        }
-      }
+      this._updateHoldCooking();
 
       if (this.customer.isVisible && this.currentOrder) {
         this.customer.waitTimer = this.kitchenTimer;
@@ -361,6 +355,7 @@ export class KitchenScene_MVP extends Scene {
         } else {
           this.success = true;
           this.phase = "END";
+          this._resetHoldCooking();
           this.showMessage("Night completed!");
           console.log("[Kitchen] All orders served.");
         }
@@ -402,6 +397,7 @@ export class KitchenScene_MVP extends Scene {
       fill(255, 245, 200);
       stroke(0);
       rect(20, 500, 360, 30);
+
       fill(0);
       noStroke();
       textSize(13);
@@ -455,94 +451,190 @@ export class KitchenScene_MVP extends Scene {
     this.customer.pos.y = 6.8;
     this.customer.waitTimer = this.kitchenTimer;
 
+    this._resetHoldCooking();
+
     console.log("[Kitchen] New customer order:", recipe.id);
     this.showMessage(`Customer wants ${this._getDisplayName(recipe.id)}`);
   }
 
   _getRelevantTaskForCurrentOrder() {
     if (!this.currentOrder) return null;
+
     const recipeId = this.currentOrder.recipeId;
     const tasks = this.productionManager.getTasks();
 
-    let task = tasks.find(t => t.recipeId === recipeId && t.status === "DONE");
-    if (task) return task;
+    return tasks.find(t => t.recipeId === recipeId && t.status === "PENDING") || null;
+  }
 
-    task = tasks.find(t => t.recipeId === recipeId && t.status === "PENDING");
-    if (task) return task;
+  _getNearbyMatchingStation(recipe) {
+    if (!recipe) return null;
 
-    task = tasks.find(t => t.recipeId === recipeId && t.status === "COOKING");
-    if (task) return task;
-
-    task = tasks.find(t => t.recipeId === recipeId && t.status === "COLLECTED");
-    if (task) return task;
+    for (const station of this.stations) {
+      if (!this.player.isNear(station)) continue;
+      if (station.canCook(recipe)) return station;
+    }
 
     return null;
   }
 
-  _handleProductionCook() {
+  _isInteractHeld() {
+    if (this.player && typeof this.player.isInteractHeld === "function") {
+      return this.player.isInteractHeld();
+    }
+
+    return keyIsDown(32);
+  }
+
+  _resetHoldCooking() {
+    this.holdCookTaskId = null;
+    this.holdCookRecipeId = null;
+    this.holdCookStation = null;
+    this.holdCookProgress = 0;
+    this.holdCookDuration = 0;
+  }
+
+  _tryConsumeIngredientsForRecipe(recipeId) {
+    const recipe = this.menu.getRecipe(recipeId);
+    if (!recipe) return false;
+
+    const inventory = this.state?.inventory;
+    const items = inventory?.items;
+    if (!items) return false;
+
+    for (const [ingredient, amount] of Object.entries(recipe.requirements)) {
+      const have = items[ingredient] || 0;
+      if (have < amount) {
+        return false;
+      }
+    }
+
+    for (const [ingredient, amount] of Object.entries(recipe.requirements)) {
+      items[ingredient] -= amount;
+    }
+
+    return true;
+  }
+
+  _completeHeldDishTask(task) {
+    const tasks = this.productionManager.tasks;
+    const index = tasks.findIndex(t => t.id === task.id);
+
+    if (index !== -1) {
+      tasks.splice(index, 1);
+    }
+  }
+
+  _updateHoldCooking() {
+    const spaceDown = this._isInteractHeld();
+    this.spaceLastFrame = spaceDown;
+
+    // Stop hold if space is released
+    if (!spaceDown) {
+      if (this.holdCookProgress > 0) {
+        this.showMessage("Cooking interrupted");
+      }
+      this._resetHoldCooking();
+      return;
+    }
+
+    // If already holding the correct dish and standing near counter, serve directly
+    if (
+      this.currentOrder &&
+      this.player.heldDish &&
+      this.player.heldDish === this.currentOrder.recipeId &&
+      this.player.isNear(this.counter)
+    ) {
+      this._resetHoldCooking();
+      this._tryServeCurrentOrder();
+      return;
+    }
+
+    // No current order
     if (!this.currentOrder) {
-      this.showMessage("No current customer order");
+      this._resetHoldCooking();
+      this.showMessage("No current order");
+      return;
+    }
+
+    // Already holding some dish: only next valid action is serve
+    if (this.player.heldDish) {
+      this._resetHoldCooking();
+
+      if (this.player.heldDish === this.currentOrder.recipeId) {
+        if (this.player.isNear(this.counter)) {
+          this._tryServeCurrentOrder();
+        } else {
+          this.showMessage(`Serve ${this._getDisplayName(this.player.heldDish)} at counter`);
+        }
+      } else {
+        this.showMessage("Wrong dish in hand");
+      }
       return;
     }
 
     const activeTask = this._getRelevantTaskForCurrentOrder();
     if (!activeTask) {
+      this._resetHoldCooking();
       this.showMessage("No remaining task for this order");
       return;
     }
 
-    const targetRecipeId = activeTask.recipeId;
-
-    for (const station of this.stations) {
-      if (this.player.isNear(station)) {
-        const recipe = this.menu.getRecipe(targetRecipeId);
-        if (!recipe) {
-          this.showMessage("Recipe not found");
-          return;
-        }
-
-        if (!station.canCook(recipe)) {
-          this.showMessage("Wrong station");
-          return;
-        }
-
-        if (activeTask.status === "PENDING") {
-          const started = station.tryCook(this.state, this.menu, targetRecipeId);
-
-          if (started) {
-            activeTask.start();
-            this.showMessage(`Cooking ${this._getDisplayName(targetRecipeId)}`);
-          } else {
-            this.showMessage("Not enough ingredients");
-          }
-          return;
-        }
-
-        if (activeTask.status === "DONE") {
-          if (this.player.heldDish) {
-            this.showMessage("Already holding a dish");
-            return;
-          }
-
-          this.player.heldDish = activeTask.recipeId;
-          activeTask.collect();
-          this.showMessage(`Collected ${this._getDisplayName(activeTask.recipeId)}`);
-          return;
-        }
-
-        if (activeTask.status === "COOKING") {
-          this.showMessage("Still cooking");
-          return;
-        }
-
-        if (activeTask.status === "COLLECTED") {
-          this.showMessage("Dish ready - serve at counter");
-          return;
-        }
-      }
+    const recipe = this.menu.getRecipe(activeTask.recipeId);
+    if (!recipe) {
+      this._resetHoldCooking();
+      this.showMessage("Recipe not found");
+      return;
     }
 
-    this.showMessage("Move near the correct station");
+    const station = this._getNearbyMatchingStation(recipe);
+    if (!station) {
+      this._resetHoldCooking();
+      this.showMessage("Move near the correct station");
+      return;
+    }
+
+    // Start a new hold session
+    if (this.holdCookTaskId !== activeTask.id) {
+      this.holdCookTaskId = activeTask.id;
+      this.holdCookRecipeId = activeTask.recipeId;
+      this.holdCookStation = station;
+      this.holdCookProgress = 0;
+      this.holdCookDuration = recipe.cookTime || 1;
+    }
+
+    // If player moved away from the original station, cancel hold
+    if (this.holdCookStation !== station) {
+      this._resetHoldCooking();
+      this.showMessage("Cooking interrupted");
+      return;
+    }
+
+    this.holdCookProgress += deltaTime / 1000;
+
+    const remain = Math.max(0, this.holdCookDuration - this.holdCookProgress);
+    this.showMessage(
+      `Hold SPACE to cook ${this._getDisplayName(activeTask.recipeId)}: ${remain.toFixed(1)}s`
+    );
+
+    if (this.holdCookProgress < this.holdCookDuration) {
+      return;
+    }
+
+    // HOLD TIME IS THE FULL COOK TIME:
+    // once finished, consume ingredients and directly put dish in player's hand
+    const cooked = this._tryConsumeIngredientsForRecipe(activeTask.recipeId);
+
+    if (!cooked) {
+      this._resetHoldCooking();
+      this.showMessage("Not enough ingredients");
+      return;
+    }
+
+    this.player.heldDish = activeTask.recipeId;
+    this._completeHeldDishTask(activeTask);
+
+    this._resetHoldCooking();
+    this.showMessage(`Cooked ${this._getDisplayName(activeTask.recipeId)}`);
   }
 
   _tryServeCurrentOrder() {
@@ -550,6 +642,8 @@ export class KitchenScene_MVP extends Scene {
       this.showMessage("No current order");
       return;
     }
+
+    const servedRecipeId = this.currentOrder.recipeId;
 
     const served = this.counter.tryServe(
       this.player,
@@ -570,13 +664,13 @@ export class KitchenScene_MVP extends Scene {
       return;
     }
 
-    this._removeOneCollectedTask(this.currentOrder.recipeId);
-
-    console.log("[Kitchen] Served:", this.currentOrder.recipeId);
-    this.showMessage("Order served!");
+    console.log("[Kitchen] Served:", servedRecipeId);
+    this.showMessage(`Served ${this._getDisplayName(servedRecipeId)}!`);
 
     this.currentOrder = null;
     this.customer.order = null;
+
+    this._resetHoldCooking();
   }
 
   _removeOneCollectedTask(recipeId) {
@@ -712,30 +806,30 @@ export class KitchenScene_MVP extends Scene {
   }
 
   _getPlanningBoardLayout() {
-  const boardW = 1120;
-  const boardH = 800;
-  const boardX = width / 2 - boardW / 2;
-  const boardY = 40;
+    const boardW = 1120;
+    const boardH = 800;
+    const boardX = width / 2 - boardW / 2;
+    const boardY = 40;
 
-  return {
-    boardX,
-    boardY,
-    boardW,
-    boardH,
-    panelGap: 28,
-    leftW: 280,
-    midW: 300,
-    rightW: 280,
-    panelH: 500,
+    return {
+      boardX,
+      boardY,
+      boardW,
+      boardH,
+      panelGap: 28,
+      leftW: 280,
+      midW: 300,
+      rightW: 280,
+      panelH: 500,
 
-    panelY: boardY + 90,
+      panelY: boardY + 90,
 
-    controlsX: boardX + 24,
-    controlsY: boardY + 620,
-    controlsW: boardW - 48,
-    controlsH: 132,
-  };
-}
+      controlsX: boardX + 24,
+      controlsY: boardY + 620,
+      controlsW: boardW - 48,
+      controlsH: 132,
+    };
+  }
 
   _drawPlanningCenterCards() {
     const layout = this._getPlanningBoardLayout();
@@ -753,41 +847,41 @@ export class KitchenScene_MVP extends Scene {
   }
 
   _drawPlanningInstructionsInsideBoard() {
-  if (this.phase !== "PLANNING") return;
+    if (this.phase !== "PLANNING") return;
 
-  const layout = this._getPlanningBoardLayout();
+    const layout = this._getPlanningBoardLayout();
 
-  push();
+    push();
 
-  const boxX = layout.controlsX;
-  const boxY = layout.controlsY;
-  const boxW = layout.controlsW;
-  const boxH = layout.controlsH;
+    const boxX = layout.controlsX;
+    const boxY = layout.controlsY;
+    const boxW = layout.controlsW;
+    const boxH = layout.controlsH;
 
-  fill(40, 40, 40, 230);
-  stroke(70);
-  rect(boxX, boxY, boxW, boxH, 8);
+    fill(40, 40, 40, 230);
+    stroke(70);
+    rect(boxX, boxY, boxW, boxH, 8);
 
-  fill(255);
-  noStroke();
+    fill(255);
+    noStroke();
 
-  textAlign(LEFT, TOP);
-  textSize(14);
-  text("Controls", boxX + 14, boxY + 10);
+    textAlign(LEFT, TOP);
+    textSize(14);
+    text("Controls", boxX + 14, boxY + 10);
 
-  textSize(12);
-  text("Select dishes in the middle panel.", boxX + 14, boxY + 40);
-  text("Use + / - to change pending quantity.", boxX + 14, boxY + 62);
-  text("Press Enter or click ✓ to confirm into Today's Menu.", boxX + 14, boxY + 84);
-  text("Space = Cook / Collect / Serve", boxX + 14, boxY + 106);
+    textSize(12);
+    text("Select dishes in the middle panel.", boxX + 14, boxY + 40);
+    text("Use + / - to change pending quantity.", boxX + 14, boxY + 62);
+    text("Press Enter or click ✓ to confirm into Today's Menu.", boxX + 14, boxY + 84);
+    text("Space = Cook / Serve", boxX + 14, boxY + 106);
 
-  textAlign(RIGHT, TOP);
-  text("Backspace = Clear full plan", boxX + boxW - 18, boxY + 40);
-  text("P = Start cooking", boxX + boxW - 18, boxY + 62);
-  text("N = Skip kitchen", boxX + boxW - 18, boxY + 84);
+    textAlign(RIGHT, TOP);
+    text("Backspace = Clear full plan", boxX + boxW - 18, boxY + 40);
+    text("P = Start cooking", boxX + boxW - 18, boxY + 62);
+    text("N = Skip kitchen", boxX + boxW - 18, boxY + 84);
 
-  pop();
-}
+    pop();
+  }
 
   _drawPanelTabs() {
     push();
@@ -1114,67 +1208,36 @@ export class KitchenScene_MVP extends Scene {
 
   _drawStationCountdowns() {
     if (this.phase !== "PRODUCTION") return;
+    if (!this.holdCookTaskId || !this.holdCookStation) return;
+    if (this.holdCookProgress <= 0) return;
 
-    const relevantTasks = this.productionManager
-      .getTasks()
-      .filter(task => task.status === "COOKING" || task.status === "DONE");
+    const relPos = this.game.view.localToScreen(this.holdCookStation.pos);
+    const relSize = this.game.view.localToScreen(this.holdCookStation.size);
 
-    if (relevantTasks.length === 0) return;
+    const remain = Math.max(0, this.holdCookDuration - this.holdCookProgress);
+    const labelText = `Cooking ${remain.toFixed(1)}s`;
 
-    for (const task of relevantTasks) {
-      const recipe = this.menu.getRecipe(task.recipeId);
-      if (!recipe) continue;
+    push();
 
-      const station = this.stations.find(
-        s =>
-          s.type === recipe.stationType ||
-          s.stationType === recipe.stationType ||
-          s.kind === recipe.stationType
-      );
+    const badgeMarginX = 10;
+    const badgeMarginY = 8;
+    const badgeX = relPos.x + badgeMarginX;
+    const badgeY = relPos.y + badgeMarginY;
+    const badgeW = Math.max(80, relSize.x - badgeMarginX * 2);
+    const badgeH = 26;
 
-      if (!station) continue;
+    fill(255, 244, 170, 235);
+    stroke(60, 60, 60);
+    strokeWeight(1.2);
+    rect(badgeX, badgeY, badgeW, badgeH, 6);
 
-      const relPos = this.game.view.localToScreen(station.pos);
-      const relSize = this.game.view.localToScreen(station.size);
+    fill(35);
+    noStroke();
+    textAlign(CENTER, CENTER);
+    textSize(13);
+    text(labelText, badgeX + badgeW / 2, badgeY + badgeH / 2);
 
-      let labelText = "";
-      let badgeColor;
-
-      if (task.status === "COOKING") {
-        labelText = `Cooking ${this._getCookCountdownText(task)}`;
-        badgeColor = color(255, 244, 170, 235);
-      } else if (task.status === "DONE") {
-        labelText = "Ready - Pick up";
-        badgeColor =
-          frameCount % 30 < 15
-            ? color(190, 255, 190, 235)
-            : color(165, 245, 165, 235);
-      } else {
-        continue;
-      }
-
-      push();
-
-      const badgeMarginX = 10;
-      const badgeMarginY = 8;
-      const badgeX = relPos.x + badgeMarginX;
-      const badgeY = relPos.y + badgeMarginY;
-      const badgeW = Math.max(80, relSize.x - badgeMarginX * 2);
-      const badgeH = 26;
-
-      fill(badgeColor);
-      stroke(60, 60, 60);
-      strokeWeight(1.2);
-      rect(badgeX, badgeY, badgeW, badgeH, 6);
-
-      fill(35);
-      noStroke();
-      textAlign(CENTER, CENTER);
-      textSize(13);
-      text(labelText, badgeX + badgeW / 2, badgeY + badgeH / 2);
-
-      pop();
-    }
+    pop();
   }
 
   _getCookCountdownText(task) {
@@ -1280,6 +1343,8 @@ export class KitchenScene_MVP extends Scene {
     this.customer.isVisible = false;
     this.customer.order = null;
     this.customer.state = "WAITING";
+
+    this._resetHoldCooking();
 
     this.game.model.gameState.phase++;
     this.game.model.scene = new ShooterScene(this.game);
