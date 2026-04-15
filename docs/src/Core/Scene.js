@@ -9,7 +9,7 @@ export class Scene {
         this.game = game;
     }
 
-    update(events){
+    update(events){ // Updates all entities in the scene
         for (let entity of this.entities){
             entity.update(events);
         }
@@ -17,7 +17,7 @@ export class Scene {
             uielement.update(events);
         }
     }
-    draw(){
+    draw(){ // Draws all entities in the scene
         for (let entity of this.entities){
             entity.draw();
         }
@@ -25,7 +25,7 @@ export class Scene {
             uielement.draw();
         }
     }
-    getEntity(id){
+    getEntity(id){ // Gets 1 entity with the corresponding id
         for (let entity of this.entities){
             if (entity.id==id){
                 return entity;
@@ -33,7 +33,7 @@ export class Scene {
         }
         return null;
     }
-    getEntities(id){
+    getEntities(id){ // Gets all entites with the corresponding id
         let entities = [];
         for (let entity of this.entities){
             if (entity.id==id){
@@ -42,7 +42,7 @@ export class Scene {
         }
         return entities;
     }
-    addEntity(newEntity){
+    addEntity(newEntity){ // Adds a new entity to the list of entities
         for (let entity of this.entities){
             if (entity == null){
                 entity = newEntity;
@@ -51,7 +51,7 @@ export class Scene {
         }
         this.entities.push(newEntity);
     }
-    removeEntity(oldEntity){
+    removeEntity(oldEntity){ // Removes an entity from the list of entities
         for (let i=0; i<this.entities.length; i++){
             if (this.entities[i] == oldEntity){
                 if (i!=this.entities.length-1){
@@ -63,7 +63,7 @@ export class Scene {
         }
     }
 
-    getUIElement(id){
+    getUIElement(id){ // Gets 1 UI element with the corresponding id
         for (let element of this.uielements){
             if (element.id==id){
                 return element;
@@ -71,7 +71,7 @@ export class Scene {
         }
         return null;
     }
-    getUIElements(id){
+    getUIElements(id){ // Gets all UI elements with the corresponding id
         let uielements = [];
         for (let element of this.uielements){
             if (element.id==id){
@@ -80,7 +80,7 @@ export class Scene {
         }
         return uielements;
     }
-    addUIElement(newUIElement){
+    addUIElement(newUIElement){ // Adds a new UI element to the list of entities
         newUIElement.resize()
         for (let element of this.uielements){
             if (element == null){
@@ -90,7 +90,7 @@ export class Scene {
         }
         this.uielements.push(newUIElement);
     }
-    removeUIElement(oldUIElement){
+    removeUIElement(oldUIElement){ // Removes an UI element from the list of entities
         for (let i=0; i<this.uielements.length; i++){
             if (this.uielements[i] == oldUIElement){
                 if (i!=this.uielements.length-1){

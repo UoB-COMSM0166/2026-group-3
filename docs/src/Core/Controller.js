@@ -7,6 +7,7 @@ export class Controller {
     }
 
     update() {
+        //Updates the model with a collection of events gathered over the frame
         if (!this.game.assetManager.isLoaded){
             return;
         }

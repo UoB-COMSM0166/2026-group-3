@@ -8,13 +8,13 @@ export class UIElement {
         this.offset = offset;
         this.size = size;
         this.game = game;
-        this.parent = game.view
+        this.parent = game.view // The container of the UI element, usually the view or a menu
         //X sticky: Left, Centre, Right
         //Y sticky: Top, Centre, Bottom 
-        this.sticky = sticky;
-        this.anchor = new Vector2(null, null);
-        this.pos = this.calculatePosition();
-        this.sizeMatch = new Vector2([],[]);
+        this.sticky = sticky; // Represents where on the parent the element will stick to
+        this.anchor = new Vector2(null, null); //Another UI element to anchor this one to (in x and y)
+        this.pos = this.calculatePosition(); 
+        this.sizeMatch = new Vector2([],[]); // A set of UI elements. Will expand to match the largest of these elements
         
         this.isVisible = true;
         this.id = null;
@@ -22,6 +22,7 @@ export class UIElement {
     }
 
     calculatePosition(){
+        //Calculates an elements position based on its anchor, sticky and offset
         let pos = new Vector2();
         let parentSize = this.parent.size;
         if (this.anchor.x == null){
@@ -77,16 +78,18 @@ export class UIElement {
         return pos;
     }
 
-    draw(){}
-    update(events){}
+    draw(){} // Draw the element
+    update(events){} // Update the element
 
     reposition(){
+        //Updates the position of the element
         this.pos = this.calculatePosition();
     }
 
-    resize(){}
+    resize(){} // Resizes the element
 
     matchSize(){
+        // Updates the elements size based on its sizeMatch values
         for (let elem of this.sizeMatch.x){
             if (elem.size.x > this.size.x){
                 this.size.x = elem.size.x;

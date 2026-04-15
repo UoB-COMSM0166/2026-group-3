@@ -1,4 +1,4 @@
-//Button Element
+//A button element is a label with a clickable effect
 
 import {UIElement} from "../Core/UIElement.js";
 import {Vector2} from "../Utility/Vector2.js";
@@ -8,7 +8,7 @@ import {Label} from "./Label.js";
 export class Button extends Label {
     constructor(game, label, size, sticky = new Vector2("Centre","Centre"), offset = new Vector2()){
         super(game, label, size, sticky, offset);
-        this.active = true;
+        this.active = true; // If the button is active
     }
 
     onClick(){}
@@ -20,12 +20,13 @@ export class Button extends Label {
         let mousePos = new Vector2(mouseX, mouseY);
         if (mousePos.withinBox(this.pos, this.size)){
             cursor(HAND);
+            // Change the cursor if the button is clickable
         }
 
         for (let event of events){
             if (event.type == "click"){
                 if (mousePos.withinBox(this.pos, this.size)){
-                   await this.game.soundManager.playSFX("woodButton");
+                    await this.game.soundManager.playSFX("woodButton");
                     this.onClick();        
                 }
             }

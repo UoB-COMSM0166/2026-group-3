@@ -11,6 +11,6 @@ export class Entity {
         this.isVisible = true;
         this.id = null;
     }
-    draw(){}
-    update(events){}
+    draw(){} // Draws the entity
+    update(events){} // Updates the entity
 }

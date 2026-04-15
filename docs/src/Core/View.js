@@ -7,17 +7,19 @@ export class View {
         this.game = game;
         this.pos = new Vector2(0,0);
 
-        this.minSize = new Vector2(1024,576);
+        this.minSize = new Vector2(1024,576); // The minimum window size
 
         this.size = this.calculateWindowSize(windowSize);
         createCanvas(this.size.x, this.size.y);
 
-        this.textSize = 20;
+        this.textSize = 20; // Initial text size
 
         noSmooth(); // Renders Pixel Art Better
     }
 
     defaultStyle(style){
+        //The default style used throughout the game
+        //Can be copied top any newly created ui elements
         style.outline = color(50);
         style.outlineWidth = 2;
         style.fillColor = color(255);
@@ -31,6 +33,7 @@ export class View {
     }
 
     calculateWindowSize() {
+        //Calculates the window size, keepign a 16:9 ratio and not less than the minimum
         let windowSize = new Vector2(windowWidth, windowHeight)
         let gameSize = new Vector2();
 
@@ -49,9 +52,14 @@ export class View {
     }
 
 
-    resize() {
+    resize() { // Called whenever the window is resized
+               // Resizes all UI elements of the current scene
         this.size = this.calculateWindowSize();
         resizeCanvas(this.size.x, this.size.y);
+
+        if (this.model.scene == null) {return;} // Leave here if no scene is loaded
+        
+        //This order allows expand to fit, sizematch and anchors to work correctly
         for (let uielement of this.model.scene.uielements){
             uielement.resize(this.size);
         }
@@ -63,14 +71,14 @@ export class View {
         }
     }
 
-    localToScreen(pos){
+    localToScreen(pos){ // Returns a screen coordinate from a grid coordinate
         return pos.multiplyV(this.size).divideV(this.game.gridSize);
     }
-    screenToLocal(pos){
+    screenToLocal(pos){ // Returns a grid coordinate from a screen coordinate
         return pos.multiplyV(this.game.gridSize).divideV(this.size);
     }
 
-    drawGrid(){
+    drawGrid(){ // Draws a grid on the screen, for use when Debug = true
         stroke(0);
         for (let i=1; i<this.game.gridSize.x; i++){
             let l1 = this.localToScreen(new Vector2(i, 0));
@@ -83,26 +91,21 @@ export class View {
             line(l1.x, l1.y, l2.x, l2.y);
         }
     }
-    //TODO: figure out a way to draw everything in the correct order
-    //All assets should be layered correctly
-    //Maybe sort by y-height
-    draw() {
-        background(255);
-        
 
+    draw() { // Draws the game
+        background(255);
 
         if (!this.game.assetManager.isLoaded){
             text("Loading...",100,100);
             return;
+            //Returns if the assets aren't loaded
         }
 
         if (this.game.debug){
             this.drawGrid();
         }
 
-        this.resize();
-        
-        this.model.draw();
+        this.model.draw(); // Draws the current model
 
         // Brightness overlay    
         let opacity = (1 - this.game.brightness) * 255;
