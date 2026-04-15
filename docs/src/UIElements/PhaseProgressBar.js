@@ -119,10 +119,12 @@ export class PhaseProgressBar extends UIElement {
         return c;
     }
 
+    reposition(){
+        this.pos.x = this.leftAnchor.pos.x + this.leftAnchor.size.x + 10
+    }
+
     resize(){
         this.style.textSize = this.game.view.textSize;
-
-        this.pos.x = this.leftAnchor.pos.x + this.leftAnchor.size.x + 10
 
         this.size.y = 1.5 * this.style.textSize
         this.size.x = this.rightAnchor.pos.x - this.pos.x - 10;

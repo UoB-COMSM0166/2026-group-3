@@ -14,6 +14,8 @@ export class UIElement {
         this.sticky = sticky;
         this.anchor = new Vector2(null, null);
         this.pos = this.calculatePosition();
+        this.sizeMatch = new Vector2([],[]);
+        
         this.isVisible = true;
         this.id = null;
         
@@ -34,7 +36,7 @@ export class UIElement {
                 console.log("Unknown Sticky Value: ", this.sticky.x);
             }
         } else {
-            this.anchor.x.resize()
+            this.anchor.x.reposition()
             if (this.sticky.x == "Left"){
                 pos.x = this.anchor.x.pos.x + this.anchor.x.size.x + this.offset.x;
             } else if (this.sticky.x == "Centre"){
@@ -59,7 +61,7 @@ export class UIElement {
                 console.log("Unknown Sticky Value: ", this.sticky.y);
             }
         } else {
-            this.anchor.y.resize()
+            this.anchor.y.reposition()
             if (this.sticky.y == "Top"){
                 pos.y = this.anchor.y.pos.y + this.anchor.y.size.y + this.offset.y;
             } else if (this.sticky.y == "Centre"){
@@ -78,7 +80,23 @@ export class UIElement {
     draw(){}
     update(events){}
 
-    resize(){
+    reposition(){
         this.pos = this.calculatePosition();
     }
+
+    resize(){}
+
+    matchSize(){
+        for (let elem of this.sizeMatch.x){
+            if (elem.size.x > this.size.x){
+                this.size.x = elem.size.x;
+            }
+        }
+        for (let elem of this.sizeMatch.y){
+            if (elem.size.y > this.size.y){
+                this.size.y = elem.size.y;
+            }
+        }
+    }
+
 }

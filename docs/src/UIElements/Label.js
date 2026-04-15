@@ -58,8 +58,6 @@ export class Label extends UIElement {
         } if (this.expandToFit.y){
             this.size.y = 1.5 * this.style.textSize
         }
-
-        super.resize()
-
+        super.resize();
     }
 }

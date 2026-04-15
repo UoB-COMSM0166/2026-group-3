@@ -55,6 +55,12 @@ export class View {
         for (let uielement of this.model.scene.uielements){
             uielement.resize(this.size);
         }
+        for (let uielement of this.model.scene.uielements){
+            uielement.matchSize(this.size);
+        }
+        for (let uielement of this.model.scene.uielements){
+            uielement.reposition(this.size);
+        }
     }
 
     localToScreen(pos){

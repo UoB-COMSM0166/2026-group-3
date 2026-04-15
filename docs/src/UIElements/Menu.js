@@ -8,6 +8,8 @@ export class Menu extends UIElement {
         this.style = new Style();
         game.view.defaultStyle(this.style);
         this.elements = [];
+        this.expandToFit = new Vector2(null, null);
+        this.border = new Vector2();
     }
 
     draw(){
@@ -33,5 +35,27 @@ export class Menu extends UIElement {
         for (let element of this.elements){
             element.resize();
         }
+        for (let element of this.elements){
+            element.matchSize();
+        }
+        for (let element of this.elements){
+            element.reposition();
+        }
+        if (this.expandToFit.x != null){
+            this.size.x = this.expandToFit.x.size.x + (this.expandToFit.x.pos.x - this.pos.x) + this.border.x
+        }
+        if (this.expandToFit.y != null){
+            this.size.y = this.expandToFit.y.size.y + (this.expandToFit.y.pos.y - this.pos.y) + this.border.y
+        }
+        for (let element of this.elements){
+            element.resize();
+        }
+        for (let element of this.elements){
+            element.matchSize();
+        }
+        for (let element of this.elements){
+            element.reposition();
+        }
+        super.resize();
     }
 }
