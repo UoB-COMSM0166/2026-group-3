@@ -29,6 +29,9 @@ export class ShopMenu extends Menu {
 
         let shopClose = new Button(game, "X", new Vector2(30, 30), new Vector2("Right", "Top"));
         shopClose.parent = this; 
+        shopClose.sizeMatch.y = [shopTitle];
+        shopClose.expandToFit.y = true;
+        shopClose.expandToFit.x = true;
         shopClose.onClick = function() {
             this.game.model.scene.getUIElement("shop").isVisible = false;
         };

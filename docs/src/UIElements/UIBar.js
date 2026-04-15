@@ -4,6 +4,7 @@ import {Menu} from "./Menu.js";
 import {Button} from "./Button.js";
 import {Label} from "./Label.js";
 import {PhaseProgressBar} from "./PhaseProgressBar.js";
+import { CounterLabel } from "./CounterLabel.js";
 
 
 
@@ -12,6 +13,8 @@ export class UIBar extends Menu {
     constructor(game, scene){
         super(game, new Vector2(), new Vector2("Left","Top"))
         this.scene = scene;
+
+        this.id = "uibar";
 
         this.style.fillColor = color(200);
 
@@ -52,29 +55,33 @@ export class UIBar extends Menu {
         let drops = game.model.drops;
         let previous = this.coinsLabel;
         for (let i=0; i < drops.length; i++){
-            let dropCount = new Label(game, "0", new Vector2(), 
+            let dropCount = new CounterLabel(game, "0", new Vector2(), 
                                             new Vector2("Left", "Top"),
                                             new Vector2(10,10));
             dropCount.anchor.x = previous;
             dropCount.expandToFit = new Vector2(true, true);
             dropCount.drop = drops[i];
+            dropCount.parent = this
+            dropCount.itemImage = drops[i];
 
             dropCount.update = function(events) {
-                this.label = str(this.game.model.gameState.inventory.get(this.drop))+" -";
+                this.label = str(this.game.model.gameState.inventory.get(this.drop));
+                this.parent.resize()
             }
 
             this.elements.push(dropCount);
 
-            let dropLabel = new Label(game, "", new Vector2(), 
-                                            new Vector2("Left", "Top"),
-                                            new Vector2(0,10));
-            dropLabel.anchor.x = dropCount;
-            dropLabel.offset.x = -32
-            dropLabel.expandToFit = new Vector2(true, true);
-            dropLabel.image = drops[i];
-            this.elements.push(dropLabel);
+            // let dropLabel = new Label(game, "", new Vector2(), 
+            //                                 new Vector2("Left", "Top"),
+            //                                 new Vector2(0,10));
+            // dropLabel.anchor.x = dropCount;
+            // dropLabel.expandToFit = new Vector2(true, true);
+            // dropLabel.image = drops[i];
+            // dropLabel.parent = this
 
-            previous = dropLabel;
+            // this.elements.push(dropLabel);
+
+            previous = dropCount;
         }   
 
         this.dayLabel = new Label(game, "Day 1",

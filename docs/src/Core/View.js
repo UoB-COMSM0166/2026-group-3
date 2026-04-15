@@ -61,13 +61,13 @@ export class View {
         
         //This order allows expand to fit, sizematch and anchors to work correctly
         for (let uielement of this.model.scene.uielements){
-            uielement.resize(this.size);
+            uielement.resize();
         }
         for (let uielement of this.model.scene.uielements){
-            uielement.matchSize(this.size);
+            uielement.matchSize();
         }
         for (let uielement of this.model.scene.uielements){
-            uielement.reposition(this.size);
+            uielement.reposition();
         }
     }
 

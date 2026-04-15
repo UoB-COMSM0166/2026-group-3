@@ -81,7 +81,9 @@ export class Scene {
         return uielements;
     }
     addUIElement(newUIElement){ // Adds a new UI element to the list of entities
-        newUIElement.resize()
+        newUIElement.resize();
+        newUIElement.matchSize();
+        newUIElement.reposition();
         for (let element of this.uielements){
             if (element == null){
                 element = newUIElement;
