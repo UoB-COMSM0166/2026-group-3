@@ -11,7 +11,7 @@ export class AssetManager {
 
         //Add all image loads here:
 
-        this.loadImage("ChefShootingIdle","./assets/chefshootingidle.png");
+        this.loadImage("ChefShooting","./assets/chefshooting.gif");
         this.loadImage("Chef Cooking","./assets/chefcooking.gif");
         this.loadImage("Chef Walking","./assets/chefwalking.gif");
         this.loadImage("Turret", "./assets/turret.gif");

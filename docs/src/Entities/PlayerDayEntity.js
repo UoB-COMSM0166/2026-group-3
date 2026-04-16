@@ -11,9 +11,11 @@ export class PlayerDayEntity extends Entity{
         this.speed = 0.05;
         this.color = color(0, 0, 0);
         this.isVisible = true;
-        this.sprite = "ChefShootingIdle";
+        this.sprite = "ChefShooting";
         this.shootCooldown = 0;
         this.weapon = weapon
+
+        this.moving = false;
     }
 
     draw(){
@@ -23,6 +25,13 @@ export class PlayerDayEntity extends Entity{
         let rel_pos = this.game.view.localToScreen(this.pos);
         let rel_size = this.game.view.localToScreen(this.size);
         let sprite = this.game.assetManager.getImage(this.sprite);
+
+        if (this.moving){
+            sprite.play();
+        } else {
+            sprite.pause();
+        }
+
         image(sprite, rel_pos.x, rel_pos.y, rel_size.x, rel_size.y);
         
         if (this.game.debug) {
@@ -33,8 +42,18 @@ export class PlayerDayEntity extends Entity{
     }
     update(events){
         if (!this.isVisible || this.game.model.scene.isGameOver) { return; }
-        if (keyIsDown(UP_ARROW) || keyIsDown('w')) this.pos.y -= this.speed;
-        if (keyIsDown(DOWN_ARROW) || keyIsDown('s')) this.pos.y += this.speed;
+
+        const up = keyIsDown(UP_ARROW) || keyIsDown('w') || keyIsDown('W');
+        const down = keyIsDown(DOWN_ARROW) || keyIsDown('s') || keyIsDown('S');
+
+        if (up) {
+            this.pos.y -= this.speed;
+        }
+        if (down) {
+            this.pos.y += this.speed;
+        }
+
+        this.moving = (up || down);
         
         this.pos.y = constrain(this.pos.y, 0, this.game.gridSize.y - this.size.y);  
 
