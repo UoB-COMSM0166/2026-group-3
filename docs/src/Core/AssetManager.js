@@ -15,6 +15,7 @@ export class AssetManager {
         this.loadImage("Chef Cooking","./assets/chefcooking.gif");
         this.loadImage("Chef Walking","./assets/chefwalking.gif");
         this.loadImage("Turret", "./assets/turret.gif");
+        this.loadImage("Shooter Background", "./assets/shooterbg.png");
 
         //Zombie Sprites
         this.loadImage("BasicZombieWalking","./assets/zombiewalking.gif");
