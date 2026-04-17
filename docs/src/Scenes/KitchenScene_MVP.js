@@ -108,6 +108,10 @@ export class KitchenScene_MVP extends Scene {
     this.holdCookCustomerId = null;
     this.spaceLastFrame = false;
 
+    // Bubble cache
+    this._bubbleImage = null;
+    this._bubbleLoadTried = false;
+
     // Placeholder descriptions
     this.recipeDescriptions = {
       rotten_burger: "Description coming soon.",
@@ -142,11 +146,11 @@ export class KitchenScene_MVP extends Scene {
     // Kitchen stations
     this.stations = [];
 
-    // Spread stations apart so interaction zones do not chain together
+    // ===== =====
     const stationSize = new Vector2(1.45, 1.15);
-    const startX = 0.55;
-    const startY = 1.0;
-    const stationGap = 1.48;
+const startX = 0.55;
+const startY = 2.55;
+const stationGap = 1.26;
 
     // Keep your intended top-to-bottom order:
     // Ramen, BBQ, Burger, Fried, Keg
@@ -427,7 +431,6 @@ export class KitchenScene_MVP extends Scene {
 
     super.draw();
 
-    // station labels go below the stations
     this._drawCustomerOrderLabels();
     this._drawStationDishLabels();
 
@@ -632,7 +635,6 @@ export class KitchenScene_MVP extends Scene {
   }
 
   _spawnNextCustomerOrder() {
-    // compatibility wrapper if any old code still calls this
     this._spawnRandomCustomerIfPossible();
   }
 
@@ -644,8 +646,26 @@ export class KitchenScene_MVP extends Scene {
     return station.type || station.stationType || station.kind || null;
   }
 
+  _getPlayerStationInteractPoint() {
+    // 厨师站在站台右边时，用身体左侧中部作为交互点
+    return new Vector2(
+      this.player.pos.x + 0.18,
+      this.player.pos.y + this.player.size.y * 0.58
+    );
+  }
+
+  _getStationInteractAnchor(station) {
+    // 每个站台唯一交互点：机器右侧中部
+    return new Vector2(
+      station.pos.x + station.size.x + 0.08,
+      station.pos.y + station.size.y * 0.58
+    );
+  }
+
   _getNearbyMatchingStation(recipe) {
     if (!recipe) return null;
+
+    const interactPoint = this._getPlayerStationInteractPoint();
 
     let bestStation = null;
     let bestDistance = Infinity;
@@ -653,12 +673,19 @@ export class KitchenScene_MVP extends Scene {
     for (const station of this.stations) {
       const stationType = this._getStationType(station);
       if (stationType !== recipe.stationType) continue;
-      if (!this.player.isNear(station)) continue;
 
-      const dx = this.player.pos.x - station.pos.x;
-      const dy = this.player.pos.y - station.pos.y;
+      const anchor = this._getStationInteractAnchor(station);
+      const dx = interactPoint.x - anchor.x;
+      const dy = interactPoint.y - anchor.y;
+
+      const absX = Math.abs(dx);
+      const absY = Math.abs(dy);
+
+      // 严格限制纵向，彻底防止串到上下站台
+      const inRange = absX <= 0.78 && absY <= 0.30;
+      if (!inRange) continue;
+
       const distSq = dx * dx + dy * dy;
-
       if (distSq < bestDistance) {
         bestDistance = distSq;
         bestStation = station;
@@ -853,7 +880,6 @@ export class KitchenScene_MVP extends Scene {
   }
 
   _tryServeCurrentOrder() {
-    // compatibility wrapper
     if (!this.player.heldDish) {
       this.showMessage("Wrong dish or no dish");
       return;
@@ -1049,36 +1075,126 @@ export class KitchenScene_MVP extends Scene {
     pop();
   }
 
-  _drawCustomerOrderLabels() {
-  if (this.phase !== "PRODUCTION") return;
-  if (!this.customers || this.customers.length === 0) return;
+  _getRecipeIdForStationType(stationType) {
+    const map = {
+      pot: "toxic_stew",
+      grill: "bone_bbq",
+      oven: "rotten_burger",
+      prep: "mutant_soup",
+      special: "ultimate_feast",
+    };
 
-  push();
-
-  for (const customer of this.customers) {
-    if (!customer.isVisible || !customer.order) continue;
-
-    const relPos = this.game.view.localToScreen(customer.pos);
-    const dishName = this._getDisplayName(customer.order.recipeId);
-
-    const boxW = 120;
-    const boxH = 28;
-    const boxX = relPos.x - boxW / 2;
-    const boxY = relPos.y - 38;
-
-    fill(255, 248, 220, 235);
-    stroke(80, 60, 20);
-    rect(boxX, boxY, boxW, boxH, 6);
-
-    fill(20);
-    noStroke();
-    textAlign(CENTER, CENTER);
-    textSize(13);
-    text(dishName, boxX + boxW / 2, boxY + boxH / 2);
+    return map[stationType] || null;
   }
 
-  pop();
-}
+  _getBubbleImage() {
+    if (this._bubbleLoadTried) return this._bubbleImage;
+
+    this._bubbleLoadTried = true;
+
+    const fromAsset =
+      this.game.assetManager.getImage("docs/assets/UI/bubble.png") ||
+      this.game.assetManager.getImage("bubble.png") ||
+      this.game.assetManager.getImage("bubble");
+
+    if (fromAsset) {
+      this._bubbleImage = fromAsset;
+      return this._bubbleImage;
+    }
+
+    try {
+      this._bubbleImage = loadImage("docs/assets/UI/bubble.png");
+    } catch (e) {
+      this._bubbleImage = null;
+    }
+
+    return this._bubbleImage;
+  }
+
+  _getDishIconImage(recipeId) {
+    if (!recipeId) return null;
+
+    return (
+      this.game.assetManager.getImage(`docs/assets/dishes/${recipeId}.png`) ||
+      this.game.assetManager.getImage(`${recipeId}.png`) ||
+      this.game.assetManager.getImage(recipeId) ||
+      null
+    );
+  }
+
+  _drawBubbleWithDish(centerX, centerY, recipeId, bubbleW = 56, bubbleH = 46, iconSize = 22) {
+    const bubbleImg = this._getBubbleImage();
+    const dishImg = this._getDishIconImage(recipeId);
+
+    push();
+
+    if (bubbleImg && bubbleImg.width > 0) {
+      image(
+        bubbleImg,
+        centerX - bubbleW / 2,
+        centerY - bubbleH / 2,
+        bubbleW,
+        bubbleH
+      );
+    } else {
+      fill(255);
+      stroke(0);
+      strokeWeight(2);
+      rect(centerX - bubbleW / 2, centerY - bubbleH / 2, bubbleW, bubbleH, 10);
+      triangle(
+        centerX - 6,
+        centerY + bubbleH / 2 - 2,
+        centerX + 6,
+        centerY + bubbleH / 2 - 2,
+        centerX,
+        centerY + bubbleH / 2 + 7
+      );
+    }
+
+    if (dishImg) {
+      image(
+        dishImg,
+        centerX - iconSize / 2,
+        centerY - iconSize / 2 - 2,
+        iconSize,
+        iconSize
+      );
+    } else {
+      fill(40);
+      noStroke();
+      textAlign(CENTER, CENTER);
+      textSize(8);
+      text(this._getDisplayName(recipeId), centerX, centerY - 1);
+    }
+
+    pop();
+  }
+
+  _drawCustomerOrderLabels() {
+    if (this.phase !== "PRODUCTION") return;
+    if (!this.customers || this.customers.length === 0) return;
+
+    const scale = this._getWorldScale();
+
+    for (const customer of this.customers) {
+      if (!customer.isVisible || !customer.order) continue;
+
+      const relPos = this.game.view.localToScreen(customer.pos);
+      const drawW = customer.size.x * scale.x;
+
+      const bubbleX = relPos.x + drawW / 2;
+      const bubbleY = relPos.y - 18;
+
+      this._drawBubbleWithDish(
+        bubbleX,
+        bubbleY,
+        customer.order.recipeId,
+        56,
+        46,
+        22
+      );
+    }
+  }
 
   _drawPlanningInstructionsInsideBoard() {
     if (this.phase !== "PLANNING") return;
@@ -1477,35 +1593,29 @@ export class KitchenScene_MVP extends Scene {
   }
 
   _drawStationDishLabels() {
-    push();
-
     const scale = this._getWorldScale();
 
     for (const station of this.stations) {
       const stationType = this._getStationType(station);
-      const label = this.stationDishLabels[stationType] || stationType || "STATION";
+      const recipeId = this._getRecipeIdForStationType(stationType);
+      if (!recipeId) continue;
 
       const relPos = this.game.view.localToScreen(station.pos);
       const drawW = station.size.x * scale.x;
-      const drawH = station.size.y * scale.y;
 
-      const labelW = 116;
-      const labelH = 26;
-      const labelX = relPos.x + drawW / 2 - labelW / 2;
-      const labelY = relPos.y + drawH + 8;
+      // bubble 跟着站台走，位置固定在站台左上附近
+      const bubbleX = relPos.x + drawW * 0.24;
+      const bubbleY = relPos.y - 10;
 
-      fill(255, 248, 220, 235);
-      stroke(80, 60, 20);
-      rect(labelX, labelY, labelW, labelH, 6);
-
-      fill(20);
-      noStroke();
-      textAlign(CENTER, CENTER);
-      textSize(13);
-      text(label, labelX + labelW / 2, labelY + labelH / 2);
+      this._drawBubbleWithDish(
+        bubbleX,
+        bubbleY,
+        recipeId,
+        56,
+        46,
+        22
+      );
     }
-
-    pop();
   }
 
   _getWorldScale() {
