@@ -55,7 +55,7 @@ export class PlayerDayEntity extends Entity{
 
         this.moving = (up || down);
         
-        this.pos.y = constrain(this.pos.y, 0, this.game.gridSize.y - this.size.y);  
+        this.pos.y = constrain(this.pos.y, 2, 6.5);  
 
         this.shootCooldown -= 1;
 

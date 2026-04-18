@@ -13,6 +13,22 @@ export class Button extends Label {
 
     onClick(){}
 
+    async draw(){
+        let mousePos = new Vector2(mouseX, mouseY);
+        if (mousePos.withinBox(this.pos, this.size) && this.active && mouseIsPressed){
+            this.pos.y+=3;
+            super.draw();
+            this.pos.y-=3;
+        } else {
+            super.draw();
+        }
+
+
+
+    }
+
+
+
     async update(events){
         if (!this.isVisible || !this.active) { return; }
         if (this.parent!=this.game.view && !this.parent.isVisible) { return; }

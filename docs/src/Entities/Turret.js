@@ -6,7 +6,7 @@ import { Bullet } from "./Bullet.js";
 
 export class Turret extends Entity{
     constructor(game, pos, ghost = false){
-        let size = new Vector2(1.5, 1.5);
+        let size = new Vector2(1.25, 1.25);
         super(game, pos, size);
         this.ghost = ghost;
         this.id = "Turret";
@@ -19,7 +19,7 @@ export class Turret extends Entity{
     async update(events){
         if (this.game.model.scene.zombieManager.waveStarted){
             if (this.cooldown==0){
-                let bullet = new Bullet(this.game, new Vector2(this.pos.x + this.size.x, this.pos.y + this.size.y/2), 1, 1);
+                let bullet = new Bullet(this.game, new Vector2(this.pos.x + this.size.x, this.pos.y + this.size.y/2 - 0.2), 3, 1);
                 this.game.model.scene.entities.push(bullet);
                 this.cooldown = 100;
         
@@ -32,23 +32,17 @@ export class Turret extends Entity{
     }
 
     draw(){
-        // let p1 = new Vector2(this.pos.x, this.pos.y);
-        // let p2 = new Vector2(this.pos.x, this.pos.y + this.size.y);
-        // let p3 = new Vector2(this.pos.x + this.size.x, this.pos.y + this.size.y/2);
-
-        // let relP1 = this.game.view.localToScreen(p1);
-        // let relP2 = this.game.view.localToScreen(p2);
-        // let relP3 = this.game.view.localToScreen(p3);
-
         let rel_pos = this.game.view.localToScreen(this.pos)
         let rel_size = this.game.view.localToScreen(this.size)
         let sprite = this.game.assetManager.getImage(this.sprite);
-        image(sprite, rel_pos.x, rel_pos.y, rel_size.x, rel_size.y);
-        // if (this.ghost){
-        //     fill(0,200,0,128);
-        // } else {
-        //     fill(0,200,0,255);
-        // }
+        
+        if (this.ghost){
+            tint(255,255,255,128);
+            image(sprite, rel_pos.x, rel_pos.y, rel_size.x, rel_size.y);
+            tint(255);
+        } else {
+            image(sprite, rel_pos.x, rel_pos.y, rel_size.x, rel_size.y);
+        }
         
     }
 

@@ -17,7 +17,6 @@ export class Label extends UIElement {
 
     draw(){
         if (!this.isVisible) { return; }
-        this.pos = this.calculatePosition();
 
         if (this.image != null){
             //Draw an image if there is one

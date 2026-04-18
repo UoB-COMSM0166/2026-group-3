@@ -26,9 +26,11 @@ export class WelcomeScene extends Scene {
       new Vector2("Centre", "Top"),
       new Vector2(0, 180)
     );
-    this.title.style.textSize = 48;
+    this.title.style.textSize = 60;
     this.title.style.textColor = "#00FF00";
     this.title.style.textAlign = { x: "center", y: "center" };
+    this.title.expandToFit.x = true;
+    
     this.title.textSizeOverride = true;
 
     //Main Menu Buttons 
