@@ -99,7 +99,7 @@ export class ShooterScene extends Scene {
 
         if (this.isGameOver) {
             //Draw a dark overlay to make it dramatic lmao :3
-            stoke(0);
+            stroke(0);
             fill(0, 0, 0, 150); //Semi-transparent black
             rect(0, 0, width, height);       
             this.restartBtn.draw();
@@ -143,6 +143,25 @@ export class ShooterScene extends Scene {
     async gameOver(){
         this.isGameOver = true;
 
+        let phaseText = this.uiBar.dayLabel.label; 
+        let parts = phaseText.split(" ");        
+        let phaseNumber = parseInt(parts[1]);     
+        let phaseTime = parts[0];
+        let survivedText;
+    
+        if(phaseNumber == "1"){
+
+       survivedText = "You Survived " + "1 " + phaseTime;
+        
+    }
+
+     else {
+
+     survivedText = "You Survived " + phaseNumber + " " + phaseTime + "s";
+    
+    }
+
+
         //Restart Button
         this.restartBtn = new Button(this.game, "Restart Game", new Vector2(160, 50), new Vector2("Centre", "Centre"));
         this.restartBtn.offset.y = 90;
@@ -153,11 +172,11 @@ export class ShooterScene extends Scene {
         this.addUIElement(this.restartBtn);
 
         //Game Over Label
-        this.gameOverLabel = new Label(this.game, "Game Over", new Vector2(350, 120), new Vector2("Centre", "Centre"));
+        this.gameOverLabel = new Label(this.game, survivedText , new Vector2(350, 120), new Vector2("Centre", "Centre"));
         this.gameOverLabel.style.fillColor = color(0,0,0,0);
         this.gameOverLabel.style.outline = color(0,0,0,0);
         this.gameOverLabel.style.textColor = color(255,0,0);
-        this.gameOverLabel.style.textSize = 60;
+        this.gameOverLabel.style.textSize = 100;
         this.gameOverLabel.offset.y = -70;
 
         //Lose Sound
