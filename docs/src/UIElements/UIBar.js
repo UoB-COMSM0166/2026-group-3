@@ -41,14 +41,15 @@ export class UIBar extends Menu {
 
         this.elements.push(this.shopButton);
 
-        this.coinsLabel = new Label(game, "0🪙",
+        this.coinsLabel = new CounterLabel(game, "0",
                                     new Vector2(), 
                                     new Vector2("Left","Top"),
                                     new Vector2(10,10))
         this.coinsLabel.anchor.x = this.shopButton;
         this.coinsLabel.expandToFit = new Vector2(true, true);
+        this.coinsLabel.itemImage = "UI Coin";
         this.coinsLabel.update = function(events) {
-            this.label = str(this.game.model.gameState.coins)+"🪙";
+            this.label = str(this.game.model.gameState.coins);
         }
 
         this.elements.push(this.coinsLabel);
@@ -85,11 +86,11 @@ export class UIBar extends Menu {
             previous = dropCount;
         }   
 
-        this.dayLabel = new Label(game, "Day 1",
+        this.dayLabel = new Button(game, "Day 1",
                                     new Vector2(), 
                                     new Vector2("Right","Top"),
                                     new Vector2(-10,10))
-        this.dayLabel.expandToFit = new Vector2(true, true);
+        this.dayLabel.active = false;
         this.dayLabel.label = game.model.gameState.time + " "+str(game.model.gameState.phase);
 
         this.elements.push(this.dayLabel);
@@ -100,6 +101,53 @@ export class UIBar extends Menu {
 
 
 
+    }
+
+    draw(){
+        if (!this.isVisible) { return; }
+
+        // Background fill (under the frame sprites)
+        noStroke();
+        fill(this.style.fillColor);
+        rect(this.pos.x, this.pos.y, this.size.x, this.size.y, this.style.rounding);
+
+        const cornerSprite = this.game.assetManager.getImage("UI Board Corner");
+        const edgeSprite = this.game.assetManager.getImage("UI Board Horizontal Edge");
+
+        if (cornerSprite && edgeSprite){
+            // Scale the frame sprites smaller so they fit fully inside the bar.
+            const frameScale = 0.72;
+            const cornerSize = Math.min(this.size.x / 2, this.size.y * frameScale);
+            const edgeH = cornerSize;
+
+            const drawFlipped = (sprite, x, y, w, h, flipX, flipY) => {
+                push();
+                translate(
+                    x + (flipX ? w : 0),
+                    y + (flipY ? h : 0)
+                );
+                scale(flipX ? -1 : 1, flipY ? -1 : 1);
+                image(sprite, 0, 0, w, h);
+                pop();
+            };
+
+            // Corners (flip to get all 4)
+            drawFlipped(cornerSprite, this.pos.x, this.pos.y, cornerSize, cornerSize, false, false); // top-left
+            drawFlipped(cornerSprite, this.pos.x + this.size.x - cornerSize, this.pos.y, cornerSize, cornerSize, true, false); // top-right
+            drawFlipped(cornerSprite, this.pos.x, this.pos.y + this.size.y - cornerSize, cornerSize, cornerSize, false, true); // bottom-left
+            drawFlipped(cornerSprite, this.pos.x + this.size.x - cornerSize, this.pos.y + this.size.y - cornerSize, cornerSize, cornerSize, true, true); // bottom-right
+
+            const edgeX = this.pos.x + cornerSize;
+            const edgeW = Math.max(0, this.size.x - (2 * cornerSize));
+
+            // Top/bottom edges across the bar
+            image(edgeSprite, edgeX, this.pos.y, edgeW, edgeH);
+            drawFlipped(edgeSprite, edgeX, this.pos.y + this.size.y - edgeH, edgeW, edgeH, false, true);
+        }
+
+        for (let element of this.elements){
+            element.draw();
+        }
     }
 
     resize(){

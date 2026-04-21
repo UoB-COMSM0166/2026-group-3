@@ -44,11 +44,14 @@ export class Counter_MVP extends Entity {
   }
 
   draw() {
-    const relPos = this.game.view.localToScreen(this.pos);
-    const relSize = this.game.view.localToScreen(this.size);
-
     let sprite = this.game.assetManager.getImage(this.sprite);
-    image(sprite, relPos.x, relPos.y, relSize.x, relSize.y);
-  
+
+    image(
+        sprite, 
+        0,                                                  
+        this.game.model.scene.uiBar.size.y,                 
+        this.game.view.size.x,                              
+        this.game.view.size.y - this.game.model.scene.uiBar.size.y 
+    );
   }
 }

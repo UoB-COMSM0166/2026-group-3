@@ -166,13 +166,19 @@ const stationGap = 1.26;
     }
 
     // Counter
-    this.counter = new Counter_MVP(game, new Vector2(4.55, 1.65));
+    this.counter = new Counter_MVP(game, new Vector2(3.2, 2.65));
     this.counter.size = new Vector2(1.9, 5.85);
 
     // Colliders
     this.colliders = [
       { pos: new Vector2(0, 0), size: new Vector2(1.45, 9) },
       { pos: this.counter.pos.add(new Vector2(1.0, 0)), size: this.counter.size.add(new Vector2(-1.0, -1.5)) },
+      // Keep chef in the full tiled kitchen area (behind the counter only).
+      { pos: new Vector2(4.9, 1.8), size: new Vector2(11, 7.4) },
+      // Block walking into the top wall area.
+      { pos: new Vector2(0, 0), size: new Vector2(4.9, 1.35) },
+      // Block walking into the bottom wooden frame area.
+      { pos: new Vector2(0, 8.6), size: new Vector2(4.9, 0.85) },
     ];
 
     // Register fixed entities
@@ -1269,6 +1275,68 @@ const stationGap = 1.26;
     pop();
   }
 
+  _drawBoardPanelBackground(panelX, panelY, panelW, panelH, cornerSize = 26) {
+    const cornerSprite = this.game.assetManager.getImage("UI Board Corner");
+    const horizontalEdgeSprite = this.game.assetManager.getImage("UI Board Horizontal Edge");
+    const verticalEdgeSprite = this.game.assetManager.getImage("UI Board Vertical Edge");
+    const middleSprite = this.game.assetManager.getImage("UI Board Middle");
+
+    if (cornerSprite && horizontalEdgeSprite && verticalEdgeSprite && middleSprite) {
+      const x = Math.round(panelX);
+      const y = Math.round(panelY);
+      const w = Math.round(panelW);
+      const h = Math.round(panelH);
+      const cap = Math.round(Math.min(w / 2, h / 2, cornerSize));
+      const innerX = x + cap;
+      const innerY = y + cap;
+      const innerW = Math.max(0, w - (2 * cap));
+      const innerH = Math.max(0, h - (2 * cap));
+
+      if (innerW > 0 && innerH > 0) {
+        image(middleSprite, innerX, innerY, innerW, innerH);
+      }
+
+      if (innerW > 0) {
+        image(horizontalEdgeSprite, innerX, y, innerW, cap);
+        push();
+        translate(innerX, y + h);
+        scale(1, -1);
+        image(horizontalEdgeSprite, 0, 0, innerW, cap);
+        pop();
+      }
+
+      if (innerH > 0) {
+        image(verticalEdgeSprite, x, innerY, cap, innerH);
+        push();
+        translate(x + w, innerY);
+        scale(-1, 1);
+        image(verticalEdgeSprite, 0, 0, cap, innerH);
+        pop();
+      }
+
+      image(cornerSprite, x, y, cap, cap);
+      push();
+      translate(x + w, y);
+      scale(-1, 1);
+      image(cornerSprite, 0, 0, cap, cap);
+      pop();
+      push();
+      translate(x, y + h);
+      scale(1, -1);
+      image(cornerSprite, 0, 0, cap, cap);
+      pop();
+      push();
+      translate(x + w, y + h);
+      scale(-1, -1);
+      image(cornerSprite, 0, 0, cap, cap);
+      pop();
+    } else {
+      fill(255, 245, 220);
+      stroke(0);
+      rect(panelX, panelY, panelW, panelH, 12);
+    }
+  }
+
   _drawMenuPanel() {
     push();
 
@@ -1278,9 +1346,7 @@ const stationGap = 1.26;
     const panelW = layout.midW;
     const panelH = layout.panelH;
 
-    fill(255, 245, 220);
-    stroke(0);
-    rect(panelX, panelY, panelW, panelH, 12);
+    this._drawBoardPanelBackground(panelX, panelY, panelW, panelH);
 
     this.menuCloseButton = null;
 
@@ -1414,9 +1480,7 @@ const stationGap = 1.26;
     const panelW = layout.leftW;
     const panelH = layout.panelH;
 
-    fill(220, 240, 255);
-    stroke(0);
-    rect(panelX, panelY, panelW, panelH, 12);
+    this._drawBoardPanelBackground(panelX, panelY, panelW, panelH);
 
     this.taskCloseButton = null;
 
@@ -1479,9 +1543,7 @@ const stationGap = 1.26;
     const panelW = layout.rightW;
     const panelH = layout.panelH;
 
-    fill(255, 245, 220);
-    stroke(0);
-    rect(panelX, panelY, panelW, panelH, 12);
+    this._drawBoardPanelBackground(panelX, panelY, panelW, panelH);
 
     fill(0);
     noStroke();

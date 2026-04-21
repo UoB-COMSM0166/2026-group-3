@@ -142,14 +142,15 @@ export class SettingsScene extends Menu {
     // Back button
     this.backButton = new Button(
       game,
-      "X",
-      new Vector2(50, 50),
+      "",
+      new Vector2(32, 32),
       new Vector2("Right", "Top"),
-      new Vector2()
+      new Vector2(-8, 8)
     );
     this.backButton.parent = this;
-    this.backButton.style.textSize = 30;
-    this.backButton.textSizeOverride = true;
+    this.backButton.image = "Cross Button";
+    this.backButton.expandToFit.x = false;
+    this.backButton.expandToFit.y = false;
 
     this.backButton.onClick = function() {
 

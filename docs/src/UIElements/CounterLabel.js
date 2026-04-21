@@ -17,11 +17,41 @@ export class CounterLabel extends Label {
             let sprite = this.game.assetManager.getImage(this.image);
             image(sprite, this.pos.x, this.pos.y, this.size.x, this.size.y);
         } else {
-            // Otherwise, draw a box to fit the text
-            fill(this.style.fillColor);
-            stroke(this.style.outline);
-            strokeWeight(this.style.outlineWidth);
-            rect(this.pos.x, this.pos.y, this.size.x, this.size.y, this.style.rounding);
+            const dentSprite = this.game.assetManager.getImage("UI Dent Corners");
+            const dentMiddleSprite = this.game.assetManager.getImage("UI Dent Middle");
+
+            if (dentSprite && dentMiddleSprite){
+                const x = Math.round(this.pos.x);
+                const y = Math.round(this.pos.y);
+                const w = Math.round(this.size.x);
+                const h = Math.round(this.size.y);
+                const capWidth = Math.round(h / 2);
+                const middleX = x + capWidth;
+                const middleWidth = Math.max(0, w - (2 * capWidth));
+
+                // Tile/stretch the dent middle so caps connect seamlessly.
+                if (middleWidth > 0){
+                    image(dentMiddleSprite, middleX, y, middleWidth, h);
+                }
+
+                // Left cap
+                image(dentSprite, x, y, capWidth, h);
+
+                // Right cap (mirrored)
+                push();
+                translate(x + w, y);
+                scale(-1, 1);
+                image(dentSprite, 0, 0, capWidth, h);
+                pop();
+            } else if (dentSprite){
+                image(dentSprite, this.pos.x, this.pos.y, this.size.x, this.size.y);
+            } else {
+                // Fallback if UI assets are missing.
+                fill(this.style.fillColor);
+                stroke(this.style.outline);
+                strokeWeight(this.style.outlineWidth);
+                rect(this.pos.x, this.pos.y, this.size.x, this.size.y, this.style.rounding);
+            }
         }
         
         // Write text in the given style
@@ -36,7 +66,18 @@ export class CounterLabel extends Label {
 
         if (this.itemImage != null){
             let sprite = this.game.assetManager.getImage(this.itemImage);
-            image(sprite, this.pos.x + this.size.x - this.size.y - 5, this.pos.y, this.size.y, this.size.y);
+            let imageSize = this.size.y;
+            let imageX = this.pos.x + this.size.x - this.size.y - 5;
+            let imageY = this.pos.y;
+
+            if (this.itemImage == "UI Coin"){
+                const coinScale = 0.8;
+                imageSize = this.size.y * coinScale;
+                imageX = this.pos.x + this.size.x - imageSize - 5;
+                imageY = this.pos.y + (this.size.y - imageSize) / 2;
+            }
+
+            image(sprite, imageX, imageY, imageSize, imageSize);
         }
     }
         

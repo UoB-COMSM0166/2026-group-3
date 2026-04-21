@@ -47,6 +47,15 @@ export class AssetManager {
         //UI Assets
         this.loadImage("Menu Button","./assets/UI/menu.png")
         this.loadImage("Cross Button","./assets/UI/cross.png")
+        this.loadImage("UI Button Corner", "./assets/UI/button/corner.png")
+        this.loadImage("UI Button Middle", "./assets/UI/button/middle.png")
+        this.loadImage("UI Dent Corners", "./assets/UI/dent/corners.png")
+        this.loadImage("UI Dent Middle", "./assets/UI/dent/middle.png")
+        this.loadImage("UI Coin", "./assets/UI/coin.png")
+        this.loadImage("UI Board Corner", "./assets/UI/board/corner.png")
+        this.loadImage("UI Board Vertical Edge", "./assets/UI/board/verticaledge.png")
+        this.loadImage("UI Board Horizontal Edge", "./assets/UI/board/horizontaledge.png")
+        this.loadImage("UI Board Middle", "./assets/UI/board/middle.png")
 
 
         //Fonts
