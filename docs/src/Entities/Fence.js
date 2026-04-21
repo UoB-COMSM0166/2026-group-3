@@ -16,13 +16,18 @@ export class Fence extends Entity {
         this.image2 = "Fence 2";
         this.image3 = "Fence 3";
 
+        this.damageCooldown = 0;
+
     }
 
     update(events){
-
+        this.damageCooldown -= 0.5;
+        this.damageCooldown = max(0, this.damageCooldown);
     }
     draw(){
         if (!this.isVisible) return;
+
+        let dmgPosOffset = Math.sqrt(this.damageCooldown) * Math.sin(this.damageCooldown);
 
         let rel_pos = this.game.view.localToScreen(this.pos);
         let rel_size = this.game.view.localToScreen(this.size);
@@ -37,11 +42,8 @@ export class Fence extends Entity {
         }
 
         let sprite = this.game.assetManager.getImage(dmgImage);
-        image(sprite, rel_pos.x, this.game.model.scene.uiBar.size.y, rel_size.x, this.game.view.size.y - this.game.model.scene.uiBar.size.y);
+        image(sprite, rel_pos.x, this.game.model.scene.uiBar.size.y + dmgPosOffset, rel_size.x, this.game.view.size.y - this.game.model.scene.uiBar.size.y);
         
-        // fill(100,100,100);
-        // stroke(0);
-        // rect(rel_pos.x, rel_pos.y, rel_size.x, rel_size.y);
     }
 
     takeDamage(damage){
@@ -52,6 +54,7 @@ export class Fence extends Entity {
             this.game.model.scene.gameOver();
         } else{
             fenceLabel.label = `Health: ${this.health/this.maxHealth}%`;
+            this.damageCooldown += 3*Math.PI;
         }
         
     }
