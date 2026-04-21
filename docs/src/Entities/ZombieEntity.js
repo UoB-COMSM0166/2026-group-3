@@ -1,3 +1,4 @@
+import { ItemEntity } from "./ItemEntity.js";
 import { Entity } from "../Core/Entity.js";
 import { Vector2 } from "../Utility/Vector2.js";
 
@@ -59,31 +60,35 @@ export class ZombieEntity extends Entity {
         }
     }
 
-    async takeDamage(damage){
-        this.health -= damage;
+ async takeDamage(damage) {
+    if (this.isDead || this.health <= 0) return;
+    this.health -= damage;
+    this.damageTimer = 10;
 
-        // Damage Sound
-        await this.game.soundManager.playSFX("damage");
-        if (this.health<=0) {
+    this.game.soundManager.playSFX("damage").catch(() => {});
 
-            //Temp Code to add Money on Death
-            //this.game.model.gameState.coins+=Math.floor(random(3, 8));
+    if (this.health <= 0) {
+        this.isDead = true;
+        
+        console.log(`Zombie Died. Type: ${this.constructor.name}, Drops:`, this.drops);
 
-            let zombieManager = this.game.model.scene.zombieManager
-
-            zombieManager.waveStrength -= this.strength / 2;
-            this.game.model.gameState.phaseProgress = 1- (zombieManager.waveStrength / zombieManager.totalStrength)
-
-            for (let drop of this.drops){
-                this.game.model.gameState.inventory.add(drop);
+        if (this.drops && this.drops.length > 0) {
+            for (let dropName of this.drops) {
+                // Add to inventory (updates the counter)
+                this.game.model.gameState.inventory.add(dropName);
+                
+                // Create visual ItemEntity on the ground
+                let item = new ItemEntity(this.game, new Vector2(this.pos.x, this.pos.y), dropName);
+                this.game.model.scene.addEntity(item);
             }
-
-
-            this.game.model.scene.removeEntity(this);
-            return;
         }
-        this.damageTimer = 10;
 
-
+        this.game.model.scene.removeEntity(this);
+        
+        let zm = this.game.model.scene.zombieManager;
+        if (zm && zm.zombies) {
+            zm.zombies = zm.zombies.filter(z => z !== this);
+        }
     }
+}
 }
