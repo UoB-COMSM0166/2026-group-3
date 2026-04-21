@@ -52,7 +52,7 @@ export class UIBar extends Menu {
 
         this.elements.push(this.coinsLabel);
 
-        let drops = game.model.drops;
+        let drops = game.model.gameState.drops;
         let previous = this.coinsLabel;
         for (let i=0; i < drops.length; i++){
             let dropCount = new CounterLabel(game, "0", new Vector2(), 

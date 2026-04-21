@@ -10,6 +10,7 @@ export class GameState {
     this.time = "Night";
     this.phaseProgress = 0; // 0 = Start of phase, 1 = end of phase
     this.turrets = [];
+    this.drops = ["Zombie Mince", "Zombie Juice", "Zombie Drumstick", "Zombie Belly"];
   }
 
   addCoins(amount) {
