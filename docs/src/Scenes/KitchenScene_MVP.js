@@ -62,9 +62,11 @@ export class KitchenScene_MVP extends Scene {
     this.nextCustomerId = 1;
 
     this.customerTargetSlots = [
-      new Vector2(12.2, 2.3),
-      new Vector2(12.2, 4.5),
-      new Vector2(12.2, 6.7),
+      new Vector2(4.75, 1.7),
+      new Vector2(4.75, 2.7),
+      new Vector2(4.75, 3.7),
+      new Vector2(4.75, 4.7),
+      new Vector2(4.75, 5.7),
     ];
     this.customerSpawnX = 14.2;
     this.customerLeaveX = 15.4;

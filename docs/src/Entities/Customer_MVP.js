@@ -1,12 +1,16 @@
+import { AssetManager } from "../Core/AssetManager.js";
 import { Entity } from "../Core/Entity.js";
 import { Vector2 } from "../Utility/Vector2.js";
 
 export class Customer_MVP extends Entity {
   constructor(game, pos, order) {
-    super(game, pos, new Vector2(0.8, 0.8));
+    super(game, pos, new Vector2(1.5, 1.5));
 
     this.order = order;
     this.state = "WAITING";
+
+    this.idleImage = "Customer Idle";
+    this.walkingImage = "Customer Walking";
 
     // In the current kitchen flow, the global kitchen timer controls failure.
     // This timer is only used for on-screen display.
@@ -84,15 +88,23 @@ export class Customer_MVP extends Entity {
 
     stroke(0);
 
+    let sprite;
+
     if (this.state === "WAITING") {
-      fill(220, 120, 120);
+      sprite = this.game.assetManager.getImage(this.idleImage);
+      image(sprite, relPos.x, relPos.y, relSize.x, relSize.y);
     } else if (this.state === "SERVED") {
-      fill(120, 220, 120);
+      push();
+      scale(-1,1);
+      sprite = this.game.assetManager.getImage(this.walkingImage);
+      image(sprite, - relPos.x - relSize.x, relPos.y, relSize.x, relSize.y);
+      pop();
     } else {
-      fill(150);
+      sprite = this.game.assetManager.getImage(this.walkingImage);
+      image(sprite, relPos.x, relPos.y, relSize.x, relSize.y);
     }
 
-    rect(relPos.x, relPos.y, relSize.x, relSize.y);
+    
 
     if (this.order && this.state === "WAITING") {
       fill(0);

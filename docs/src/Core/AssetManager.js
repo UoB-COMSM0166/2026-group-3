@@ -44,6 +44,12 @@ export class AssetManager {
         this.loadImage("Ramen","./assets/kitchen/ramenpot.png")
         this.loadImage("Counter","./assets/kitchen/counter.png")
 
+        //Customer Sprites
+        this.loadImage("Customer Walking","./assets/cuswalking.gif")
+        this.loadImage("Customer Idle","./assets/csit.png")
+
+
+
         //UI Assets
         this.loadImage("Menu Button","./assets/UI/menu.png")
         this.loadImage("Cross Button","./assets/UI/cross.png")

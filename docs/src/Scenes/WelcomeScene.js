@@ -30,7 +30,7 @@ export class WelcomeScene extends Scene {
     this.title.style.textColor = "#00FF00";
     this.title.style.textAlign = { x: "center", y: "center" };
     this.title.expandToFit.x = true;
-    
+
     this.title.textSizeOverride = true;
 
     //Main Menu Buttons 
@@ -108,7 +108,7 @@ export class WelcomeScene extends Scene {
     this.testKitchenButton.onClick = () => {
       this.game.model.difficulty = "normal";
       this.game.model.gameState.inventory = new Inventory({
-            "Zombie Mince": 6,
+            "Zombie Mince": 100,
             toxic_slime: 1,
             bone_fragments: 1,
             spice_powder: 2,
