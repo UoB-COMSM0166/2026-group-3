@@ -24,7 +24,7 @@ export class View {
         style.outlineWidth = 2;
         style.fillColor = color(255);
         style.textColor = color(0);
-        style.font = 'Courier New';
+        style.font = this.game.assetManager.getFont("PixelMix");
         style.textAlign.x = CENTER;
         style.textAlign.y = CENTER;
         style.textSize = this.textSize;

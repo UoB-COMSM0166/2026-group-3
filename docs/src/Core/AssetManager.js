@@ -4,6 +4,7 @@ export class AssetManager {
         this.isLoaded = false;
         this.promises = []
         this.images = {};
+        this.fonts = {};
         this.game = game;
     }
 
@@ -15,6 +16,10 @@ export class AssetManager {
         this.loadImage("Chef Cooking","./assets/chefcooking.gif");
         this.loadImage("Chef Walking","./assets/chefwalking.gif");
         this.loadImage("Turret", "./assets/turret.gif");
+        this.loadImage("Shooter Background", "./assets/shooterbg.png");
+        this.loadImage("Fence 1", "./assets/fence1.png");
+        this.loadImage("Fence 2", "./assets/fence2.png");
+        this.loadImage("Fence 3", "./assets/fence3png.png");
 
         //Zombie Sprites
         this.loadImage("BasicZombieWalking","./assets/zombiewalking.gif");
@@ -39,7 +44,14 @@ export class AssetManager {
         this.loadImage("Ramen","./assets/kitchen/ramenpot.png")
         this.loadImage("Counter","./assets/kitchen/counter.png")
 
+        //UI Assets
+        this.loadImage("Menu Button","./assets/UI/menu.png")
+        this.loadImage("Cross Button","./assets/UI/cross.png")
 
+
+        //Fonts
+        this.loadFont("PixelBit","./assets/fonts/PixelBit-Free.ttf");
+        this.loadFont("PixelMix","./assets/fonts/pixelmix.ttf");
 
 
 
@@ -61,7 +73,15 @@ export class AssetManager {
         this.promises.push(loadImage(path).then(value => this.images[name] = value));
     }
 
+    async loadFont(name,path){
+        this.promises.push(loadFont(path).then(value => this.fonts[name] = value));
+    }
+
     getImage(name){
         return this.images[name];
+    }
+
+    getFont(name){
+        return this.fonts[name];
     }
 }

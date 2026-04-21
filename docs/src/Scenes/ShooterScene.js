@@ -22,7 +22,9 @@ export class ShooterScene extends Scene {
         this.game.model.gameState.time = "Night"
         this.game.model.gameState.phaseProgress = 0;
 
-        this.rows = [1, 2.5, 4, 5.5, 7];
+        this.background = "Shooter Background";
+
+        this.rows = [2, 3, 4, 5, 6];
 
         this.weaponManager = new WeaponManager(game);
         let weapon = this.weaponManager.getWeapon(game.model.gameState.playerWeapon);
@@ -84,33 +86,24 @@ export class ShooterScene extends Scene {
 
     draw () {
 
-        // Visualize allowed area (left 1/6th of grid)
-        fill(100, 100, 255, 50); // semi-transparent blue
-        noStroke();
-        let rectWidth = this.game.view.localToScreen(new Vector2(4, 0)).x;
-        let rectHeight = this.game.view.localToScreen(new Vector2(0, this.game.gridSize.y)).y;
-        rect(0, 0, rectWidth, rectHeight);
+        const background = this.game.assetManager.getImage(this.background);
+        image(
+            background,
+            0,
+            this.uiBar.size.y,
+            this.game.view.size.x,
+            this.game.view.size.y - this.uiBar.size.y
+        );
 
-
-        let top = new Vector2(4,0);
-        let bottom = new Vector2(4,9);
-
-        let relTop = this.game.view.localToScreen(top);
-        let relBottom = this.game.view.localToScreen(bottom);
-        
-        //Red Boundary Line(bro would not appear idky)
-        stroke(255, 0, 0);
-        line(relTop.x, relTop.y, relBottom.x, relBottom.y);
+        super.draw();
 
         if (this.isGameOver) {
             //Draw a dark overlay to make it dramatic lmao :3
+            stroke(0);
             fill(0, 0, 0, 150); //Semi-transparent black
-            rect(0, 0, width, height);         
+            rect(0, 0, width, height);       
+            this.restartBtn.draw();
         }
-
-        super.draw(); //call the base draw function
-                      //e.g draws all the entities + ui
-        
     }
 
     update(events){
@@ -150,6 +143,25 @@ export class ShooterScene extends Scene {
     async gameOver(){
         this.isGameOver = true;
 
+        let phaseText = this.uiBar.dayLabel.label; 
+        let parts = phaseText.split(" ");        
+        let phaseNumber = parseInt(parts[1]);     
+        let phaseTime = parts[0];
+        let survivedText;
+    
+        if(phaseNumber == "1"){
+
+       survivedText = "You Survived " + "1 " + phaseTime;
+        
+    }
+
+     else {
+
+     survivedText = "You Survived " + phaseNumber + " " + phaseTime + "s";
+    
+    }
+
+
         //Restart Button
         this.restartBtn = new Button(this.game, "Restart Game", new Vector2(160, 50), new Vector2("Centre", "Centre"));
         this.restartBtn.offset.y = 90;
@@ -160,11 +172,11 @@ export class ShooterScene extends Scene {
         this.addUIElement(this.restartBtn);
 
         //Game Over Label
-        this.gameOverLabel = new Label(this.game, "Game Over", new Vector2(350, 120), new Vector2("Centre", "Centre"));
+        this.gameOverLabel = new Label(this.game, survivedText , new Vector2(350, 120), new Vector2("Centre", "Centre"));
         this.gameOverLabel.style.fillColor = color(0,0,0,0);
         this.gameOverLabel.style.outline = color(0,0,0,0);
         this.gameOverLabel.style.textColor = color(255,0,0);
-        this.gameOverLabel.style.textSize = 60;
+        this.gameOverLabel.style.textSize = 100;
         this.gameOverLabel.offset.y = -70;
 
         //Lose Sound

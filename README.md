@@ -240,7 +240,73 @@ Gathering requirements helped us perfect our game concept, moving us closer to a
 
 - One qualitative evaluation (of your choice) 
 
-- One quantitative evaluation (of your choice) 
+## Quantitative Evaluation: NASA Task Load Index (TLX)
+
+## Methods
+
+We administered the NASA Task Load Index (Hart and Staveland, 1988) to measure users’ perceived workload across two difficulty levels: Easy and Hard. The latter contained a higher spawn frequency of zombies. To reduce between-participant differences, a within-subjects design was adopted and we recruited only students. 
+
+Limitation: Learning effects potentially minimised perceived workload differences in the Hard difficulty. On reflection, the conditions could have been counterbalanced or randomised across participants, or possibly a time gap to reduce these biases. Nonetheless, the results show that workload predictably increased between the Easy and Hard difficulty levels.
+
+
+
+## Results
+
+### Bar Chart: NASA Task Load Index (TLX)
+
+<p align="center">
+  <img src="documentation/Evaluation_figures/NASATLX,%20BARCHART.png" width="600"/>
+</p>
+
+A Wilcoxon Signed Rank Test showed statistical significance for the overall scores (W = 1, p < 0.005).
+
+---
+
+### Stacked Radar Chart: Aggregate perceived workload score (n = 10) for Easy and Hard difficulty
+
+<p align="center">
+  <img src="documentation/Evaluation_figures/NASATLXRADARLAYER.jpg" width="450"/>
+</p>
+
+
+---
+
+### Radar Chart (Easy Difficulty): Aggregate perceived workload score (n = 10), per dimension
+
+<p align="center">
+  <img src="documentation/Evaluation_figures/NASATLXEASY.png" width="450"/>
+</p>
+
+---
+
+### Radar Chart (Hard Difficulty): Aggregate perceived workload score (n = 10), per dimension
+
+<p align="center">
+  <img src="documentation/Evaluation_figures/NASATLXHARD.png" width="450"/>
+</p>
+
+
+
+## Wilcoxon Signed-Rank Test Results (NASA-TLX)
+
+| Dimension     | W stat | p-value | Significant (p < 0.05) | Result        |
+|---------------|--------|---------|--------------------------|---------------|
+| Mental        | 0      | 0.005   | ✔                        | Significant   |
+| Physical      | 0      | 0.025   | ✔                        | Significant   |
+| Temporal      | 0      | 0.010   | ✔                        | Significant   |
+| Performance   | —      | —       | ✘                        | Not significant |
+| Effort        | 3.5    | 0.010   | ✔                        | Significant   |
+| Frustration   | 10.5   | 0.100   | ✘                        | Not significant |
+
+---
+
+Mental, physical, temporal and effort scores were recorded significantly higher in the hard condition, as expected due to a higher zombie spawn frequency, tighter timing pressure, and the need for faster keyboard movements. 
+
+Interestingly, frustration had an insignificant result, with unusual variability in scores. For example, User 7 reported less frustration and effort for the hard condition, despite rating increased mental demand. User 1 also recorded less frustration in the harder condition, despite rating mental, physical and temporal demand as higher.
+
+This could be attributed to differences in participants’ perception of the game feedback, specifically the health bar, which very gradually decreased from 100% during gameplay. Participants may not have perceived this as impactful enough to feel frustrated. Rather than omitting these values as possible outliers, we included them in our evaluation, linking them to individual differences. 
+
+
 
 - Description of how code was tested. 
 

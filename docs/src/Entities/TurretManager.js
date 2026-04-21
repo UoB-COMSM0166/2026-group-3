@@ -16,7 +16,7 @@ export class TurretManager extends Entity{
             this.turretPositions.push(new Vector2(5, row));
         }
         this.buyingTurret = false;
-        this.turretPrice = 20;
+        this.turretPrice = 50;
 
         this.ghostTurret = new Turret(game, this.pos, true);
 
@@ -31,12 +31,12 @@ export class TurretManager extends Entity{
             if (targetPos.withinBox(pos, this.spaceSize)){
                 if (this.scene.getEntities("Turret") != null){
                     for (let placedTurret of this.scene.getEntities("Turret")){
-                        if (placedTurret.pos.y == pos.y){
+                        if (placedTurret.pos.y == pos.y - 0.25){
                             return null;
                         }
                     }
                 }
-                return pos;
+                return pos.add(new Vector2(0, 0.25));
             }
         }
         return null;

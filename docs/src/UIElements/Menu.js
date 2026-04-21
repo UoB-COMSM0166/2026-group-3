@@ -17,7 +17,6 @@ export class Menu extends UIElement {
 
     draw(){
         if (!this.isVisible) { return; }
-        this.pos = this.calculatePosition();
 
         fill(this.style.fillColor);
         stroke(this.style.outline);
@@ -36,6 +35,8 @@ export class Menu extends UIElement {
         }
     }
     resize(){
+        this.reposition();
+
         //Update each element size/position accordingly
         for (let element of this.elements){
             element.resize();

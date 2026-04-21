@@ -18,11 +18,12 @@ export class UIBar extends Menu {
 
         this.style.fillColor = color(200);
 
-        this.menuButton = new Button(game, "M",
+        this.menuButton = new Button(game, "",
                                     new Vector2(), 
                                     new Vector2("Left","Top"),
                                     new Vector2(10,10))
         this.menuButton.expandToFit = new Vector2(true, true);
+        this.menuButton.image = "Menu Button";
 
         this.elements.push(this.menuButton);
 

@@ -27,11 +27,12 @@ export class ShopMenu extends Menu {
 
         this.elements.push(shopTitle);
 
-        let shopClose = new Button(game, "X", new Vector2(30, 30), new Vector2("Right", "Top"));
+        let shopClose = new Button(game, "", new Vector2(30, 30), new Vector2("Right", "Top"));
         shopClose.parent = this; 
         shopClose.sizeMatch.y = [shopTitle];
         shopClose.expandToFit.y = true;
         shopClose.expandToFit.x = true;
+        shopClose.image = "Cross Button";
         shopClose.onClick = function() {
             this.game.model.scene.getUIElement("shop").isVisible = false;
         };
