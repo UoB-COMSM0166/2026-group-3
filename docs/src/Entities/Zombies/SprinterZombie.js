@@ -21,13 +21,4 @@ export class SprinterZombie extends ZombieEntity {
         let promise = loadImage("./assets/sprinter.gif").then(image => this.image = image);
         return promise;
     }
-
-    async takeDamage(damage) {
-        await super.takeDamage(damage);
-
-        if (this.health <= 0) {
-            let drop = new ItemEntity(this.game, new Vector2(this.pos.x, this.pos.y), this.drops[0]);
-            this.game.model.scene.addEntity(drop);
-        }
-    }
 }

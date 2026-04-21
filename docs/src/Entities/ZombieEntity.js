@@ -78,7 +78,7 @@ export class ZombieEntity extends Entity {
                 this.game.model.gameState.inventory.add(dropName);
                 
                 // Create visual ItemEntity on the ground
-                let item = new ItemEntity(this.game, new Vector2(this.pos.x, this.pos.y), dropName);
+                let item = new ItemEntity(this.game, new Vector2(this.pos.x, this.pos.y + this.size.x), dropName);
                 this.game.model.scene.addEntity(item);
             }
         }

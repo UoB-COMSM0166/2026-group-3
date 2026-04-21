@@ -53,7 +53,7 @@ export class Fence extends Entity {
             fenceLabel.label = "Health: 0%";
             this.game.model.scene.gameOver();
         } else{
-            fenceLabel.label = `Health: ${this.health/this.maxHealth}%`;
+            fenceLabel.label = `Health: ${100*this.health/this.maxHealth}%`;
             this.damageCooldown += 3*Math.PI;
         }
         

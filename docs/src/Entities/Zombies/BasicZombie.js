@@ -22,14 +22,4 @@ export class BasicZombie extends ZombieEntity {
         return promise;
     }
 
-    async takeDamage(damage) {
-        // Call the original damage logic from ZombieEntity
-        await super.takeDamage(damage);
-
-        // If the zombie just died, spawn the item
-        if (this.health <= 0) {
-            let drop = new ItemEntity(this.game, new Vector2(this.pos.x, this.pos.y), this.drops[0]);
-            this.game.model.scene.addEntity(drop);
-        }
-    }
 }
