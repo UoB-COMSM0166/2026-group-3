@@ -48,12 +48,14 @@ export class Fence extends Entity {
 
     takeDamage(damage){
         this.health -= damage;
+        this.health = max(0, this.health);
         let fenceLabel = this.game.model.scene.getUIElement("FenceLabel");
         if (this.health/this.maxHealth <= 0){
             fenceLabel.label = "Health: 0%";
             this.game.model.scene.gameOver();
         } else{
-            fenceLabel.label = `Health: ${100*this.health/this.maxHealth}%`;
+            const healthPercent = Math.round((this.health / this.maxHealth) * 100);
+            fenceLabel.label = `Health: ${healthPercent}%`;
             this.damageCooldown += 3*Math.PI;
         }
         

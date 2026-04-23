@@ -15,6 +15,7 @@ export class AssetManager {
         this.loadImage("ChefShooting","./assets/chefshooting.gif");
         this.loadImage("Chef Cooking","./assets/chefcooking.gif");
         this.loadImage("Chef Walking","./assets/chefwalking.gif");
+        this.loadImage("Chef Hold","./assets/chefhold.gif");
         this.loadImage("Turret", "./assets/turret.gif");
         this.loadImage("Shooter Background", "./assets/shooterbg.png");
         this.loadImage("Fence 1", "./assets/fence1.png");
@@ -34,6 +35,11 @@ export class AssetManager {
         this.loadImage("Zombie Drumstick","./assets/drops/zombieDrumstick.png");
         this.loadImage("Zombie Juice","./assets/drops/zombieJuice.png");
         this.loadImage("Zombie Mince","./assets/drops/zombieMince.png");
+        this.loadImage("Dish ZOMBURGER", "./assets/dishes/Zomburger.png");
+        this.loadImage("Dish DFD", "./assets/dishes/firedDrumstick.png");
+        this.loadImage("Dish ZOMMEN", "./assets/dishes/ramen.png");
+        this.loadImage("Dish ZOMBBQ", "./assets/dishes/bbq.png");
+        this.loadImage("Dish ZOMBEER", "./assets/dishes/beer.png");
 
         //Kitchen Scene Assets
         this.loadImage("Kitchen Background","./assets/kitchen/background.png")
@@ -43,6 +49,8 @@ export class AssetManager {
         this.loadImage("Keg","./assets/kitchen/keg.png")
         this.loadImage("Ramen","./assets/kitchen/ramenpot.png")
         this.loadImage("Counter","./assets/kitchen/counter.png")
+        this.loadImage("Customer Walking","./assets/cuswalking.gif")
+        this.loadImage("Customer Standing","./assets/cusstand.png")
 
         //Customer Sprites
         this.loadImage("Customer Walking","./assets/cuswalking.gif")
@@ -58,10 +66,18 @@ export class AssetManager {
         this.loadImage("UI Dent Corners", "./assets/UI/dent/corners.png")
         this.loadImage("UI Dent Middle", "./assets/UI/dent/middle.png")
         this.loadImage("UI Coin", "./assets/UI/coin.png")
+        this.loadImage("UI Bubble", "./assets/UI/bubble.png")
+        this.loadImage("UI Minus", "./assets/UI/minus.png")
+        this.loadImage("UI Plus", "./assets/UI/plus.png")
+        this.loadImage("UI Tick", "./assets/UI/tick.png")
         this.loadImage("UI Board Corner", "./assets/UI/board/corner.png")
         this.loadImage("UI Board Vertical Edge", "./assets/UI/board/verticaledge.png")
         this.loadImage("UI Board Horizontal Edge", "./assets/UI/board/horizontaledge.png")
         this.loadImage("UI Board Middle", "./assets/UI/board/middle.png")
+        this.loadImage("UI Paper Corner", "./assets/UI/paper/corner.png")
+        this.loadImage("UI Paper Vertical Edge", "./assets/UI/paper/verticaledge.png")
+        this.loadImage("UI Paper Horizontal Edge", "./assets/UI/paper/horizontaledge.png")
+        this.loadImage("UI Paper Middle", "./assets/UI/paper/middle.png")
 
 
         //Fonts

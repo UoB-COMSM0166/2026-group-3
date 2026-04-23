@@ -108,11 +108,12 @@ export class WelcomeScene extends Scene {
     this.testKitchenButton.onClick = () => {
       this.game.model.difficulty = "normal";
       this.game.model.gameState.inventory = new Inventory({
-            "Zombie Mince": 100,
-            toxic_slime: 1,
-            bone_fragments: 1,
-            spice_powder: 2,
-            mutant_core: 0,
+            // Starter stock for all menu recipes in test kitchen mode
+            "Zombie Mince": 10,
+            "Zombie Belly": 10,
+            "Zombie Juice": 10,
+            "Prime Bone": 10,
+            "Zombie Drumstick": 10,
           });
       this.game.model.scene = new KitchenScene_MVP(this.game);
     };

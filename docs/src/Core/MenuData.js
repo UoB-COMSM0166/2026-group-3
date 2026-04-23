@@ -7,7 +7,7 @@ export class MenuData {
         requirements: {
           "Zombie Mince": 2
         },
-        cookTime: 4,
+        cookTime: 3,
         rewardCoins: 20,
         stationType: "oven"
       },
@@ -18,7 +18,7 @@ export class MenuData {
           "Zombie Belly": 1,
           "Zombie Juice": 1
         },
-        cookTime: 6,
+        cookTime: 4.5,
         rewardCoins: 45,
         stationType: "pot"
       },
@@ -31,7 +31,7 @@ export class MenuData {
           "Prime Bone": 1,
           "Zombie Drumstick": 2
         },
-        cookTime: 7,
+        cookTime: 6,
         rewardCoins: 150,
         stationType: "grill"
       },
@@ -41,7 +41,7 @@ export class MenuData {
         requirements: {
           "Zombie Drumstick": 4
         },
-        cookTime: 8,
+        cookTime: 4,
         rewardCoins: 30,
         stationType: "prep"
       },
@@ -51,7 +51,7 @@ export class MenuData {
         requirements: {
           "Zombie Juice": 2
         },
-        cookTime: 12,
+        cookTime: 2.5,
         rewardCoins: 25,
         stationType: "special"
       }

@@ -50,6 +50,9 @@ export class KitchenScene_MVP extends Scene {
     this.currentOrder = null;
     this.success = false;
     this.endTimer = 2;
+    this.endOverlayButton = null;
+    this.nightStartCoins = this.state?.coins || 0;
+    this.nightEarnedCoins = 0;
 
     // Multiple random customers
     this.customers = [];
@@ -70,7 +73,7 @@ export class KitchenScene_MVP extends Scene {
     ];
     this.customerSpawnX = 14.2;
     this.customerLeaveX = 15.4;
-    this.customerMoveSpeed = 2.6;
+    this.customerMoveSpeed = 4.7;
 
     // Logging
     this._loggedDoneTaskIds = new Set();
@@ -98,8 +101,9 @@ export class KitchenScene_MVP extends Scene {
     this.planningUIAutoVisible = true;
 
     // Pending dish editor state
-    this.pendingRecipeId = "toxic_stew";
+    this.pendingRecipeId = "rotten_burger";
     this.pendingQuantity = 0;
+    this.cookPriorityRecipeId = null;
 
     // Hold-to-cook state
     this.holdCookTaskId = null;
@@ -109,6 +113,7 @@ export class KitchenScene_MVP extends Scene {
     this.holdCookDuration = 0;
     this.holdCookCustomerId = null;
     this.spaceLastFrame = false;
+    this.showInteractDebug = true;
 
     // Bubble cache
     this._bubbleImage = null;
@@ -116,11 +121,11 @@ export class KitchenScene_MVP extends Scene {
 
     // Placeholder descriptions
     this.recipeDescriptions = {
-      rotten_burger: "Description coming soon.",
-      toxic_stew: "Description coming soon.",
-      bone_bbq: "Description coming soon.",
-      mutant_soup: "Description coming soon.",
-      ultimate_feast: "Description coming soon.",
+      rotten_burger: "A wasteland classic. We've hand-pressed the finest zombie mince into a patty that's surprisingly juicy-though we recommend not asking what the 'juice' actually is. Flame-grilled to mask the slight scent of decay. It's the ultimate comfort food for the end of the world.",
+      mutant_soup: "\"Doomsday Fried Drumstick\" double-breaded and deep-fried to a perfect, radioactive golden-brown. The thick crust provides a satisfying crunch that helps you forget the rubbery texture of the 'poultry' underneath. It's finger-lickin' good, provided you've still got all your fingers.",
+      toxic_stew: "A steaming bowl of scavenged noodles swimming in a rich, dark marrow broth. The 'meat' slices are slow-simmered until they stop twitching, absorbing all the salty goodness of the soup. It's a bowl of warmth in a cold, dead world.",
+      bone_bbq: "The crown jewel of the kitchen. These premium ribs are slow-smoked for 12 hours over charred driftwood and old-world furniture. The meat falls right off the bone-which is convenient, because the zombie it came from didn't need them anymore anyway. Sweet, smoky, and suspiciously tender.",
+      ultimate_feast: "Brewed in a repurposed radiator using fermented fungal spores and a prayer. It's got a thick head, a copper aftertaste, and enough kick to make a shambler sprint. Best served lukewarm. Drink enough of these, and the apocalypse starts looking like a party.",
     };
 
     // Station labels shown below each station
@@ -150,9 +155,9 @@ export class KitchenScene_MVP extends Scene {
 
     // ===== =====
     const stationSize = new Vector2(1.45, 1.15);
-const startX = 0.55;
-const startY = 2.55;
-const stationGap = 1.26;
+const startX = 0.25;
+const startY = 1.95;
+const stationGap = 1.25;
 
     // Keep your intended top-to-bottom order:
     // Ramen, BBQ, Burger, Fried, Keg
@@ -242,6 +247,11 @@ const stationGap = 1.26;
       const my = event?.y ?? mouseY;
 
       if (event.type === "click") {
+        if (this.phase === "END" && this._isInside(mx, my, this.endOverlayButton)) {
+          this._resetAndReturnToShooter();
+          return;
+        }
+
         if (this._isInside(mx, my, this.menuOpenTab)) {
           this.isMenuOpen = true;
           return;
@@ -260,6 +270,11 @@ const stationGap = 1.26;
 
       if (event.key === "t" || event.key === "T") {
         this.isTaskListOpen = !this.isTaskListOpen;
+      }
+
+      if (this.phase === "END" && event.key === "Enter") {
+        this._resetAndReturnToShooter();
+        return;
       }
 
       // Planning phase
@@ -359,15 +374,25 @@ const stationGap = 1.26;
           this.phase = "PRODUCTION";
           this.timerStarted = true;
           this.kitchenTimer = this.kitchenTimeLimit;
+          this.nightStartCoins = this.state?.coins || 0;
+          this.nightEarnedCoins = 0;
 
           this.isMenuOpen = false;
           this.isTaskListOpen = false;
 
           this._resetHoldCooking();
           this._spawnRandomCustomerIfPossible();
-          this.showMessage("Cooking started");
           console.log("[Kitchen] Entered PRODUCTION");
         }
+      }
+
+      // Production phase: let player choose cook priority dish
+      if (this.phase === "PRODUCTION") {
+        if (event.key === "1") this._setCookPriorityRecipe("rotten_burger");
+        if (event.key === "2") this._setCookPriorityRecipe("mutant_soup");
+        if (event.key === "3") this._setCookPriorityRecipe("toxic_stew");
+        if (event.key === "4") this._setCookPriorityRecipe("bone_bbq");
+        if (event.key === "5") this._setCookPriorityRecipe("ultimate_feast");
       }
     }
 
@@ -410,18 +435,14 @@ const stationGap = 1.26;
         this.success = true;
         this.phase = "END";
         this._resetHoldCooking();
-        this.showMessage("Night completed!");
+        this.showMessage("Day completed!");
         console.log("[Kitchen] All orders served.");
       }
     }
 
     // End phase
     if (this.phase === "END") {
-      this.endTimer -= deltaTime / 1000;
-
-      if (this.endTimer <= 0) {
-        this._resetAndReturnToShooter();
-      }
+      this.nightEarnedCoins = Math.max(0, (this.state?.coins || 0) - this.nightStartCoins);
     }
   }
 
@@ -441,6 +462,8 @@ const stationGap = 1.26;
 
     this._drawCustomerOrderLabels();
     this._drawStationDishLabels();
+    this._drawStationHoldSpacePrompt();
+    this._drawCounterServePrompt();
 
     if (this.phase === "PLANNING") {
       this._drawPlanningCenterCards();
@@ -458,19 +481,66 @@ const stationGap = 1.26;
     }
 
     this._drawStationCountdowns();
+    this._drawInteractDebugOverlay();
+
+    if (this.phase === "END") {
+      this._drawEndSummaryOverlay();
+    }
 
     if (this.message) {
-      push();
-      fill(255, 245, 200);
-      stroke(0);
-      rect(20, 500, 360, 30);
+      let messageX = 0;
+      let messageY = 0;
+      let messageW = 0;
+      let messageH = 0;
+      let shouldDrawMessage = false;
 
-      fill(0);
-      noStroke();
-      textSize(13);
-      textAlign(LEFT, CENTER);
-      text(this.message, 30, 515);
-      pop();
+      if (
+        this.phase === "PLANNING" &&
+        this.isMenuOpen &&
+        (
+          this.message === "Not enough of ingredients" ||
+          this.message === "Plan at least one dish" ||
+          this.message === "Set a quantity first"
+        )
+      ) {
+        const layout = this._getPlanningBoardLayout();
+        const panelX = width / 2 - layout.midW / 2;
+        const panelY = layout.panelY;
+        const panelW = layout.midW;
+
+        // Place insufficient-ingredients notice under "AVAILABLE DISHES".
+        messageX = panelX + 14;
+        messageY = panelY + 34;
+        messageW = panelW - 28;
+        messageH = 22;
+        shouldDrawMessage = true;
+      } else if (this.phase === "PLANNING" && this.isTaskListOpen) {
+        const layout = this._getPlanningBoardLayout();
+        const panelX = width / 2 - layout.midW / 2 - layout.panelGap - layout.leftW;
+        const panelY = layout.panelY;
+        const panelW = layout.leftW;
+
+        // Place status message just below the "TODAY'S MENU" header.
+        messageX = panelX + 14;
+        messageY = panelY + 34;
+        messageW = panelW - 28;
+        messageH = 22;
+        shouldDrawMessage = true;
+      }
+
+      if (shouldDrawMessage) {
+        push();
+        fill(255, 245, 200);
+        stroke(0);
+        rect(messageX, messageY, messageW, messageH);
+
+        fill(0);
+        noStroke();
+        textSize(13);
+        textAlign(LEFT, CENTER);
+        text(this.message, messageX + 10, messageY + messageH / 2);
+        pop();
+      }
     }
   }
 
@@ -556,7 +626,6 @@ const stationGap = 1.26;
     this.customerSpawnTimer = this._getRandomSpawnInterval();
 
     console.log("[Kitchen] Spawned customer:", customer._customerId, recipe.id);
-    this.showMessage(`Customer wants ${this._getDisplayName(recipe.id)}`);
     return true;
   }
 
@@ -627,9 +696,56 @@ const stationGap = 1.26;
     return waitingCustomers.find(c => c.order.recipeId === recipeId) || null;
   }
 
-  _getRelevantTaskForCurrentCustomers() {
+  _getNearbyInteractableStation() {
+    const interactPoint = this._getPlayerStationInteractPoint();
+
+    let bestStation = null;
+    let bestDistance = Infinity;
+
+    for (const station of this.stations) {
+      const anchor = this._getStationInteractAnchor(station);
+      const dx = interactPoint.x - anchor.x;
+      const dy = interactPoint.y - anchor.y;
+
+      const absX = Math.abs(dx);
+      const absY = Math.abs(dy);
+      const inRange = absX <= 0.78 && absY <= 0.30;
+      if (!inRange) continue;
+
+      const distSq = dx * dx + dy * dy;
+      if (distSq < bestDistance) {
+        bestDistance = distSq;
+        bestStation = station;
+      }
+    }
+
+    return bestStation;
+  }
+
+  _getRelevantTaskForCurrentCustomers(preferredRecipeId = null) {
     const waitingCustomers = this._getVisibleWaitingCustomers();
     const tasks = this.productionManager.getTasks();
+
+    const tryPickRecipe = (recipeId) => {
+      if (!recipeId) return null;
+      const customer = waitingCustomers.find(c => c.order.recipeId === recipeId);
+      if (!customer) return null;
+
+      const task = tasks.find(t => t.recipeId === recipeId && t.status === "PENDING");
+      if (!task) return null;
+
+      return { customer, task };
+    };
+
+    // 1) Station-selected dish (player standing near a station)
+    const preferredTask = tryPickRecipe(preferredRecipeId);
+    if (preferredTask) return preferredTask;
+
+    // Player-selected recipe gets first priority when possible.
+    if (this.cookPriorityRecipeId) {
+      const hotkeyPreferredTask = tryPickRecipe(this.cookPriorityRecipeId);
+      if (hotkeyPreferredTask) return hotkeyPreferredTask;
+    }
 
     for (const customer of waitingCustomers) {
       const recipeId = customer.order.recipeId;
@@ -640,6 +756,12 @@ const stationGap = 1.26;
     }
 
     return null;
+  }
+
+  _setCookPriorityRecipe(recipeId) {
+    if (!recipeId) return;
+    this.cookPriorityRecipeId = recipeId;
+    this.showMessage(`Cook priority: ${this._getDisplayName(recipeId)}`);
   }
 
   _spawnNextCustomerOrder() {
@@ -781,10 +903,18 @@ const stationGap = 1.26;
       return;
     }
 
-    const target = this._getRelevantTaskForCurrentCustomers();
+    const nearbyStation = this._getNearbyInteractableStation();
+    const stationType = nearbyStation ? this._getStationType(nearbyStation) : null;
+    const stationRecipeId = stationType ? this._getRecipeIdForStationType(stationType) : null;
+
+    const target = this._getRelevantTaskForCurrentCustomers(stationRecipeId);
     if (!target) {
       this._resetHoldCooking();
-      this.showMessage("No remaining task for waiting customers");
+      if (stationRecipeId) {
+        this.showMessage(`No waiting customer for ${this._getDisplayName(stationRecipeId)}`);
+      } else {
+        this.showMessage("No remaining task for waiting customers");
+      }
       return;
     }
 
@@ -824,11 +954,6 @@ const stationGap = 1.26;
     }
 
     this.holdCookProgress += deltaTime / 1000;
-
-    const remain = Math.max(0, this.holdCookDuration - this.holdCookProgress);
-    this.showMessage(
-      `Hold SPACE to cook ${this._getDisplayName(activeTask.recipeId)}: ${remain.toFixed(1)}s`
-    );
 
     if (this.holdCookProgress < this.holdCookDuration) {
       return;
@@ -928,7 +1053,7 @@ const stationGap = 1.26;
     if (this._canIncreasePending(this.pendingRecipeId, this.pendingQuantity + 1)) {
       this.pendingQuantity += 1;
     } else {
-      this.showMessage("Not enough ingredients for this dish");
+      this.showMessage("Not enough of ingredients");
     }
   }
 
@@ -940,7 +1065,7 @@ const stationGap = 1.26;
     if (!this.pendingRecipeId) return;
 
     if (this.pendingQuantity <= 0) {
-      this.showMessage("Set a quantity before confirming");
+      this.showMessage("Set a quantity first");
       return;
     }
 
@@ -1101,6 +1226,7 @@ const stationGap = 1.26;
     this._bubbleLoadTried = true;
 
     const fromAsset =
+      this.game.assetManager.getImage("UI Bubble") ||
       this.game.assetManager.getImage("docs/assets/UI/bubble.png") ||
       this.game.assetManager.getImage("bubble.png") ||
       this.game.assetManager.getImage("bubble");
@@ -1122,6 +1248,17 @@ const stationGap = 1.26;
   _getDishIconImage(recipeId) {
     if (!recipeId) return null;
 
+    const dishImageMap = {
+      rotten_burger: "Dish ZOMBURGER",
+      mutant_soup: "Dish DFD",
+      toxic_stew: "Dish ZOMMEN",
+      bone_bbq: "Dish ZOMBBQ",
+      ultimate_feast: "Dish ZOMBEER",
+    };
+
+    const mappedImage = this.game.assetManager.getImage(dishImageMap[recipeId]);
+    if (mappedImage) return mappedImage;
+
     return (
       this.game.assetManager.getImage(`docs/assets/dishes/${recipeId}.png`) ||
       this.game.assetManager.getImage(`${recipeId}.png`) ||
@@ -1130,42 +1267,70 @@ const stationGap = 1.26;
     );
   }
 
-  _drawBubbleWithDish(centerX, centerY, recipeId, bubbleW = 56, bubbleH = 46, iconSize = 22) {
+  _drawBubbleWithDish(centerX, centerY, recipeId, bubbleW = 56, bubbleH = 46, iconSize = 22, progressRatio = null) {
     const bubbleImg = this._getBubbleImage();
     const dishImg = this._getDishIconImage(recipeId);
+    const globalBubbleAssetScale = 0.85;
+    const iconScaleMultiplier = 2.25 * globalBubbleAssetScale;
+    const dishScaleOverrides = {
+      rotten_burger: 0.88,
+      ultimate_feast: 0.88,
+    };
+    const dishYOffsetOverrides = {
+      rotten_burger: -2,
+      ultimate_feast: -2,
+    };
+    const iconRecipeMultiplier = dishScaleOverrides[recipeId] ?? 1;
+    const dishRecipeYOffset = dishYOffsetOverrides[recipeId] ?? 0;
+    const bubbleScaleMultiplier = 1.5 * globalBubbleAssetScale;
+    const scaledBubbleW = bubbleW * bubbleScaleMultiplier;
+    const scaledBubbleH = bubbleH * bubbleScaleMultiplier;
+    const scaledIconSize = iconSize * iconScaleMultiplier * iconRecipeMultiplier;
+    let dishTopY = centerY - scaledIconSize / 2 - 2;
 
     push();
 
     if (bubbleImg && bubbleImg.width > 0) {
       image(
         bubbleImg,
-        centerX - bubbleW / 2,
-        centerY - bubbleH / 2,
-        bubbleW,
-        bubbleH
+        centerX - scaledBubbleW / 2,
+        centerY - scaledBubbleH / 2,
+        scaledBubbleW,
+        scaledBubbleH
       );
     } else {
       fill(255);
       stroke(0);
       strokeWeight(2);
-      rect(centerX - bubbleW / 2, centerY - bubbleH / 2, bubbleW, bubbleH, 10);
+      rect(centerX - scaledBubbleW / 2, centerY - scaledBubbleH / 2, scaledBubbleW, scaledBubbleH, 10);
       triangle(
         centerX - 6,
-        centerY + bubbleH / 2 - 2,
+        centerY + scaledBubbleH / 2 - 2,
         centerX + 6,
-        centerY + bubbleH / 2 - 2,
+        centerY + scaledBubbleH / 2 - 2,
         centerX,
-        centerY + bubbleH / 2 + 7
+        centerY + scaledBubbleH / 2 + 7
       );
     }
 
     if (dishImg) {
+      let dishDrawW = scaledIconSize;
+      let dishDrawH = scaledIconSize;
+      if (dishImg.width > 0 && dishImg.height > 0) {
+        const aspectRatio = dishImg.width / dishImg.height;
+        if (aspectRatio >= 1) {
+          dishDrawH = scaledIconSize / aspectRatio;
+        } else {
+          dishDrawW = scaledIconSize * aspectRatio;
+        }
+      }
+      dishTopY = centerY - dishDrawH / 2 - 4 + dishRecipeYOffset;
       image(
         dishImg,
-        centerX - iconSize / 2,
-        centerY - iconSize / 2 - 2,
-        iconSize,
-        iconSize
+        centerX - dishDrawW / 2,
+        dishTopY,
+        dishDrawW,
+        dishDrawH
       );
     } else {
       fill(40);
@@ -1173,6 +1338,24 @@ const stationGap = 1.26;
       textAlign(CENTER, CENTER);
       textSize(8);
       text(this._getDisplayName(recipeId), centerX, centerY - 1);
+    }
+
+    if (typeof progressRatio === "number") {
+      const clamped = Math.max(0, Math.min(1, progressRatio));
+      const barW = Math.max(16, (scaledBubbleW - 18) * 0.5);
+      const barH = 5;
+      const barX = centerX - barW / 2;
+      // Keep the timer inside the bubble and slightly above the dish icon.
+      const barY = dishTopY - 7;
+
+      fill(215, 215, 215, 230);
+      stroke(110);
+      strokeWeight(1);
+      rect(barX, barY, barW, barH, 2);
+
+      noStroke();
+      fill(75, 190, 85, 235);
+      rect(barX + 1, barY + 1, Math.max(0, (barW - 2) * clamped), Math.max(0, barH - 2), 1);
     }
 
     pop();
@@ -1183,6 +1366,8 @@ const stationGap = 1.26;
     if (!this.customers || this.customers.length === 0) return;
 
     const scale = this._getWorldScale();
+    const bubbleOffsetX = 0.25 * scale.x;
+    const bubbleOffsetY = -0.15 * scale.y;
 
     for (const customer of this.customers) {
       if (!customer.isVisible || !customer.order) continue;
@@ -1190,16 +1375,20 @@ const stationGap = 1.26;
       const relPos = this.game.view.localToScreen(customer.pos);
       const drawW = customer.size.x * scale.x;
 
-      const bubbleX = relPos.x + drawW / 2;
-      const bubbleY = relPos.y - 18;
+      const bubbleX = relPos.x + drawW / 2 + bubbleOffsetX;
+      const bubbleY = relPos.y - 24 + bubbleOffsetY;
+      const waitProgress = this.kitchenTimeLimit > 0
+        ? customer.waitTimer / this.kitchenTimeLimit
+        : 0;
 
       this._drawBubbleWithDish(
         bubbleX,
         bubbleY,
         customer.order.recipeId,
         56,
-        46,
-        22
+        52,
+        22,
+        waitProgress
       );
     }
   }
@@ -1277,7 +1466,70 @@ const stationGap = 1.26;
     pop();
   }
 
-  _drawBoardPanelBackground(panelX, panelY, panelW, panelH, cornerSize = 26) {
+  _drawPaperPanel(panelX, panelY, panelW, panelH) {
+    const cornerSprite = this.game.assetManager.getImage("UI Paper Corner");
+    const horizontalEdgeSprite = this.game.assetManager.getImage("UI Paper Horizontal Edge");
+    const verticalEdgeSprite = this.game.assetManager.getImage("UI Paper Vertical Edge");
+    const middleSprite = this.game.assetManager.getImage("UI Paper Middle");
+
+    if (cornerSprite && horizontalEdgeSprite && verticalEdgeSprite && middleSprite) {
+      const x = Math.round(panelX);
+      const y = Math.round(panelY);
+      const w = Math.round(panelW);
+      const h = Math.round(panelH);
+      const cornerSize = Math.round(Math.min(w / 2, h / 2, 28));
+      const innerX = x + cornerSize;
+      const innerY = y + cornerSize;
+      const innerW = Math.max(0, w - (2 * cornerSize));
+      const innerH = Math.max(0, h - (2 * cornerSize));
+
+      if (innerW > 0 && innerH > 0) {
+        image(middleSprite, innerX, innerY, innerW, innerH);
+      }
+
+      if (innerW > 0) {
+        image(horizontalEdgeSprite, innerX, y, innerW, cornerSize);
+        push();
+        translate(innerX, y + h);
+        scale(1, -1);
+        image(horizontalEdgeSprite, 0, 0, innerW, cornerSize);
+        pop();
+      }
+
+      if (innerH > 0) {
+        image(verticalEdgeSprite, x, innerY, cornerSize, innerH);
+        push();
+        translate(x + w, innerY);
+        scale(-1, 1);
+        image(verticalEdgeSprite, 0, 0, cornerSize, innerH);
+        pop();
+      }
+
+      image(cornerSprite, x, y, cornerSize, cornerSize);
+      push();
+      translate(x + w, y);
+      scale(-1, 1);
+      image(cornerSprite, 0, 0, cornerSize, cornerSize);
+      pop();
+      push();
+      translate(x, y + h);
+      scale(1, -1);
+      image(cornerSprite, 0, 0, cornerSize, cornerSize);
+      pop();
+      push();
+      translate(x + w, y + h);
+      scale(-1, -1);
+      image(cornerSprite, 0, 0, cornerSize, cornerSize);
+      pop();
+      return;
+    }
+
+    fill(255, 245, 220);
+    stroke(0);
+    rect(panelX, panelY, panelW, panelH, 12);
+  }
+
+  _drawBoardPanel(panelX, panelY, panelW, panelH) {
     const cornerSprite = this.game.assetManager.getImage("UI Board Corner");
     const horizontalEdgeSprite = this.game.assetManager.getImage("UI Board Horizontal Edge");
     const verticalEdgeSprite = this.game.assetManager.getImage("UI Board Vertical Edge");
@@ -1288,55 +1540,56 @@ const stationGap = 1.26;
       const y = Math.round(panelY);
       const w = Math.round(panelW);
       const h = Math.round(panelH);
-      const cap = Math.round(Math.min(w / 2, h / 2, cornerSize));
-      const innerX = x + cap;
-      const innerY = y + cap;
-      const innerW = Math.max(0, w - (2 * cap));
-      const innerH = Math.max(0, h - (2 * cap));
+      const cornerSize = Math.round(Math.min(w / 2, h / 2, 28));
+      const innerX = x + cornerSize;
+      const innerY = y + cornerSize;
+      const innerW = Math.max(0, w - (2 * cornerSize));
+      const innerH = Math.max(0, h - (2 * cornerSize));
 
       if (innerW > 0 && innerH > 0) {
         image(middleSprite, innerX, innerY, innerW, innerH);
       }
 
       if (innerW > 0) {
-        image(horizontalEdgeSprite, innerX, y, innerW, cap);
+        image(horizontalEdgeSprite, innerX, y, innerW, cornerSize);
         push();
         translate(innerX, y + h);
         scale(1, -1);
-        image(horizontalEdgeSprite, 0, 0, innerW, cap);
+        image(horizontalEdgeSprite, 0, 0, innerW, cornerSize);
         pop();
       }
 
       if (innerH > 0) {
-        image(verticalEdgeSprite, x, innerY, cap, innerH);
+        image(verticalEdgeSprite, x, innerY, cornerSize, innerH);
         push();
         translate(x + w, innerY);
         scale(-1, 1);
-        image(verticalEdgeSprite, 0, 0, cap, innerH);
+        image(verticalEdgeSprite, 0, 0, cornerSize, innerH);
         pop();
       }
 
-      image(cornerSprite, x, y, cap, cap);
+      image(cornerSprite, x, y, cornerSize, cornerSize);
       push();
       translate(x + w, y);
       scale(-1, 1);
-      image(cornerSprite, 0, 0, cap, cap);
+      image(cornerSprite, 0, 0, cornerSize, cornerSize);
       pop();
       push();
       translate(x, y + h);
       scale(1, -1);
-      image(cornerSprite, 0, 0, cap, cap);
+      image(cornerSprite, 0, 0, cornerSize, cornerSize);
       pop();
       push();
       translate(x + w, y + h);
       scale(-1, -1);
-      image(cornerSprite, 0, 0, cap, cap);
+      image(cornerSprite, 0, 0, cornerSize, cornerSize);
       pop();
-    } else {
-      fill(255, 245, 220);
-      stroke(0);
-      rect(panelX, panelY, panelW, panelH, 12);
+      return;
     }
+
+    fill(255, 245, 220);
+    stroke(0);
+    rect(panelX, panelY, panelW, panelH, 12);
   }
 
   _drawMenuPanel() {
@@ -1347,8 +1600,19 @@ const stationGap = 1.26;
     const panelY = layout.panelY;
     const panelW = layout.midW;
     const panelH = layout.panelH;
+    const minusSprite = this.game.assetManager.getImage("UI Minus");
+    const plusSprite = this.game.assetManager.getImage("UI Plus");
+    const tickSprite = this.game.assetManager.getImage("UI Tick");
+    const coinSprite = this.game.assetManager.getImage("UI Coin");
+    const controlsOffsetX = -12;
+    const controlsOffsetY = 4;
+    const tickOffsetX = 7;
+    const controlButtonW = 24;
+    const controlButtonH = 20;
+    const tickButtonW = 16;
+    const tickButtonH = 20;
 
-    this._drawBoardPanelBackground(panelX, panelY, panelW, panelH);
+    this._drawBoardPanel(panelX, panelY, panelW, panelH);
 
     this.menuCloseButton = null;
 
@@ -1394,77 +1658,119 @@ const stationGap = 1.26;
         h: cardH
       });
 
+      const dishImage = this._getDishIconImage(item.recipeId);
+      const thumbX = cardX + 8;
+      const thumbY = cardY + 8;
+      const thumbSize = 50;
+
+      fill(245, 235, 210);
+      stroke(0);
+      rect(thumbX, thumbY, thumbSize, thumbSize, 6);
+
+      if (dishImage && dishImage.width > 0) {
+        const pad = 5;
+        const maxW = thumbSize - pad * 2;
+        const maxH = thumbSize - pad * 2;
+        const scale = Math.min(maxW / dishImage.width, maxH / dishImage.height);
+        const drawW = dishImage.width * scale;
+        const drawH = dishImage.height * scale;
+        const drawX = thumbX + (thumbSize - drawW) / 2;
+        const drawY = thumbY + (thumbSize - drawH) / 2;
+        image(dishImage, drawX, drawY, drawW, drawH);
+      }
+
       fill(0);
       noStroke();
       textSize(13);
       textAlign(LEFT, TOP);
-      text(`${item.key}. ${item.name}`, panelX + 16, item.y);
+      text(`${item.name}`, thumbX + thumbSize + 8, cardY + 10);
 
-      textSize(11);
+      textSize(16);
       fill(80);
-      text(`Profit ${recipe ? recipe.rewardCoins : "-"}`, panelX + 16, item.y + 24);
+      const rewardText = `${recipe ? recipe.rewardCoins : "-"}`;
+      const rewardX = thumbX + thumbSize + 8;
+      const rewardY = cardY + 34;
+      text(rewardText, rewardX, rewardY);
+      if (coinSprite) {
+        const coinSize = 18;
+        image(coinSprite, rewardX + textWidth(rewardText) + 4, rewardY - 2, coinSize, coinSize);
+      }
 
-      fill(220);
-      stroke(0);
-      rect(panelX + 198, item.y + 10, 22, 18, 4);
-
-      fill(0);
-      noStroke();
-      textSize(14);
-      textAlign(CENTER, CENTER);
-      text("-", panelX + 209, item.y + 19);
+      if (minusSprite) {
+        image(minusSprite, panelX + 198 + controlsOffsetX, item.y + 10 + controlsOffsetY, controlButtonW, controlButtonH);
+      } else {
+        fill(220);
+        stroke(0);
+        rect(panelX + 198 + controlsOffsetX, item.y + 10 + controlsOffsetY, controlButtonW, controlButtonH, 4);
+        fill(0);
+        noStroke();
+        textSize(14);
+        textAlign(CENTER, CENTER);
+        text("-", panelX + 209 + controlsOffsetX, item.y + 19 + controlsOffsetY);
+      }
 
       this.menuButtons.push({
         recipeId: item.recipeId,
         action: "decrease",
-        x: panelX + 198,
-        y: item.y + 10,
-        w: 22,
-        h: 18
+        x: panelX + 198 + controlsOffsetX,
+        y: item.y + 10 + controlsOffsetY,
+        w: controlButtonW,
+        h: controlButtonH
       });
 
       fill(0);
       noStroke();
       textSize(14);
       textAlign(CENTER, CENTER);
-      text(pendingShown, panelX + 234, item.y + 19);
+      text(pendingShown, panelX + 234 + controlsOffsetX, item.y + 19 + controlsOffsetY);
 
-      fill(canAdd ? color(220) : color(170));
-      stroke(0);
-      rect(panelX + 246, item.y + 10, 22, 18, 4);
-
-      fill(canAdd ? color(0) : color(90));
-      noStroke();
-      textSize(14);
-      textAlign(CENTER, CENTER);
-      text("+", panelX + 257, item.y + 19);
+      if (plusSprite) {
+        image(plusSprite, panelX + 246 + controlsOffsetX, item.y + 10 + controlsOffsetY, controlButtonW, controlButtonH);
+        if (!canAdd) {
+          fill(120, 120, 120, 140);
+          noStroke();
+          rect(panelX + 246 + controlsOffsetX, item.y + 10 + controlsOffsetY, controlButtonW, controlButtonH, 4);
+        }
+      } else {
+        fill(canAdd ? color(220) : color(170));
+        stroke(0);
+        rect(panelX + 246 + controlsOffsetX, item.y + 10 + controlsOffsetY, controlButtonW, controlButtonH, 4);
+        fill(canAdd ? color(0) : color(90));
+        noStroke();
+        textSize(14);
+        textAlign(CENTER, CENTER);
+        text("+", panelX + 257 + controlsOffsetX, item.y + 19 + controlsOffsetY);
+      }
 
       this.menuButtons.push({
         recipeId: item.recipeId,
         action: "increase",
-        x: panelX + 246,
-        y: item.y + 10,
-        w: 22,
-        h: 18
+        x: panelX + 246 + controlsOffsetX,
+        y: item.y + 10 + controlsOffsetY,
+        w: controlButtonW,
+        h: controlButtonH
       });
 
-      fill(isSelected && pendingShown > 0 ? color(215, 235, 205) : color(200));
-      stroke(0);
-      rect(panelX + 270, item.y + 10, 12, 18, 4);
-
-      fill(0);
-      noStroke();
-      textSize(10);
-      textAlign(CENTER, CENTER);
-      text("✓", panelX + 276, item.y + 19);
+      if (tickSprite) {
+        image(tickSprite, panelX + 270 + controlsOffsetX + tickOffsetX, item.y + 10 + controlsOffsetY, tickButtonW, tickButtonH);
+      } else {
+        fill(isSelected && pendingShown > 0 ? color(215, 235, 205) : color(200));
+        stroke(0);
+        rect(panelX + 270 + controlsOffsetX + tickOffsetX, item.y + 10 + controlsOffsetY, tickButtonW, tickButtonH, 4);
+        fill(0);
+        noStroke();
+        textSize(10);
+        textAlign(CENTER, CENTER);
+        text("✓", panelX + 276 + controlsOffsetX + tickOffsetX, item.y + 19 + controlsOffsetY);
+      }
 
       this.menuButtons.push({
         recipeId: item.recipeId,
         action: "confirm",
-        x: panelX + 270,
-        y: item.y + 10,
-        w: 12,
-        h: 18
+        x: panelX + 270 + controlsOffsetX + tickOffsetX,
+        y: item.y + 10 + controlsOffsetY,
+        w: tickButtonW,
+        h: tickButtonH
       });
     }
 
@@ -1482,7 +1788,7 @@ const stationGap = 1.26;
     const panelW = layout.leftW;
     const panelH = layout.panelH;
 
-    this._drawBoardPanelBackground(panelX, panelY, panelW, panelH);
+    this._drawPaperPanel(panelX, panelY, panelW, panelH);
 
     this.taskCloseButton = null;
 
@@ -1531,6 +1837,7 @@ const stationGap = 1.26;
 
     const recipe = this.menu.getRecipe(this.pendingRecipeId);
     if (!recipe) return;
+    const coinSprite = this.game.assetManager.getImage("UI Coin");
 
     const confirmedRemaining = this._getConfirmedRemainingMap();
     const reqEntries = Object.entries(recipe.requirements);
@@ -1544,8 +1851,9 @@ const stationGap = 1.26;
     const panelY = layout.panelY;
     const panelW = layout.rightW;
     const panelH = layout.panelH;
+    const detailsShiftY = 36;
 
-    this._drawBoardPanelBackground(panelX, panelY, panelW, panelH);
+    this._drawPaperPanel(panelX, panelY, panelW, panelH);
 
     fill(0);
     noStroke();
@@ -1553,15 +1861,32 @@ const stationGap = 1.26;
     textAlign(LEFT, TOP);
     text("DISH DETAILS", panelX + 14, panelY + 12);
 
-    fill(240);
+    fill(245, 235, 210);
     stroke(0);
     rect(panelX + 18, panelY + 44, 90, 90, 8);
 
-    fill(0);
-    noStroke();
-    textSize(11);
-    textAlign(CENTER, CENTER);
-    text("IMAGE", panelX + 63, panelY + 89);
+    const dishImage = this._getDishIconImage(this.pendingRecipeId);
+    if (dishImage && dishImage.width > 0) {
+      const imageBoxX = panelX + 18;
+      const imageBoxY = panelY + 44;
+      const imageBoxSize = 90;
+      const imagePadding = 8;
+      const maxW = imageBoxSize - imagePadding * 2;
+      const maxH = imageBoxSize - imagePadding * 2;
+      const scale = Math.min(maxW / dishImage.width, maxH / dishImage.height);
+      const drawW = dishImage.width * scale;
+      const drawH = dishImage.height * scale;
+      const drawX = imageBoxX + (imageBoxSize - drawW) / 2;
+      const drawY = imageBoxY + (imageBoxSize - drawH) / 2;
+
+      image(dishImage, drawX, drawY, drawW, drawH);
+    } else {
+      fill(0);
+      noStroke();
+      textSize(11);
+      textAlign(CENTER, CENTER);
+      text("IMAGE", panelX + 63, panelY + 89);
+    }
 
     fill(0);
     noStroke();
@@ -1570,11 +1895,20 @@ const stationGap = 1.26;
     text(this._getDisplayName(this.pendingRecipeId), panelX + 128, panelY + 54);
 
     textSize(16);
-    text(`G${recipe.rewardCoins}`, panelX + 128, panelY + 96);
+    const rewardText = `${recipe.rewardCoins}`;
+    const rewardX = panelX + 128;
+    const rewardY = panelY + 96;
+    text(rewardText, rewardX, rewardY);
+    if (coinSprite) {
+      const coinSize = 21;
+      const coinX = rewardX + textWidth(rewardText) + 4;
+      const coinY = rewardY - 2;
+      image(coinSprite, coinX, coinY, coinSize, coinSize);
+    }
 
-    fill(245, 245, 245);
+    fill(245, 235, 210);
     stroke(0);
-    rect(panelX + 18, panelY + 160, panelW - 36, 110, 8);
+    rect(panelX + 18, panelY + 148, panelW - 36, 180, 8);
 
     fill(0);
     noStroke();
@@ -1583,22 +1917,22 @@ const stationGap = 1.26;
     text(
       this._getDescription(this.pendingRecipeId),
       panelX + 28,
-      panelY + 174,
+      panelY + 162,
       panelW - 56,
-      82
+      160
     );
 
     fill(0);
     noStroke();
     textSize(15);
     textAlign(LEFT, TOP);
-    text("INGREDIENTS", panelX + 18, panelY + 292);
+    text("INGREDIENTS", panelX + 18, panelY + 302 + detailsShiftY);
 
-    fill(250);
+    fill(245, 235, 210);
     stroke(0);
-    rect(panelX + 18, panelY + 326, panelW - 36, 128, 8);
+    rect(panelX + 18, panelY + 326 + detailsShiftY, panelW - 36, 110, 8);
 
-    let y = panelY + 340;
+    let y = panelY + 340 + detailsShiftY;
     for (const [name] of reqEntries) {
       const remaining = confirmedRemaining[name] || 0;
       const need = pendingNeedMap[name] || 0;
@@ -1615,7 +1949,7 @@ const stationGap = 1.26;
     noStroke();
     textSize(11);
     textAlign(LEFT, TOP);
-    text(`Pending quantity: ${this.pendingQuantity}`, panelX + 18, panelY + 466);
+    text(`Pending quantity: ${this.pendingQuantity}`, panelX + 18, panelY + 446 + detailsShiftY);
 
     pop();
   }
@@ -1628,36 +1962,64 @@ const stationGap = 1.26;
     const relPos = this.game.view.localToScreen(this.holdCookStation.pos);
     const scale = this._getWorldScale();
     const drawW = this.holdCookStation.size.x * scale.x;
-    const drawH = this.holdCookStation.size.y * scale.y;
+    const bubbleOffsetX = 0.25 * scale.x;
+    const bubbleOffsetY = -0.15 * scale.y;
+    const requestedRecipeIds = this._getRequestedRecipeIds();
+    const activeRecipeId =
+      this.holdCookRecipeId ||
+      this._getRecipeIdForStationType(this._getStationType(this.holdCookStation));
+    const isRequested = activeRecipeId ? requestedRecipeIds.has(activeRecipeId) : false;
+    const bobOffsetY = isRequested
+      ? this._getStationBubbleBobOffset(this.holdCookStation, scale)
+      : 0;
 
-    const remain = Math.max(0, this.holdCookDuration - this.holdCookProgress);
-    const labelText = `Cooking ${remain.toFixed(1)}s`;
+    // Match bubble anchor used by _drawStationDishLabels so progress stays attached to bubble.
+    const bubbleX = relPos.x + drawW * 0.24 + bubbleOffsetX;
+    const bubbleY = relPos.y - 16 + bubbleOffsetY + bobOffsetY;
+
+    const progressRatio = this.holdCookDuration > 0
+      ? Math.max(0, Math.min(1, this.holdCookProgress / this.holdCookDuration))
+      : 0;
 
     push();
 
-    const badgeMarginX = 10;
-    const badgeMarginY = 8;
-    const badgeX = relPos.x + badgeMarginX;
-    const badgeY = relPos.y + badgeMarginY;
-    const badgeW = Math.max(80, drawW - badgeMarginX * 2);
-    const badgeH = 26;
+    // Draw progress bar inside the bubble, above the dish icon.
+    const badgeW = 42;
+    const badgeH = 9;
+    const badgeX = bubbleX - badgeW / 2;
+    const badgeY = bubbleY - 6;
 
-    fill(255, 244, 170, 235);
-    stroke(60, 60, 60);
-    strokeWeight(1.2);
-    rect(badgeX, badgeY, badgeW, badgeH, 6);
+    fill(30, 35, 45, 210);
+    stroke(245, 235, 205, 220);
+    strokeWeight(1);
+    rect(badgeX, badgeY, badgeW, badgeH, 5);
 
-    fill(35);
+    const barPadding = 2;
+    const barX = badgeX + barPadding;
+    const barY = badgeY + barPadding;
+    const barW = badgeW - barPadding * 2;
+    const barH = badgeH - barPadding * 2;
+
+    // Empty track
+    fill(90, 90, 90, 140);
     noStroke();
-    textAlign(CENTER, CENTER);
-    textSize(13);
-    text(labelText, badgeX + badgeW / 2, badgeY + badgeH / 2);
+    rect(barX, barY, barW, barH, 4);
+
+    // Filled progress
+    const fillW = barW * progressRatio;
+    stroke(0, 0, 0, 180);
+    strokeWeight(0.8);
+    fill(116, 210, 120, 235);
+    rect(barX, barY, fillW, barH, 4);
 
     pop();
   }
 
   _drawStationDishLabels() {
     const scale = this._getWorldScale();
+    const bubbleOffsetX = 0.25 * scale.x;
+    const bubbleOffsetY = -0.15 * scale.y;
+    const requestedRecipeIds = this._getRequestedRecipeIds();
 
     for (const station of this.stations) {
       const stationType = this._getStationType(station);
@@ -1666,10 +2028,14 @@ const stationGap = 1.26;
 
       const relPos = this.game.view.localToScreen(station.pos);
       const drawW = station.size.x * scale.x;
+      const isRequested = requestedRecipeIds.has(recipeId);
+      const bobOffsetY = isRequested
+        ? this._getStationBubbleBobOffset(station, scale)
+        : 0;
 
       // bubble 跟着站台走，位置固定在站台左上附近
-      const bubbleX = relPos.x + drawW * 0.24;
-      const bubbleY = relPos.y - 10;
+      const bubbleX = relPos.x + drawW * 0.24 + bubbleOffsetX;
+      const bubbleY = relPos.y - 16 + bubbleOffsetY + bobOffsetY;
 
       this._drawBubbleWithDish(
         bubbleX,
@@ -1680,6 +2046,223 @@ const stationGap = 1.26;
         22
       );
     }
+  }
+
+  _drawStationHoldSpacePrompt() {
+    if (this.phase !== "PRODUCTION") return;
+    if (!this.player || !this.stations || this.stations.length === 0) return;
+
+    const station = this._getNearbyInteractableStation();
+    if (!station) return;
+
+    const stationType = this._getStationType(station);
+    const recipeId = this._getRecipeIdForStationType(stationType);
+    if (!recipeId) return;
+
+    const scale = this._getWorldScale();
+    const relPos = this.game.view.localToScreen(station.pos);
+    const drawW = station.size.x * scale.x;
+
+    const bubbleOffsetX = 0.25 * scale.x;
+    const bubbleOffsetY = -0.15 * scale.y;
+    const requestedRecipeIds = this._getRequestedRecipeIds();
+    const isRequested = requestedRecipeIds.has(recipeId);
+    const bobOffsetY = isRequested ? this._getStationBubbleBobOffset(station, scale) : 0;
+
+    const bubbleX = relPos.x + drawW * 0.24 + bubbleOffsetX;
+    const bubbleY = relPos.y - 16 + bubbleOffsetY + bobOffsetY;
+
+    const promptY = bubbleY + 34;
+    const promptText = "Hold [SPACE]";
+
+    push();
+    textSize(11);
+    textAlign(CENTER, TOP);
+
+    const textW = textWidth(promptText);
+    const padX = 8;
+    const padY = 4;
+    const boxW = textW + padX * 2;
+    const boxH = 18;
+    const boxX = bubbleX - boxW / 2;
+    const boxY = promptY - padY;
+
+    fill(20, 24, 32, 210);
+    stroke(245, 235, 200, 230);
+    strokeWeight(1);
+    rect(boxX, boxY, boxW, boxH, 6);
+
+    fill(255, 245, 205);
+    noStroke();
+    text(promptText, bubbleX, promptY);
+    pop();
+  }
+
+  _drawCounterServePrompt() {
+    if (this.phase !== "PRODUCTION") return;
+    if (!this.player || !this.counter) return;
+    if (!this.player.heldDish) return;
+
+    const scale = this._getWorldScale();
+    const counterTopCenter = new Vector2(
+      this.counter.pos.x + this.counter.size.x * 0.46 + 0.4,
+      this.counter.pos.y + this.counter.size.y * 0.18 + 0.8
+    );
+    const screenPos = this.game.view.localToScreen(counterTopCenter);
+
+    const time = typeof frameCount === "number" ? frameCount : 0;
+    const bob = Math.sin(time * 0.11) * Math.max(2, scale.y * 0.04);
+    const promptX = screenPos.x;
+    const promptY = screenPos.y - 34 + bob;
+    const promptText = "Hold [SPACE] to serve";
+
+    push();
+    textSize(12);
+    textAlign(CENTER, TOP);
+
+    const textW = textWidth(promptText);
+    const padX = 10;
+    const boxW = textW + padX * 2;
+    const boxH = 20;
+    const boxX = promptX - boxW / 2;
+    const boxY = promptY - 3;
+
+    fill(20, 24, 32, 215);
+    stroke(245, 235, 200, 230);
+    strokeWeight(1);
+    rect(boxX, boxY, boxW, boxH, 7);
+
+    fill(255, 245, 205);
+    noStroke();
+    text(promptText, promptX, promptY);
+    pop();
+  }
+
+  _drawUIButtonBackground(x, y, w, h) {
+    const cornerSprite = this.game.assetManager.getImage("UI Button Corner");
+    const middleSprite = this.game.assetManager.getImage("UI Button Middle");
+
+    if (cornerSprite && middleSprite) {
+      const px = Math.round(x);
+      const py = Math.round(y);
+      const pw = Math.round(w);
+      const ph = Math.round(h);
+      const capWidth = Math.round(ph / 2);
+      const overlap = 1;
+      const middleX = px + capWidth - overlap;
+      const middleW = Math.max(0, pw - (2 * capWidth) + (2 * overlap));
+
+      image(cornerSprite, px, py, capWidth, ph);
+      image(middleSprite, middleX, py, middleW, ph);
+
+      push();
+      translate(px + pw, py);
+      scale(-1, 1);
+      image(cornerSprite, 0, 0, capWidth, ph);
+      pop();
+      return;
+    }
+
+    fill(240, 220, 160);
+    stroke(0);
+    rect(x, y, w, h, 10);
+  }
+
+  _drawEndSummaryOverlay() {
+    const overlayX = width / 2 - 220;
+    const overlayY = this.uiBar.size.y + 90;
+    const overlayW = 440;
+    const overlayH = 290;
+    const phaseNum = this.game?.model?.gameState?.phase || 1;
+
+    push();
+    fill(0, 0, 0, 135);
+    noStroke();
+    rect(0, this.uiBar.size.y, width, height - this.uiBar.size.y);
+
+    this._drawBoardPanel(overlayX, overlayY, overlayW, overlayH);
+
+    fill(25);
+    noStroke();
+    textAlign(CENTER, TOP);
+    textSize(34);
+    text(`Day ${phaseNum}`, overlayX + overlayW / 2, overlayY + 32);
+
+    textSize(22);
+    const madeText = `You made ${this.nightEarnedCoins}`;
+    const madeY = overlayY + 108;
+    text(madeText, overlayX + overlayW / 2 - 12, madeY);
+
+    const coinSprite = this.game.assetManager.getImage("UI Coin");
+    if (coinSprite) {
+      const coinSize = 28;
+      const textW = textWidth(madeText);
+      const coinX = overlayX + overlayW / 2 - 12 + textW / 2 + 8;
+      const coinY = madeY - 1;
+      image(coinSprite, coinX, coinY, coinSize, coinSize);
+    }
+
+    const btnW = 196;
+    const btnH = 50;
+    const btnX = overlayX + (overlayW - btnW) / 2;
+    const btnY = overlayY + overlayH - 82;
+
+    this.endOverlayButton = { x: btnX, y: btnY, w: btnW, h: btnH };
+    this._drawUIButtonBackground(btnX, btnY, btnW, btnH);
+
+    fill(20);
+    noStroke();
+    textAlign(CENTER, CENTER);
+    textSize(22);
+    text("Next Day", btnX + btnW / 2, btnY + btnH / 2 - 1);
+    pop();
+  }
+
+  _getRequestedRecipeIds() {
+    const requested = new Set();
+    const waitingCustomers = this._getVisibleWaitingCustomers();
+
+    for (const customer of waitingCustomers) {
+      const recipeId = customer?.order?.recipeId;
+      if (recipeId) requested.add(recipeId);
+    }
+
+    return requested;
+  }
+
+  _getStationBubbleBobOffset(station, scale) {
+    const time = typeof frameCount === "number" ? frameCount : 0;
+    const stationIndex = Math.max(0, this.stations.indexOf(station));
+    const phaseShift = stationIndex * 0.6;
+    const speed = 0.11;
+    const amplitudePx = Math.max(1.8, Math.min(3.2, scale.y * 0.035));
+    return Math.sin(time * speed + phaseShift) * amplitudePx;
+  }
+
+  _drawInteractDebugOverlay() {
+    if (!this.showInteractDebug || !this.player || !this.stations) return;
+
+    const playerPoint = this._getPlayerStationInteractPoint();
+    const playerScreen = this.game.view.localToScreen(playerPoint);
+
+    push();
+    stroke(255, 0, 0, 190);
+    strokeWeight(2);
+    fill(255, 0, 0, 210);
+
+    // Player interact point marker.
+    circle(playerScreen.x, playerScreen.y, 8);
+
+    // Station anchor markers and connector lines.
+    for (const station of this.stations) {
+      const anchor = this._getStationInteractAnchor(station);
+      const anchorScreen = this.game.view.localToScreen(anchor);
+
+      line(playerScreen.x, playerScreen.y, anchorScreen.x, anchorScreen.y);
+      circle(anchorScreen.x, anchorScreen.y, 8);
+    }
+
+    pop();
   }
 
   _getWorldScale() {

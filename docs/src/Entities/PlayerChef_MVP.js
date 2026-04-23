@@ -50,9 +50,11 @@ export class PlayerChef_MVP extends Entity {
     super(game, new Vector2(15, 8), new Vector2(1.5, 1.5));
     this.speed = 0.1;
     this.heldDish = null;
+    this.renderOffsetX = -0.15;
 
     this.cookingSprite = "Chef Cooking";
     this.walkingSprite = "Chef Walking";
+    this.holdSprite = "Chef Hold";
 
     this.moving = false
     this.facing = 1 // -1 = left, 1 = right
@@ -123,31 +125,88 @@ export class PlayerChef_MVP extends Entity {
   }
 
   draw() {
-    const relPos = this.game.view.localToScreen(this.pos);
+    const renderPos = new Vector2(this.pos.x + this.renderOffsetX, this.pos.y);
+    const relPos = this.game.view.localToScreen(renderPos);
     const relSize = this.game.view.localToScreen(this.size);
 
-    let sprite
-    if (PlayerChef_MVP.keysDown["Space"] && this.facing == -1){
+    let sprite;
+    if (this.heldDish) {
+      sprite = this.game.assetManager.getImage(this.holdSprite)
+        || this.game.assetManager.getImage(this.walkingSprite);
+      if (this.moving && sprite && typeof sprite.play === "function") {
+        sprite.play();
+      } else if (sprite && typeof sprite.pause === "function") {
+        sprite.pause();
+      }
+    } else if (PlayerChef_MVP.keysDown["Space"] && this.facing == -1) {
       sprite = this.game.assetManager.getImage(this.cookingSprite);
     } else {
       sprite = this.game.assetManager.getImage(this.walkingSprite);
-      if (this.moving){
-        sprite.play()
-      } else {
-        sprite.pause()
+      if (this.moving && sprite && typeof sprite.play === "function") {
+        sprite.play();
+      } else if (sprite && typeof sprite.pause === "function") {
+        sprite.pause();
       }
     }
-    push()
-    if (this.facing == 1){
-      scale(-1,1)
+    if (!sprite) return;
+
+    push();
+    if (this.facing == 1) {
+      scale(-1, 1);
       image(sprite, -relSize.x - relPos.x, relPos.y, relSize.x, relSize.y);
-    }
-    else {
+    } else {
       image(sprite, relPos.x, relPos.y, relSize.x, relSize.y);
     }
-    
-    pop()
 
+    pop();
 
+    this._drawHeldDishIcon(relPos, relSize);
+  }
+
+  _getHeldDishImage() {
+    if (!this.heldDish) return null;
+
+    const dishImageMap = {
+      rotten_burger: "Dish ZOMBURGER",
+      mutant_soup: "Dish DFD",
+      toxic_stew: "Dish ZOMMEN",
+      bone_bbq: "Dish ZOMBBQ",
+      ultimate_feast: "Dish ZOMBEER",
+    };
+
+    return this.game.assetManager.getImage(dishImageMap[this.heldDish]) || null;
+  }
+
+  _drawHeldDishIcon(relPos, relSize) {
+    const dishImg = this._getHeldDishImage();
+    if (!dishImg) return;
+
+    const heldDishScale = 0.7;
+    let drawW = relSize.x * 0.42 * heldDishScale;
+    let drawH = relSize.y * 0.42 * heldDishScale;
+    if (dishImg.width > 0 && dishImg.height > 0) {
+      const aspect = dishImg.width / dishImg.height;
+      if (aspect >= 1) {
+        drawH = drawW / aspect;
+      } else {
+        drawW = drawH * aspect;
+      }
+    }
+
+    const handAnchorX = this.facing === 1
+      ? relPos.x + relSize.x * 0.38
+      : relPos.x + relSize.x * 0.62;
+    const handShiftX = this.facing === 1
+      ? relSize.x * 0.15
+      : -relSize.x * 0.15;
+    const handAnchorY = relPos.y + relSize.y * 0.56;
+
+    image(
+      dishImg,
+      handAnchorX + handShiftX - drawW / 2,
+      handAnchorY - drawH / 2,
+      drawW,
+      drawH
+    );
   }
 }

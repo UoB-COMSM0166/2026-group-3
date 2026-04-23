@@ -71,9 +71,27 @@ export class KitchenStation_MVP extends Entity {
   draw() {
     const relPos = this.game.view.localToScreen(this.pos);
     const relSize = this.game.view.localToScreen(this.size);
+    const stationOffsetX = -2;
+    const stationOffsetY = -1;
+    const stationScaleMultiplier = 1.5;
+    const stationScaleOverrides = {
+      special: 0.8, // Render keg at 80% of station scale.
+    };
 
     let sprite = this.game.assetManager.getImage(this._getStationLabel());
-    image(sprite, relPos.x, relPos.y, relSize.x, relSize.y);
+    if (sprite && sprite.width > 0 && sprite.height > 0) {
+      // Keep original sprite ratio and fit it within station bounds.
+      const stationTypeScale = stationScaleOverrides[this.stationType] ?? 1;
+      const effectiveScale = stationScaleMultiplier * stationTypeScale;
+      const targetW = relSize.x * effectiveScale;
+      const targetH = relSize.y * effectiveScale;
+      const fitScale = Math.min(targetW / sprite.width, targetH / sprite.height);
+      const drawW = sprite.width * fitScale;
+      const drawH = sprite.height * fitScale;
+      const drawX = relPos.x + stationOffsetX + (relSize.x - drawW) / 2;
+      const drawY = relPos.y + stationOffsetY + (relSize.y - drawH) / 2;
+      image(sprite, drawX, drawY, drawW, drawH);
+    }
 
 
     // stroke(0);

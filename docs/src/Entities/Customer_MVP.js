@@ -85,49 +85,33 @@ export class Customer_MVP extends Entity {
 
     const relPos = this.game.view.localToScreen(this.pos);
     const relSize = this.game.view.localToScreen(this.size);
+    const isLeaving = this.state === "LEAVING" || this._phase === "LEAVING";
+    const isStanding = !isLeaving && (this.state === "WAITING" || this.state === "SERVED");
+    const customerSprite = isStanding
+      ? this.game.assetManager.getImage("Customer Standing")
+      : this.game.assetManager.getImage("Customer Walking");
 
-    stroke(0);
-
-    let sprite;
-
-    if (this.state === "WAITING") {
-      sprite = this.game.assetManager.getImage(this.idleImage);
-      image(sprite, relPos.x, relPos.y, relSize.x, relSize.y);
-    } else if (this.state === "SERVED") {
-      push();
-      scale(-1,1);
-      sprite = this.game.assetManager.getImage(this.walkingImage);
-      image(sprite, - relPos.x - relSize.x, relPos.y, relSize.x, relSize.y);
-      pop();
+    if (customerSprite && customerSprite.width > 0) {
+      if (isLeaving) {
+        push();
+        translate(relPos.x + relSize.x, relPos.y);
+        scale(-1, 1);
+        image(customerSprite, 0, 0, relSize.x, relSize.y);
+        pop();
+      } else {
+        image(customerSprite, relPos.x, relPos.y, relSize.x, relSize.y);
+      }
     } else {
-      sprite = this.game.assetManager.getImage(this.walkingImage);
-      image(sprite, relPos.x, relPos.y, relSize.x, relSize.y);
+      stroke(0);
+      if (this.state === "WAITING") {
+        fill(220, 120, 120);
+      } else if (this.state === "SERVED") {
+        fill(120, 220, 120);
+      } else {
+        fill(150);
+      }
+      rect(relPos.x, relPos.y, relSize.x, relSize.y);
     }
 
-    
-
-    if (this.order && this.state === "WAITING") {
-      fill(0);
-      noStroke();
-      textSize(10);
-      textAlign(CENTER, BOTTOM);
-      text(
-        this._getDisplayName(this.order.recipeId),
-        relPos.x + relSize.x / 2,
-        relPos.y - 5
-      );
-    }
-
-    if (this.state === "WAITING") {
-      fill(0);
-      noStroke();
-      textSize(10);
-      textAlign(CENTER, TOP);
-      text(
-        Math.ceil(Math.max(0, this.waitTimer)),
-        relPos.x + relSize.x / 2,
-        relPos.y + relSize.y + 2
-      );
-    }
   }
 }

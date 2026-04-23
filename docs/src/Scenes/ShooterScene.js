@@ -19,7 +19,7 @@ export class ShooterScene extends Scene {
         super(game);
         this.isGameOver = false;
         this.isRoundWon = false;
-        this.game.model.gameState.time = "Night"
+        this.game.model.gameState.time = "Day"
         this.game.model.gameState.phaseProgress = 0;
 
         this.background = "Shooter Background";
@@ -65,6 +65,10 @@ export class ShooterScene extends Scene {
         let fenceHealth = new Label(game, "Health: 100%", new Vector2(200, 30), new Vector2("Centre", "Bottom"));
         fenceHealth.id = "FenceLabel";
         fenceHealth.isVisible = false;
+        // Keep this as a state holder; health is rendered as a custom progress bar.
+        fenceHealth.style.fillColor = color(0, 0, 0, 0);
+        fenceHealth.style.outline = color(0, 0, 0, 0);
+        fenceHealth.style.textColor = color(0, 0, 0, 0);
 
         this.addUIElement(fenceHealth);
 
@@ -96,6 +100,7 @@ export class ShooterScene extends Scene {
         );
 
         super.draw();
+        this._drawFenceHealthBar();
 
         if (this.isGameOver) {
             //Draw a dark overlay to make it dramatic lmao :3
@@ -104,6 +109,66 @@ export class ShooterScene extends Scene {
             rect(0, 0, width, height);       
             this.restartBtn.draw();
         }
+    }
+
+    _drawFenceHealthBar() {
+        const fenceLabel = this.getUIElement("FenceLabel");
+        if (!fenceLabel || !fenceLabel.isVisible) return;
+
+        const fence = this.getEntity("Fence");
+        if (!fence || !fence.maxHealth) return;
+
+        const healthRatio = constrain(fence.health / fence.maxHealth, 0, 1);
+        const healthPercent = Math.round(healthRatio * 100);
+
+        const barW = 320;
+        const barH = 26;
+        const barX = width / 2 - barW / 2;
+        const barY = height - barH - 18;
+
+        push();
+        // Frame
+        fill(20, 20, 20, 205);
+        stroke(240, 230, 190, 230);
+        strokeWeight(1.3);
+        rect(barX, barY, barW, barH, 8);
+
+        // Track
+        const pad = 4;
+        const trackX = barX + pad;
+        const trackY = barY + pad;
+        const trackW = barW - pad * 2;
+        const trackH = barH - pad * 2;
+        noStroke();
+        fill(80, 35, 35, 180);
+        rect(trackX, trackY, trackW, trackH, 6);
+
+        // Fill
+        fill(76, 178, 84, 230);
+        rect(trackX, trackY, trackW * healthRatio, trackH, 6);
+
+        // Defense icon (shield)
+        const iconCx = barX + 22;
+        const iconCy = barY + barH / 2 - 1;
+        noStroke();
+        fill(232, 222, 185);
+        beginShape();
+        vertex(iconCx - 7, iconCy - 6);
+        vertex(iconCx + 7, iconCy - 6);
+        vertex(iconCx + 6, iconCy + 2);
+        vertex(iconCx, iconCy + 8);
+        vertex(iconCx - 6, iconCy + 2);
+        endShape(CLOSE);
+        fill(120, 98, 55);
+        rect(iconCx - 1, iconCy - 4, 2, 9, 1);
+
+        // Label
+        fill(255, 245, 220);
+        noStroke();
+        textAlign(CENTER, CENTER);
+        textSize(14);
+        text(`${healthPercent}%`, barX + barW / 2 + 6, barY + barH / 2 + 0.5);
+        pop();
     }
 
     update(events){
