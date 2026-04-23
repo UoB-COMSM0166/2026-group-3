@@ -65,11 +65,9 @@ export class KitchenScene_MVP extends Scene {
     this.nextCustomerId = 1;
 
     this.customerTargetSlots = [
-      new Vector2(4.75, 1.7),
-      new Vector2(4.75, 2.7),
-      new Vector2(4.75, 3.7),
-      new Vector2(4.75, 4.7),
-      new Vector2(4.75, 5.7),
+      new Vector2(5.8, 2.3),
+      new Vector2(5.8, 4.5),
+      new Vector2(5.8, 6.7),
     ];
     this.customerSpawnX = 14.2;
     this.customerLeaveX = 15.4;
@@ -113,7 +111,7 @@ export class KitchenScene_MVP extends Scene {
     this.holdCookDuration = 0;
     this.holdCookCustomerId = null;
     this.spaceLastFrame = false;
-    this.showInteractDebug = true;
+    this.showInteractDebug = false;
 
     // Bubble cache
     this._bubbleImage = null;
@@ -597,7 +595,8 @@ const stationGap = 1.25;
     const slotIndex = this._getAvailableCustomerSlotIndex();
     if (slotIndex === -1) return false;
 
-    const recipeId = this.orderQueue.shift();
+    const queuePickIndex = Math.floor(Math.random() * this.orderQueue.length);
+    const [recipeId] = this.orderQueue.splice(queuePickIndex, 1);
     const recipe = this.menu.getRecipe(recipeId);
     if (!recipe) return false;
 
@@ -1366,11 +1365,11 @@ const stationGap = 1.25;
     if (!this.customers || this.customers.length === 0) return;
 
     const scale = this._getWorldScale();
-    const bubbleOffsetX = 0.25 * scale.x;
+    const bubbleOffsetX = 0.05 * scale.x;
     const bubbleOffsetY = -0.15 * scale.y;
 
     for (const customer of this.customers) {
-      if (!customer.isVisible || !customer.order) continue;
+      if (!customer.isVisible || !customer.order || customer._phase !== "WAITING") continue;
 
       const relPos = this.game.view.localToScreen(customer.pos);
       const drawW = customer.size.x * scale.x;
@@ -2169,8 +2168,9 @@ const stationGap = 1.25;
   }
 
   _drawEndSummaryOverlay() {
+    const scale = this._getWorldScale();
     const overlayX = width / 2 - 220;
-    const overlayY = this.uiBar.size.y + 90;
+    const overlayY = this.uiBar.size.y + 90 + 1.25 * scale.y;
     const overlayW = 440;
     const overlayH = 290;
     const phaseNum = this.game?.model?.gameState?.phase || 1;
