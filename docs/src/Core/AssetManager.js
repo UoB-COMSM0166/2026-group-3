@@ -2,6 +2,7 @@
 export class AssetManager {
     constructor(game){
         this.isLoaded = false;
+        this.loadError = null;
         this.promises = []
         this.images = {};
         this.fonts = {};
@@ -35,7 +36,7 @@ export class AssetManager {
         this.loadImage("Zombie Drumstick","./assets/drops/zombieDrumstick.png");
         this.loadImage("Zombie Juice","./assets/drops/zombieJuice.png");
         this.loadImage("Zombie Mince","./assets/drops/zombieMince.png");
-        this.loadImage("Dish ZOMBURGER", "./assets/dishes/Zomburger.png");
+        this.loadImage("Dish ZOMBURGER", "./assets/dishes/zomburger.png");
         this.loadImage("Dish DFD", "./assets/dishes/firedDrumstick.png");
         this.loadImage("Dish ZOMMEN", "./assets/dishes/ramen.png");
         this.loadImage("Dish ZOMBBQ", "./assets/dishes/bbq.png");
@@ -92,7 +93,15 @@ export class AssetManager {
         //     this.loadImage("testSprites","./assets/test_image.png");
         // }
 
-        await Promise.all(this.promises);
+        try {
+            await Promise.all(this.promises);
+        } catch (e) {
+            console.error("[AssetManager] Preload failed — one or more files could not be loaded.", e);
+            this.loadError =
+                "Could not load game files. Use a local server with the docs folder as the site root, " +
+                "run git pull so all assets exist, then check the browser console and Network tab for 404 errors.";
+            return;
+        }
         this.isLoaded = true;
 
         this.game.finishedLoading();
@@ -101,11 +110,29 @@ export class AssetManager {
     //Can be called to load an image individually
     //Be aware of async stuff
     async loadImage(name,path){
-        this.promises.push(loadImage(path).then(value => this.images[name] = value));
+        this.promises.push(
+            loadImage(path)
+                .then((value) => {
+                    this.images[name] = value;
+                })
+                .catch((err) => {
+                    console.error(`[AssetManager] loadImage failed: ${path} (key: ${name})`, err);
+                    throw new Error(`loadImage: ${path}`);
+                })
+        );
     }
 
     async loadFont(name,path){
-        this.promises.push(loadFont(path).then(value => this.fonts[name] = value));
+        this.promises.push(
+            loadFont(path)
+                .then((value) => {
+                    this.fonts[name] = value;
+                })
+                .catch((err) => {
+                    console.error(`[AssetManager] loadFont failed: ${path} (key: ${name})`, err);
+                    throw new Error(`loadFont: ${path}`);
+                })
+        );
     }
 
     getImage(name){

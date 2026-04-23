@@ -96,10 +96,19 @@ export class View {
         background(255);
 
         if (!this.game.assetManager.isLoaded){
-            text("Loading...",100,100);
+            textAlign(LEFT, TOP);
+            if (this.game.assetManager.loadError) {
+                fill(180, 0, 0);
+                text(this.game.assetManager.loadError, 24, 24, width - 48, height - 48);
+            } else {
+                fill(0);
+                text("Loading...", 100, 100);
+            }
             return;
             //Returns if the assets aren't loaded
         }
+
+        textAlign(CENTER, CENTER);
 
         if (this.game.debug){
             this.drawGrid();
