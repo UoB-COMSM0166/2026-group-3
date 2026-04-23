@@ -14,7 +14,7 @@ export class SoundManager {
         this.sounds["buy"] = loadSound("./assets/sounds/buyItem.mp3");
         this.sounds["damage"] = loadSound("./assets/sounds/zombieHit.mp3");
         this.sounds["intro"] = loadSound("./assets/sounds/introMusic.mp3");
-        this.sounds["kitchenDing"] = loadSound("./assets/sounds/dingKitchen.mp3");
+        this.sounds["kitchenDing"] = loadSound("./assets/sounds/dingkitchen.mp3");
         this.sounds["woodButton"] = loadSound("./assets/sounds/woodButton.mp3");
     }
 

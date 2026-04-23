@@ -1226,7 +1226,6 @@ const stationGap = 1.25;
 
     const fromAsset =
       this.game.assetManager.getImage("UI Bubble") ||
-      this.game.assetManager.getImage("docs/assets/UI/bubble.png") ||
       this.game.assetManager.getImage("bubble.png") ||
       this.game.assetManager.getImage("bubble");
 
@@ -1236,7 +1235,7 @@ const stationGap = 1.25;
     }
 
     try {
-      this._bubbleImage = loadImage("docs/assets/UI/bubble.png");
+      this._bubbleImage = loadImage("./assets/UI/bubble.png");
     } catch (e) {
       this._bubbleImage = null;
     }
@@ -1259,7 +1258,6 @@ const stationGap = 1.25;
     if (mappedImage) return mappedImage;
 
     return (
-      this.game.assetManager.getImage(`docs/assets/dishes/${recipeId}.png`) ||
       this.game.assetManager.getImage(`${recipeId}.png`) ||
       this.game.assetManager.getImage(recipeId) ||
       null
