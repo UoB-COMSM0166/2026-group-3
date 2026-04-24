@@ -95,9 +95,12 @@ export class ZombieEntity extends Entity {
             }
         }
 
+        
+
         this.game.model.scene.removeEntity(this);
         
         let zm = this.game.model.scene.zombieManager;
+        this.game.model.gameState.phaseProgress += 0.5*(this.strength / zm.totalStrength)
         if (zm && zm.zombies) {
             zm.zombies = zm.zombies.filter(z => z !== this);
         }

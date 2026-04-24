@@ -31,7 +31,7 @@ export class TurretManager extends Entity{
             if (targetPos.withinBox(pos, this.spaceSize)){
                 if (this.scene.getEntities("Turret") != null){
                     for (let placedTurret of this.scene.getEntities("Turret")){
-                        if (placedTurret.pos.y == pos.y - 0.25){
+                        if (placedTurret.pos.y == pos.y + 0.25){
                             return null;
                         }
                     }

@@ -26,6 +26,12 @@ export class Button extends Label {
         if (this.image != null){
             image(this.game.assetManager.getImage(this.image), this.pos.x, drawY, this.size.x, this.size.y);
         } else {
+            push();
+            if (!this.active){
+                tint(100, 100, 100);
+            }
+            
+            
             const cornerSprite = this.game.assetManager.getImage("UI Button Corner");
             const middleSprite = this.game.assetManager.getImage("UI Button Middle");
 
@@ -54,6 +60,7 @@ export class Button extends Label {
                 strokeWeight(this.style.outlineWidth);
                 rect(this.pos.x, drawY, this.size.x, this.size.y, this.style.rounding);
             }
+            pop()
         }
 
         textFont(this.style.font);

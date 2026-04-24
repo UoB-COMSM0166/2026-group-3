@@ -15,11 +15,10 @@ export class ShopMenu extends Menu {
         this.style.outlineWidth = 3
         this.id = "shop";
 
-        let shopTitle = new Button(game, "WEAPON SHOP", new Vector2(0,0), new Vector2("Left", "Top"));
+        let shopTitle = new Label(game, "WEAPON SHOP", new Vector2(0,0), new Vector2("Left", "Top"));
         shopTitle.parent = this;
         shopTitle.expandToFit.x = true;
         shopTitle.expandToFit.y = true;
-        shopTitle.active = false;
 
         shopTitle.sizeMatch.x = [this]
         this.sizeMatch.x = [shopTitle]
@@ -48,13 +47,12 @@ export class ShopMenu extends Menu {
         let previous = shopTitle
         for (let i=0; i<shopWeapons.length; i++){
             let weapon = scene.weaponManager.getWeapon(shopWeapons[i])
-            let weaponLabel = new Button(game, weapon.name, new Vector2(), new Vector2("Left", "Top"));
+            let weaponLabel = new Label(game, weapon.name, new Vector2(), new Vector2("Left", "Top"));
             weaponLabel.offset.x = 20;
             weaponLabel.anchor.y = previous
             weaponLabel.offset.y = 10;
             weaponLabel.expandToFit = new Vector2(true, true);
             weaponLabel.parent = this;
-            weaponLabel.active = false;
 
             weaponLabel.sizeMatch.x = labelSizeMatch;
             labelSizeMatch.push(weaponLabel);
@@ -74,8 +72,8 @@ export class ShopMenu extends Menu {
             priceSizeMatch.push(weaponPrice);
 
             weaponPrice.onClick = async function() {
-                if (this.game.model.gameState.coins >= weapon.price){
-                    this.game.model.gameState.coins -= weapon.price
+                if (this.game.model.gameState.coins >= this.weapon.price){
+                    this.game.model.gameState.coins -= this.weapon.price
                     this.game.model.scene.getEntity("player").weapon = this.weapon;
                     this.game.model.gameState.playerWeapon = this.weapon.name;
                     this.game.model.scene.getUIElement("shop").isVisible = false;
@@ -85,10 +83,16 @@ export class ShopMenu extends Menu {
                 }
             };
             weaponPrice.update = async function(events) {
-                if (this.game.model.gameState.coins >= weapon.price){
-                    this.style.textColor = color(255)
-                } else {
+                let weaponManager = this.game.model.scene.weaponManager;
+                if (this.weapon.price <= weaponManager.getWeapon(this.game.model.gameState.playerWeapon).price){
+                    this.style.textColor = color(100)
+                    this.active = false;
+                } else if (this.game.model.gameState.coins < this.weapon.price){
                     this.style.textColor = color(255,50,50)
+                    this.active = false;
+                } else {
+                    this.style.textColor = color(0)
+                    this.active = true;
                 }
                 //I don't know why super doesn't work here
                 //super.update(events);
@@ -115,13 +119,12 @@ export class ShopMenu extends Menu {
 
         //Turret Purchase Button Options
 
-        let turretLabel = new Button(game, "Turret", new Vector2(), new Vector2("Left", "Top"));
+        let turretLabel = new Label(game, "Turret", new Vector2(), new Vector2("Left", "Top"));
         turretLabel.offset.x = 20;
         turretLabel.anchor.y = previous
         turretLabel.offset.y = 10;
         turretLabel.expandToFit = new Vector2(true, true);
         turretLabel.parent = this;
-        turretLabel.active = false;
 
         turretLabel.sizeMatch.x = labelSizeMatch;
         labelSizeMatch.push(turretLabel);
@@ -150,10 +153,15 @@ export class ShopMenu extends Menu {
             }
         };
         turretPrice.update = async function(events) {
-            if (this.game.model.gameState.coins >= this.game.model.scene.turretManager.turretPrice){
-                this.style.textColor = color(255)
-            } else {
+            if (this.game.model.scene.getEntities("Turret").length == 5){
+                this.style.textColor = color(100)
+                this.active = false;
+            } else if (this.game.model.gameState.coins < this.game.model.scene.turretManager.turretPrice){
                 this.style.textColor = color(255,50,50)
+                this.active = false;
+            } else {
+                this.style.textColor = color(0)
+                this.active = true;
             }
             //I don't know why super doesn't work here
             //super.update(events);

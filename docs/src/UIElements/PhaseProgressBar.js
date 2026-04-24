@@ -55,10 +55,10 @@ export class PhaseProgressBar extends UIElement {
         this.drawGradient(xMin, xMax, sunPos, moonPos)
 
         if (sunPos!=null){
-            text("☀️", sunPos - this.size.y/2, this.pos.y, this.size.y, this.size.y)
+            text("☀️", sunPos - this.size.y/2 - 3, this.pos.y, this.size.y, this.size.y)
         }
         if (moonPos!=null){
-            text("🌙", moonPos - this.size.y/2, this.pos.y, this.size.y, this.size.y)
+            text("🌙", moonPos - this.size.y/2 - 3, this.pos.y, this.size.y, this.size.y)
         }
         
         fill(color(0,0,0,0));
@@ -67,10 +67,10 @@ export class PhaseProgressBar extends UIElement {
 
         rect(this.pos.x, this.pos.y, this.size.x, this.size.y, this.style.rounding);
 
-        stroke(color(200,50,50))
+        stroke(color(150,50,50))
         strokeWeight((3))
 
-        line(dayNightBoundary, this.pos.y, dayNightBoundary, this.pos.y + this.size.y);
+        line(dayNightBoundary, this.pos.y + 2, dayNightBoundary, this.pos.y + this.size.y - 2);
 
 
         

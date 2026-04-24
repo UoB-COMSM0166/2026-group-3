@@ -250,37 +250,6 @@ export class ShooterScene extends Scene {
         this.addUIElement(this.gameOverLabel);
     }
 
-    /*async roundWon(){
-        this.isRoundWon = true;
-
-        //Continue Button
-        this.contiueBtn = new Button(this.game, "Continue", new Vector2(160, 50), new Vector2("Centre", "Centre"));
-        this.contiueBtn.offset.y = 90;
-        this.contiueBtn.onClick = () => {
-
-            //Temporary Fucntion for continue button
-            this.game.model.gameState.phase++;
-            this.game.model.scene = new KitchenScene_MVP(this.game);
-
-        };
-
-        this.addUIElement(this.contiueBtn);
-
-        //You Won Label
-        this.youWonLabel = new Label(this.game, "You Beat The Wave!", new Vector2(450, 150), new Vector2("Centre", "Centre"));
-        this.youWonLabel.style.fillColor = color(0,0,0,0);
-        this.youWonLabel.style.outline = color(0,0,0,0);
-        this.youWonLabel.style.textColor = color(255,0,0);
-        this.youWonLabel.style.textSize = 40;
-        this.youWonLabel.offset.y = -70;
-
-        //Win sound 
-        await this.game.soundManager.playSFX("win");
-
-
-        this.addUIElement(this.youWonLabel);
-    }*/
-
     async roundWon(){
         this.isRoundWon = true;
         this.getUIElement("shop").isVisible = false;

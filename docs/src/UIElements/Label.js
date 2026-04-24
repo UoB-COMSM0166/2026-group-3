@@ -23,11 +23,41 @@ export class Label extends UIElement {
             let sprite = this.game.assetManager.getImage(this.image);
             image(sprite, this.pos.x, this.pos.y, this.size.x, this.size.y);
         } else {
-            // Otherwise, draw a box to fit the text
-            fill(this.style.fillColor);
-            stroke(this.style.outline);
-            strokeWeight(this.style.outlineWidth);
-            rect(this.pos.x, this.pos.y, this.size.x, this.size.y, this.style.rounding);
+            const dentSprite = this.game.assetManager.getImage("UI Dent Corners");
+            const dentMiddleSprite = this.game.assetManager.getImage("UI Dent Middle");
+
+            if (dentSprite && dentMiddleSprite){
+                const x = Math.round(this.pos.x);
+                const y = Math.round(this.pos.y);
+                const w = Math.round(this.size.x);
+                const h = Math.round(this.size.y);
+                const capWidth = Math.round(h / 2);
+                const middleX = x + capWidth;
+                const middleWidth = Math.max(0, w - (2 * capWidth));
+
+                // Tile/stretch the dent middle so caps connect seamlessly.
+                if (middleWidth > 0){
+                    image(dentMiddleSprite, middleX, y, middleWidth, h);
+                }
+
+                // Left cap
+                image(dentSprite, x, y, capWidth, h);
+
+                // Right cap (mirrored)
+                push();
+                translate(x + w, y);
+                scale(-1, 1);
+                image(dentSprite, 0, 0, capWidth, h);
+                pop();
+            } else if (dentSprite){
+                image(dentSprite, this.pos.x, this.pos.y, this.size.x, this.size.y);
+            } else {
+                // Fallback if UI assets are missing.
+                fill(this.style.fillColor);
+                stroke(this.style.outline);
+                strokeWeight(this.style.outlineWidth);
+                rect(this.pos.x, this.pos.y, this.size.x, this.size.y, this.style.rounding);
+            }
         }
         
         // Write text in the given style

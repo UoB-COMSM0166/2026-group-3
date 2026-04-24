@@ -10,11 +10,11 @@ export class Model {
         this.scene = null;
         this.game = game;
         this.difficulty = "normal";   // easy / normal / hard
-        this.drops = ["Prime Bone",
-                    "Zombie Belly",
+        this.drops = ["Zombie Mince",
                     "Zombie Drumstick",
                     "Zombie Juice",
-                    "Zombie Mince"
+                    "Prime Bone",
+                    "Zombie Belly"
         ];
         this.gameState = new GameState()
     }

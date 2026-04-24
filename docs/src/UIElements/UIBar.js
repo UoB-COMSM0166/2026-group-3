@@ -72,26 +72,15 @@ export class UIBar extends Menu {
             }
 
             this.elements.push(dropCount);
-
-            // let dropLabel = new Label(game, "", new Vector2(), 
-            //                                 new Vector2("Left", "Top"),
-            //                                 new Vector2(0,10));
-            // dropLabel.anchor.x = dropCount;
-            // dropLabel.expandToFit = new Vector2(true, true);
-            // dropLabel.image = drops[i];
-            // dropLabel.parent = this
-
-            // this.elements.push(dropLabel);
-
             previous = dropCount;
         }   
 
-        this.dayLabel = new Button(game, "Day 1",
+        this.dayLabel = new Label(game, "Day 1",
                                     new Vector2(), 
                                     new Vector2("Right","Top"),
                                     new Vector2(-10,10))
-        this.dayLabel.active = false;
         this.dayLabel.label = game.model.gameState.time + " "+str(game.model.gameState.phase);
+        this.dayLabel.expandToFit = new Vector2(true, true);
 
         this.elements.push(this.dayLabel);
 
@@ -151,7 +140,7 @@ export class UIBar extends Menu {
     }
 
     resize(){
-        this.size.x = windowWidth
+        this.size.x = this.game.view.size.x
         this.size.y = 1.5 * this.style.textSize + 20;
         super.resize()
         

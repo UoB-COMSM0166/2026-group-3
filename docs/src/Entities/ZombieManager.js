@@ -120,7 +120,7 @@ export class ZombieManager extends Entity{
 
                 this.waveStrength -= zombie.strength / 2;
 
-                this.game.model.gameState.phaseProgress = 1- (this.waveStrength / this.totalStrength)
+                this.game.model.gameState.phaseProgress += 0.5*(zombie.strength / this.totalStrength)
             }
         }
     }

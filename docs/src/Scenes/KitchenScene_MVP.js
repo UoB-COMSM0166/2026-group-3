@@ -1933,11 +1933,14 @@ const stationGap = 1.25;
       const remaining = confirmedRemaining[name] || 0;
       const need = pendingNeedMap[name] || 0;
 
+      let sprite = this.game.assetManager.getImage(name);
+
+      image(sprite, panelX + 28, y - 5, 20, 20)
       fill(0);
       noStroke();
       textSize(12);
       textAlign(LEFT, TOP);
-      text(`${name}  ${remaining}/${need}`, panelX + 28, y);
+      text(`${name}  ${remaining}/${need}`, panelX + 52, y);
       y += 22;
     }
 
