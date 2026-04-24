@@ -43,7 +43,7 @@ export class ShopMenu extends Menu {
         let labelSizeMatch = []
         let priceSizeMatch = []
 
-        let shopWeapons = ["Rifle", "Machine Gun", "The Big Gun"];
+        let shopWeapons = ["Rifle", "Shotgun", "Machine Gun", "The Big Gun"];
 
         let previous = shopTitle
         for (let i=0; i<shopWeapons.length; i++){

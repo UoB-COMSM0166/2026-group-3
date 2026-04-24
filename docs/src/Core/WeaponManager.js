@@ -10,35 +10,54 @@ export class WeaponManager {
             fireRate : 1,
             damage : 1,
             speed : 1,
-            price : 0
+            price : 0,
+            shots : 1,
+            accuracy : 80
         }
 
         let rifle = {
             name : "Rifle",
-            fireRate : 0.6,
+            fireRate : 0.5,
             damage : 4,
-            speed : 3,
-            price : 50
+            speed : 2.5,
+            price : 80,
+            shots : 1,
+            accuracy : 100
+        }
+
+        let shotgun = {
+            name : "Shotgun",
+            fireRate : 0.4,
+            damage : 2,
+            speed : 2,
+            price : 250,
+            shots : 5,
+            accuracy : 60
         }
 
         let machineGun = {
             name : "Machine Gun",
-            fireRate : 5,
-            damage : 1,
+            fireRate : 3,
+            damage : 2,
             speed : 1.5,
-            price : 150
+            price : 500,
+            shots : 1,
+            accuracy : 50
         }
 
         let bigGun = {
             name : "The Big Gun",
-            fireRate : 5,
+            fireRate : 2,
             damage : 5,
             speed : 2,
-            price : 1000
+            price : 1000,
+            shots : 3,
+            accuracy : 80
         }
 
         this.weapons.push(pistol);
         this.weapons.push(rifle);
+        this.weapons.push(shotgun);
         this.weapons.push(machineGun);
         this.weapons.push(bigGun);
     }

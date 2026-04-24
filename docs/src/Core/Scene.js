@@ -50,6 +50,7 @@ export class Scene {
             }
         }
         this.entities.push(newEntity);
+        this.entities.sort(this.compareY);
     }
     removeEntity(oldEntity){ // Removes an entity from the list of entities
         for (let i=0; i<this.entities.length; i++){
@@ -104,6 +105,13 @@ export class Scene {
         }
     }
     
-
+    compareY(e1, e2){
+        if (e1.pos.y < e2.pos.y){
+            return -1
+        } else if (e1.pos.y > e2.pos.y){
+            return 1
+        }
+        return 0;
+    }
 
 }

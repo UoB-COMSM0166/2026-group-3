@@ -18,7 +18,7 @@ export class SlobZombie extends ZombieEntity {
         
         // MATCHES ASSET MANAGER EXACTLY
         this.drops = ["Zombie Juice"]; 
-        this.strength = 5;
+        this.strength = 4;
     }
 
     // You don't need a manual preload here if the AssetManager handles it!

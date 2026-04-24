@@ -26,7 +26,7 @@ export class ZombieManager extends Entity{
 
         this.totalStrength = this.calculateWaveStrength(this.game.model.gameState.phase);
         this.waveStrength = this.totalStrength;
-        this.spawnInterval = 3000/(this.difficultyMod*(this.waveStrength+20));
+        this.spawnInterval = 3000/(this.difficultyMod*(this.waveStrength+15));
 
         this.zombies = [];
         this.preloadWave(this.waveStrength);
@@ -34,10 +34,10 @@ export class ZombieManager extends Entity{
     }
 
     calculateWaveStrength(phase){
-        let waveStrengths = [8, 12, 20, 32, 48, 68, 92];
+        let waveStrengths = [12, 28, 44, 82, 140, 200, 300];
 
         if (phase>7){
-            return this.difficultyMod*25*(phase-3);
+            return this.difficultyMod*200*(phase-6);
         } else {
             return this.difficultyMod*waveStrengths[phase-1];
         }
@@ -57,23 +57,22 @@ export class ZombieManager extends Entity{
             let zombie;
             
             const phase = this.game.model.gameState.phase;
-            const spawnMult = 1/(this.difficultyMod**2)
             
-            if (waveStrength > 10 
-                && phase >= 3 
-                && random(0, 6 * spawnMult)<=1){
+            if (waveStrength > 15 
+                && phase >= 4 
+                && random(0, 7)<=1){
 
                 //Spawn Tank
                 zombie = new TankZombie(this.game, startPos);
-            } else if (waveStrength > 5 
-                && phase >= 2 
-                && random(0, 5 * spawnMult)<=1){
+            } else if (waveStrength > 10 
+                && phase >= 3 
+                && random(0, 5)<=1){
 
                 //Spawn Slob
                 zombie = new SlobZombie(this.game, startPos);
             } else if (waveStrength > 5 
                 && phase >= 2 
-                && random(0, 4 * spawnMult)<=1){
+                && random(0, 3)<=1){
 
                 //Spawn Sprinter
                 zombie = new SprinterZombie(this.game, startPos);

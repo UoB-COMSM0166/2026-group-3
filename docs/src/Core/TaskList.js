@@ -3,9 +3,10 @@ export class TaskList {
     this.tasks = {
       rotten_burger: 0,
       toxic_stew: 0,
+      ultimate_feast: 0,
       bone_bbq: 0,
-      mutant_soup: 0,
-      ultimate_feast: 0
+      mutant_soup: 0
+      
     };
   }
 

@@ -73,13 +73,25 @@ export class ZombieEntity extends Entity {
         console.log(`Zombie Died. Type: ${this.constructor.name}, Drops:`, this.drops);
 
         if (this.drops && this.drops.length > 0) {
+
+            let numOfDrops;
+            if (this.game.model.difficulty == "hard" && random(0, 1) < 0.25){
+                numOfDrops = 0;
+            } else if (this.game.model.difficulty == "easy" && random(0, 1) < 0.5){
+                numOfDrops = 2;
+            } else {
+                numOfDrops = 1;
+            }
+
             for (let dropName of this.drops) {
-                // Add to inventory (updates the counter)
+                for (let i=0; i< numOfDrops; i++){
+                    // Add to inventory (updates the counter)
                 this.game.model.gameState.inventory.add(dropName);
                 
                 // Create visual ItemEntity on the ground
-                let item = new ItemEntity(this.game, new Vector2(this.pos.x, this.pos.y + this.size.x), dropName);
+                let item = new ItemEntity(this.game, new Vector2(this.pos.x + random(-0.5,1.5), this.pos.y + this.size.x), dropName);
                 this.game.model.scene.addEntity(item);
+                }
             }
         }
 

@@ -70,8 +70,12 @@ export class PlayerDayEntity extends Entity{
     }
 
     async shoot(){
-        let bullet = new Bullet(this.game, new Vector2(this.pos.x + this.size.x, this.pos.y + this.size.y/2), this.weapon.damage, this.weapon.speed);
-        this.game.model.scene.entities.push(bullet);
+        for (let i=0; i< this.weapon.shots; i++){
+            let spread = (100-this.weapon.accuracy) * random(-0.01, 0.01);
+            let bullet = new Bullet(this.game, new Vector2(this.pos.x + this.size.x - 0.3, this.pos.y + this.size.y/2 + spread), this.weapon.damage, this.weapon.speed);
+            this.game.model.scene.entities.push(bullet);
+        }
+        
 
         // Shoot sound
         await this.game.soundManager.playSFX("shoot");

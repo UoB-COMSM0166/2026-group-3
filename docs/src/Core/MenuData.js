@@ -16,19 +16,20 @@ export class MenuData {
         name: "ZOMMEN",
         requirements: {
           "Zombie Belly": 1,
-          "Zombie Juice": 1
+          "Zombie Juice": 2,
+          "Zombie Mince": 3
         },
         cookTime: 4.5,
-        rewardCoins: 45,
+        rewardCoins: 75,
         stationType: "pot"
       },
       {
         id: "bone_bbq",
         name: "ZOMBBQ",
         requirements: {
-          "Zombie Mince": 2,
+          "Zombie Mince": 6,
           "Zombie Belly": 1,
-          "Prime Bone": 1,
+          "Prime Bone": 2,
           "Zombie Drumstick": 2
         },
         cookTime: 6,
@@ -39,20 +40,22 @@ export class MenuData {
         id: "mutant_soup",
         name: "DFD",
         requirements: {
-          "Zombie Drumstick": 4
+          "Zombie Drumstick": 3,
+          "Zombie Mince": 1
         },
-        cookTime: 4,
-        rewardCoins: 30,
+        cookTime: 3,
+        rewardCoins: 35,
         stationType: "prep"
       },
       {
         id: "ultimate_feast",
         name: "ZOMBEER",
         requirements: {
-          "Zombie Juice": 2
+          "Zombie Juice": 3,
+          "Zombie Mince": 2
         },
-        cookTime: 2.5,
-        rewardCoins: 25,
+        cookTime: 3.5,
+        rewardCoins: 60,
         stationType: "special"
       }
     ];

@@ -35,11 +35,11 @@ export class KitchenScene_MVP extends Scene {
     // Global kitchen timer
     const difficulty = this.game.model.difficulty || "normal";
     if (difficulty === "easy") {
-      this.kitchenTimeLimit = 75;
-    } else if (difficulty === "hard") {
-      this.kitchenTimeLimit = 45;
-    } else {
       this.kitchenTimeLimit = 60;
+    } else if (difficulty === "hard") {
+      this.kitchenTimeLimit = 30;
+    } else {
+      this.kitchenTimeLimit = 45;
     }
 
     this.kitchenTimer = this.kitchenTimeLimit;
@@ -56,22 +56,24 @@ export class KitchenScene_MVP extends Scene {
 
     // Multiple random customers
     this.customers = [];
-    this.maxCustomersOnScreen = 3;
+    this.maxCustomersOnScreen = 5;
     this.customerSpawnTimer = 1.2;
-    this.customerSpawnIntervalMin = 3.2;
-    this.customerSpawnIntervalMax = 5.8;
+    this.customerSpawnIntervalMin = 2.0;
+    this.customerSpawnIntervalMax = 5.0;
     this.totalOrdersToServe = 0;
     this.servedOrdersCount = 0;
     this.nextCustomerId = 1;
 
     this.customerTargetSlots = [
       new Vector2(5.8, 2.3),
+      new Vector2(5.8, 3.4),
       new Vector2(5.8, 4.5),
+      new Vector2(5.8, 5.6),
       new Vector2(5.8, 6.7),
     ];
     this.customerSpawnX = 14.2;
     this.customerLeaveX = 15.4;
-    this.customerMoveSpeed = 4.7;
+    this.customerMoveSpeed = 2.5;
 
     // Logging
     this._loggedDoneTaskIds = new Set();
@@ -167,7 +169,7 @@ const stationGap = 1.25;
       station.size = stationSize;
 
       this.stations.push(station);
-      this.entities.push(station);
+      this.addEntity(station);
     }
 
     // Counter
@@ -187,7 +189,8 @@ const stationGap = 1.25;
     ];
 
     // Register fixed entities
-    this.entities.push(this.counter, this.player);
+    this.addEntity(this.counter);
+    this.addEntity(this.player);
 
     console.log("[Kitchen] Current phase:", this.phase);
     console.log("[Kitchen] Difficulty:", difficulty);
@@ -620,7 +623,7 @@ const stationGap = 1.25;
     customer.state = "ENTERING";
 
     this.customers.push(customer);
-    this.entities.push(customer);
+    this.addEntity(customer);
 
     this.customerSpawnTimer = this._getRandomSpawnInterval();
 
@@ -667,16 +670,11 @@ const stationGap = 1.25;
     }
 
     // remove invisible customers from entity list + array
-    const stillVisible = [];
     for (const customer of this.customers) {
-      if (customer.isVisible) {
-        stillVisible.push(customer);
-      } else {
-        const idx = this.entities.indexOf(customer);
-        if (idx !== -1) this.entities.splice(idx, 1);
+      if (!customer.isVisible) {
+        this.removeEntity(customer);
       }
     }
-    this.customers = stillVisible;
   }
 
   _getVisibleWaitingCustomers() {
@@ -1100,9 +1098,9 @@ const stationGap = 1.25;
     const orderedRecipeIds = [
       "rotten_burger",
       "mutant_soup",
+      "ultimate_feast",
       "toxic_stew",
-      "bone_bbq",
-      "ultimate_feast"
+      "bone_bbq"
     ];
 
     const result = [];
@@ -1622,9 +1620,10 @@ const stationGap = 1.25;
     const items = [
       { key: "1", name: "ZOMBURGER", recipeId: "rotten_burger",  y: panelY + 60 },
       { key: "2", name: "DFD",       recipeId: "mutant_soup",    y: panelY + 150 },
-      { key: "3", name: "ZOMMEN",    recipeId: "toxic_stew",     y: panelY + 240 },
-      { key: "4", name: "ZOMBBQ",    recipeId: "bone_bbq",       y: panelY + 330 },
-      { key: "5", name: "ZOMBEER",   recipeId: "ultimate_feast", y: panelY + 420 },
+      { key: "3", name: "ZOMBEER",   recipeId: "ultimate_feast", y: panelY + 240 },
+      { key: "4", name: "ZOMMEN",    recipeId: "toxic_stew",     y: panelY + 330 },
+      { key: "5", name: "ZOMBBQ",    recipeId: "bone_bbq",       y: panelY + 420 },
+      
     ];
 
     this.menuButtons = [];

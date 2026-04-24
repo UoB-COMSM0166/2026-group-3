@@ -6,7 +6,7 @@ import { Vector2 } from "../Utility/Vector2.js";
 
 export class SettingsScene extends Menu {
   constructor(game) {
-    super(game, new Vector2(420,300));
+    super(game, new Vector2(480,300));
 
     this.style.fillColor = color(150);
     this.style.outlineWidth = 3
@@ -16,7 +16,7 @@ export class SettingsScene extends Menu {
     this.title = new Label(
       game,
       "SETTINGS",
-      new Vector2(420, 50),
+      new Vector2(480, 50),
       new Vector2("Centre", "Top"),
       new Vector2() 
     );
@@ -29,7 +29,7 @@ export class SettingsScene extends Menu {
     this.sfxSubTitle = new Label(
       game,
       "SFX",
-      new Vector2(180, 30),
+      new Vector2(240, 30),
       new Vector2("Left", "Top"),
       new Vector2(10,30) 
     );
@@ -58,7 +58,7 @@ export class SettingsScene extends Menu {
     this.musicSubTitle = new Label(
       game,
       "Music",
-      new Vector2(180, 30),
+      new Vector2(240, 30),
       new Vector2("Left", "Top"),
       new Vector2(10, 80) 
     );
@@ -88,7 +88,7 @@ export class SettingsScene extends Menu {
     this.textResizeSubTitle = new Label(
       game,
       "Text Size",
-      new Vector2(180, 30),
+      new Vector2(240, 30),
       new Vector2("Left", "Top"),
       new Vector2(10, 130)
     );
@@ -116,7 +116,7 @@ export class SettingsScene extends Menu {
     this.brightnessSubTitle = new Label(
       game,
       "Brightness",
-      new Vector2(180, 30),
+      new Vector2(240, 30),
       new Vector2("Left", "Top"),
       new Vector2(10, 180) 
     );
@@ -157,6 +157,9 @@ export class SettingsScene extends Menu {
       // Hide all SettingsScene 
       this.parent.isVisible = false;
     };
+
+    this.settingsLabels = [this.sfxSubTitle,this.musicSubTitle,this.textResizeSubTitle,this.brightnessSubTitle]
+    this.settingsLabels.forEach(b => b.sizeMatch.x = this.settingsLabels);
 
     // Add elements
     [

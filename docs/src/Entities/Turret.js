@@ -10,7 +10,7 @@ export class Turret extends Entity{
         super(game, pos, size);
         this.ghost = ghost;
         this.id = "Turret";
-        this.cooldown = Math.floor(random(0, 100));
+        this.cooldown = Math.floor(random(0, 70));
         this.sprite = "Turret";
 
     }
@@ -19,9 +19,9 @@ export class Turret extends Entity{
     async update(events){
         if (this.game.model.scene.zombieManager.waveStarted){
             if (this.cooldown==0){
-                let bullet = new Bullet(this.game, new Vector2(this.pos.x + this.size.x, this.pos.y + this.size.y/2 - 0.2), 3, 1);
+                let bullet = new Bullet(this.game, new Vector2(this.pos.x + this.size.x, this.pos.y + this.size.y/2 - 0.2), 2, 1);
                 this.game.model.scene.entities.push(bullet);
-                this.cooldown = 100;
+                this.cooldown = 50;
         
                 // Shoot sound
                 await this.game.soundManager.playSFX("shoot");

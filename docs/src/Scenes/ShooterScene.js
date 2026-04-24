@@ -19,7 +19,7 @@ export class ShooterScene extends Scene {
         super(game);
         this.isGameOver = false;
         this.isRoundWon = false;
-        this.game.model.gameState.time = "Day"
+        this.game.model.gameState.time = "Night"
         this.game.model.gameState.phaseProgress = 0;
 
         this.background = "Shooter Background";
@@ -284,9 +284,6 @@ export class ShooterScene extends Scene {
     async roundWon(){
         this.isRoundWon = true;
         this.getUIElement("shop").isVisible = false;
-
-        //Continue Button
-        this.game.model.gameState.phase++;
 
         //Win sound 
         await this.game.soundManager.playSFX("win");

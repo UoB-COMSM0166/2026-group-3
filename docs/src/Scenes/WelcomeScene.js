@@ -39,6 +39,9 @@ export class WelcomeScene extends Scene {
     this.settingsButton = new Button(game, "Settings", new Vector2(220, 50), new Vector2("Centre", "Top"), new Vector2(0, 460));
     this.quitButton = new Button(game, "Quit", new Vector2(220, 50), new Vector2("Centre", "Top"), new Vector2(0, 530));
 
+    this.menuButtons = [this.playButton, this.instructionsButton, this.settingsButton, this.quitButton]
+    this.menuButtons.forEach(b => b.sizeMatch.x = this.menuButtons);
+
     // Test Kitchen Button (temporary debug access)
     this.testKitchenButton = new Button(
       game,
@@ -55,7 +58,9 @@ export class WelcomeScene extends Scene {
     this.backButton = new Button(game, "Back", new Vector2(220, 50), new Vector2("Centre", "Top"), new Vector2(0, 530));
 
     //Hide difficulty buttons initially
+    this.difficultyButtons = [this.easyButton, this.mediumButton, this.hardButton, this.backButton];
     [this.easyButton, this.mediumButton, this.hardButton, this.backButton].forEach(b => b.isVisible = false);
+    this.difficultyButtons.forEach(b => b.sizeMatch.x = this.difficultyButtons)
 
     //Button Actions
 
@@ -109,11 +114,11 @@ export class WelcomeScene extends Scene {
       this.game.model.difficulty = "normal";
       this.game.model.gameState.inventory = new Inventory({
             // Starter stock for all menu recipes in test kitchen mode
-            "Zombie Mince": 10,
-            "Zombie Belly": 10,
-            "Zombie Juice": 10,
-            "Prime Bone": 10,
-            "Zombie Drumstick": 10,
+            "Zombie Mince": 100,
+            "Zombie Belly": 100,
+            "Zombie Juice": 100,
+            "Prime Bone": 100,
+            "Zombie Drumstick": 100,
           });
       this.game.model.scene = new KitchenScene_MVP(this.game);
     };

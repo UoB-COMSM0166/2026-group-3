@@ -81,9 +81,11 @@ export class PhaseProgressBar extends UIElement {
         let lightBlue = color(0, 150, 230);
         let darkBlue = color(0, 0, 64);
         let x_color = color(0)
+        let drawWidth = 5;
 
 
-        for (let x = xMin; x < xMax; x++){
+
+        for (let x = xMin; x < xMax; x+= drawWidth){
             
             if (sunPos != null){
                 let x_distance = abs(x - sunPos)
@@ -103,8 +105,9 @@ export class PhaseProgressBar extends UIElement {
                     x_color = this.mixColors(lightBlue, darkBlue, p)
                 }
             }
+            fill(x_color);
             stroke(x_color);
-            line(x, this.pos.y, x, this.pos.y + this.size.y)
+            rect(x, this.pos.y, drawWidth, this.size.y)
         }
     }
 
