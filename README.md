@@ -27,19 +27,22 @@ VIDEO. Include a demo video of your game here (you don't have to wait until the 
 
  <img src="documentation/images/WhatsApp Image 2026-02-17 at 14.51.29.jpeg" width="75%" />
 
-- 1, Matthew Honey, is25252@bristol.ac.uk, role
-- 2, Yoyo Wu, xa25891@bristol.ac.uk, role
-- 3, Khalda Satti, ji25166@bristol.ac.uk, role
-- 4, Tanveer Bakshi, lr25703@bristol.ac.uk, role
-- 5, SHUYUAN LIU, de25547@bristol.ac.uk, role
-- 6, Di Deng, th25793@bristol.ac.uk, role
+- 1, Matthew Honey, is25252@bristol.ac.uk, Project Manager, Front-end Developer, QA, Music/SFX
+- 2, Yoyo Wu, xa25891@bristol.ac.uk, Front-end Developer, UX/UI Design, Game Flow, Video
+- 3, Khalda Satti, ji25166@bristol.ac.uk, Project Manager, Front-end Developer, QA, Music/SFX
+- 4, Tanveer Bakshi, lr25703@bristol.ac.uk, Documentation, Developer,Game Flow
+- 5, Shuyuan Liu, de25547@bristol.ac.uk, Developer, Architecture and Integration
+- 6, Di Deng, th25793@bristol.ac.uk, Documentation, Developer,Github Review
 
 ## Project Report
 
 ## Introduction
 
-- 5% ~250 words 
-- Describe your game, what is based on, what makes it novel? (what's the "twist"?)
+Doomsday Kitchen is a genre-blending 2D survival game set in a post-apocalyptic world, forty years after a catastrophic global famine known as the "Shamble Shift." Players take on the role of "The Chef," inheriting a legendary wasteland restaurant from his father. To keep the colony from starving, the player must engage in a dual-phase gameplay loop that seamlessly transitions between high-octane action and strategic time management.
+
+Our core mechanics draw heavy inspiration from several successful titles. The combat and survival aspects are influenced by the horde-clearing upgrade systems of Vampire Survivors and the iconic zombie defense themes of Plants vs. Zombies. Meanwhile, the resource management and restaurant operation phases are directly inspired by the dual-gameplay loop of Dave the Diver, where combat gathering fuels the business operations.
+
+What makes Doomsday Kitchen novel is its subversion of player expectations. At first glance, players may assume it is a straightforward top-down shooter focused purely on surviving endless waves of enemies. However, the game's true "twist" is revealed when the player transitions into the management phase: the enemies they were just shooting are actually the raw ingredients for their restaurant. This unhinged, dark-comedy element of harvesting, cooking, and serving zombie meat to hungry wasteland survivors adds a unique thematic layer. It transforms standard enemy loot into a crucial economic resource, forcing players to balance aggressive hunting with careful culinary planning.
 
 ## 2. Requirements 
 
