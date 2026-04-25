@@ -16,7 +16,7 @@ export class WelcomeScene extends Scene {
     this.instructions = new InstructionsScene(this.game);
     this.instructions.isVisible = false;
 
-
+  this.background = "Kitchen Background";
 
     // Title
     this.title = new Label(
@@ -155,6 +155,16 @@ update(events) {
 }
 
   draw() {
+
+const background = this.game.assetManager.getImage(this.background);
+        image(
+            background,
+            0,
+    0,
+            this.game.view.size.x,
+            this.game.view.size.y
+        );
+
     super.draw();
 
     if (this.settings.isVisible) {
