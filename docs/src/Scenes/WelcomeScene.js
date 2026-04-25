@@ -37,9 +37,8 @@ export class WelcomeScene extends Scene {
     this.playButton = new Button(game, "Play", new Vector2(220, 50), new Vector2("Centre", "Top"), new Vector2(0, 320));
     this.instructionsButton = new Button(game, "Instructions", new Vector2(220, 50), new Vector2("Centre", "Top"), new Vector2(0, 390));
     this.settingsButton = new Button(game, "Settings", new Vector2(220, 50), new Vector2("Centre", "Top"), new Vector2(0, 460));
-    this.quitButton = new Button(game, "Quit", new Vector2(220, 50), new Vector2("Centre", "Top"), new Vector2(0, 530));
-
-    this.menuButtons = [this.playButton, this.instructionsButton, this.settingsButton, this.quitButton]
+    
+    this.menuButtons = [this.playButton, this.instructionsButton, this.settingsButton]
     this.menuButtons.forEach(b => b.sizeMatch.x = this.menuButtons);
 
     // Test Kitchen Button (temporary debug access)
@@ -66,7 +65,7 @@ export class WelcomeScene extends Scene {
 
     //Play Button: show difficulty menu
     this.playButton.onClick = () => {
-      [this.playButton, this.instructionsButton, this.settingsButton, this.quitButton,this.testKitchenButton]
+      [this.playButton, this.instructionsButton, this.settingsButton, this.testKitchenButton]
         .forEach(b => b.isVisible = false);
 
       //Small delay before showing difficulty buttons
@@ -85,7 +84,7 @@ export class WelcomeScene extends Scene {
     //Back button: return to main menu
     this.backButton.onClick = () => {
       [this.easyButton, this.mediumButton, this.hardButton, this.backButton].forEach(b => b.isVisible = false);
-      [this.playButton, this.instructionsButton, this.settingsButton, this.quitButton,this.testKitchenButton].forEach(b => b.isVisible = true);
+      [this.playButton, this.instructionsButton, this.settingsButton, this.testKitchenButton].forEach(b => b.isVisible = true);
     };
 
     // Settings Button: Go to settings
@@ -128,7 +127,6 @@ export class WelcomeScene extends Scene {
       this.playButton,
       this.instructionsButton,
       this.settingsButton,
-      this.quitButton,
       this.testKitchenButton,
       this.easyButton,
       this.mediumButton,
