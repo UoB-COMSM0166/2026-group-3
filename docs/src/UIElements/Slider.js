@@ -20,7 +20,7 @@ export class Slider extends UIElement {
     let centerY = this.pos.y + (this.size.y / 2);
 
     // line
-    stroke(this.style.outline);
+    stroke(0);
     strokeWeight(this.style.outlineWidth);
     line(this.pos.x, centerY, this.pos.x + this.size.x, centerY);
 
@@ -30,6 +30,7 @@ export class Slider extends UIElement {
     fill(this.style.fillColor);
 
     // slider drag
+    fill(101, 67, 33);
     ellipse(slideVal, centerY, 20, 20);
 }
 

@@ -23,30 +23,6 @@ this.position = new Vector2(0, 120);
         this.title.style.textAlign = { x: "center", y: "center" };
         this.title.parent = this;
 
- this.instructionsText = new Label(
-  game,
-`DOOMSDAY KITCHEN: SHOOTER PHASE
-
-Harvest ingredients before the dinner rush begins.
-
-CONTROLS
-WASD - Move
-Space - Shoot
-
-THE STAKES
-If zombies get too close, the kitchen falls.
-
-Reach the kitchen for full controls... if you dare.`,
-new Vector2(450,400), // width height
-  new Vector2("Centre", "Top"),
-  new Vector2(0, 65)
-);
-
-this.instructionsText.style.textSize = 13;
-this.instructionsText.textSizeOverride = true;
-this.instructionsText.style.textAlign = { x: "center", y: "center" };
-this.instructionsText.parent = this;
-
          // Back button
         this.backButton = new Button(
                  game,
@@ -67,11 +43,40 @@ this.instructionsText.parent = this;
             };
 
             [this.title,
-              this.instructionsText,
             this.backButton,
     ].forEach((el) => this.elements.push(el));
   }
 
-   ;}
+  draw(){
+    super.draw();
+
+    if (!this.isVisible) { return; }
+
+    fill(0);
+    textAlign(CENTER, CENTER);
+    textSize(12);
+    textStyle(BOLD);
+
+    text(
+`DOOMSDAY KITCHEN: SHOOTER PHASE
+
+Harvest ingredients before the dinner rush begins.
+
+CONTROLS
+WASD - Move
+Space - Shoot
+
+THE STAKES
+If zombies get too close, the kitchen falls.
+
+Reach the kitchen for full controls... if you dare.`,
+      this.pos.x + this.size.x / 2,
+      this.pos.y + 220
+    );
+  }
+
+
+   
+}
    
 
