@@ -4,7 +4,7 @@ import { Label } from "../UIElements/Label.js";
 import { Button } from "../UIElements/Button.js";
 export class InstructionsScene extends Menu {
   constructor(game) {
-   super(game, new Vector2(500,500));
+   super(game, new Vector2(500,400));
 this.position = new Vector2(0, 120);
 
     this.style.fillColor = color(150);
@@ -13,7 +13,7 @@ this.position = new Vector2(0, 120);
     this.title = new Label(
           game,
           "INSTRUCTIONS",
-          new Vector2(420, 50),
+          new Vector2(500, 68),
           new Vector2("Centre", "Top"),
           new Vector2() 
         );
@@ -71,7 +71,7 @@ If zombies get too close, the kitchen falls.
 
 Reach the kitchen for full controls... if you dare.`,
       this.pos.x + this.size.x / 2,
-      this.pos.y + 220
+      this.pos.y + 200 
     );
   }
 
