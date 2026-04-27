@@ -15,11 +15,9 @@
   🧟‍♂️ <a href="https://uob-comsm0166.github.io/2026-group-3/"><b>CLICK HERE TO PLAY</b></a>🍴
 
   <br><br><br>
-
   <a href="https://youtu.be/Si7i7T8xywY">
-    <img src="doc/assets/UI/play.png" alt="Watch the Demo Video" width="200">
+    <img src="docs/assets/UI/play.png" alt="Watch the Demo Video" width="150">
   </a>
-
   <br>
 
   🎥 <a href="https://youtu.be/Si7i7T8xywY"><b>Demo Video</b></a>🎮
