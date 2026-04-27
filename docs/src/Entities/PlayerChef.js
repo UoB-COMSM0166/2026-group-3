@@ -1,84 +1,212 @@
-// src/Entities/PlayerChef.js
-export class PlayerChef {
-  constructor(x, y, gameLogic) {
-    this.x = x;
-    this.y = y;
-    this.r = 16; // collision radius
-    this.speed = 160; // px/sec
-    this.gameLogic = gameLogic;
+import { Entity } from "../Core/Entity.js";
+import { Vector2 } from "../Utility/Vector2.js";
 
-    this._interactPressed = false; // edge-trigger
-    this._interactLatch = false;   // to avoid repeats while key held
+export class PlayerChef extends Entity {
+  static keysDown = {};
+  static inputInitialized = false;
+
+  static initInput() {
+    if (PlayerChef.inputInitialized) return;
+    PlayerChef.inputInitialized = true;
+
+    window.addEventListener("keydown", (e) => {
+      PlayerChef.keysDown[e.code] = true;
+
+      if (
+        e.code === "ArrowLeft" ||
+        e.code === "ArrowRight" ||
+        e.code === "ArrowUp" ||
+        e.code === "ArrowDown" ||
+        e.code === "KeyW" ||
+        e.code === "KeyA" ||
+        e.code === "KeyS" ||
+        e.code === "KeyD" ||
+        e.code === "Space"
+      ) {
+        e.preventDefault();
+      }
+    });
+
+    window.addEventListener("keyup", (e) => {
+      PlayerChef.keysDown[e.code] = false;
+
+      if (
+        e.code === "ArrowLeft" ||
+        e.code === "ArrowRight" ||
+        e.code === "ArrowUp" ||
+        e.code === "ArrowDown" ||
+        e.code === "KeyW" ||
+        e.code === "KeyA" ||
+        e.code === "KeyS" ||
+        e.code === "KeyD" ||
+        e.code === "Space"
+      ) {
+        e.preventDefault();
+      }
+    });
   }
 
-  update(dt) {
-    // Movement: WASD + Arrow keys
-    let vx = 0;
-    let vy = 0;
+  constructor(game) {
+    super(game, new Vector2(15, 8), new Vector2(1.5, 1.5));
+    this.speed = 0.1;
+    this.heldDish = null;
+    this.renderOffsetX = -0.15;
 
-    if (keyIsDown(65) || keyIsDown(LEFT_ARROW)) vx -= 1;   // A
-    if (keyIsDown(68) || keyIsDown(RIGHT_ARROW)) vx += 1;  // D
-    if (keyIsDown(87) || keyIsDown(UP_ARROW)) vy -= 1;     // W
-    if (keyIsDown(83) || keyIsDown(DOWN_ARROW)) vy += 1;   // S
+    this.cookingSprite = "Chef Cooking";
+    this.walkingSprite = "Chef Walking";
+    this.holdSprite = "Chef Hold";
 
-    // Normalize diagonal
-    const mag = Math.hypot(vx, vy);
-    if (mag > 0) {
-      vx /= mag;
-      vy /= mag;
+    this.moving = false
+    this.facing = 1 // -1 = left, 1 = right
+
+    PlayerChef.initInput();
+  }
+
+  isNear(target, padding = 0.2) {
+    const aMinX = this.pos.x - padding;
+    const aMaxX = this.pos.x + this.size.x + padding;
+    const aMinY = this.pos.y - padding;
+    const aMaxY = this.pos.y + this.size.y + padding;
+
+    const bMinX = target.pos.x;
+    const bMaxX = target.pos.x + target.size.x;
+    const bMinY = target.pos.y;
+    const bMaxY = target.pos.y + target.size.y;
+
+    const overlapX = aMinX <= bMaxX && aMaxX >= bMinX;
+    const overlapY = aMinY <= bMaxY && aMaxY >= bMinY;
+    return overlapX && overlapY;
+  }
+
+  isInteractHeld() {
+    return !!PlayerChef.keysDown["Space"];
+  }
+
+  update(events) {
+    let dx = 0;
+    let dy = 0;
+
+    const left =
+      PlayerChef.keysDown["ArrowLeft"] ||
+      PlayerChef.keysDown["KeyA"];
+
+    const right =
+      PlayerChef.keysDown["ArrowRight"] ||
+      PlayerChef.keysDown["KeyD"];
+
+    const up =
+      PlayerChef.keysDown["ArrowUp"] ||
+      PlayerChef.keysDown["KeyW"];
+
+    const down =
+      PlayerChef.keysDown["ArrowDown"] ||
+      PlayerChef.keysDown["KeyS"];
+
+    if (left) dx -= 1;
+    if (right) dx += 1;
+    if (up) dy -= 1;
+    if (down) dy += 1;
+
+    if (dy != 0) this.moving = true;
+    else if (dx != 0) {
+      this.moving = true;
+      this.facing = Math.sign(dx);
     }
+    else this.moving = false;
 
-    this.x += vx * this.speed * dt;
-    this.y += vy * this.speed * dt;
+    this.pos.x += dx * this.speed;
+    this.pos.y += dy * this.speed;
 
-    // Clamp inside room area (match scene floor rect)
-    this.x = constrain(this.x, 80, 600);
-    this.y = constrain(this.y, 100, 380);
+    const maxX = this.game.gridSize.x - this.size.x;
+    const maxY = this.game.gridSize.y - this.size.y;
 
-    // Interact key (E = 69)
-    const eDown = keyIsDown(69);
-    if (eDown && !this._interactLatch) {
-      this._interactPressed = true;
-      this._interactLatch = true;
-    }
-    if (!eDown) this._interactLatch = false;
+    this.pos.x = Math.max(0, Math.min(this.pos.x, maxX));
+    this.pos.y = Math.max(0, Math.min(this.pos.y, maxY));
   }
 
-  consumeInteractPressed() {
-    const v = this._interactPressed;
-    this._interactPressed = false;
-    return v;
-  }
+  draw() {
+    const renderPos = new Vector2(this.pos.x + this.renderOffsetX, this.pos.y);
+    const relPos = this.game.view.localToScreen(renderPos);
+    const relSize = this.game.view.localToScreen(this.size);
 
-  isNear(entity, dist = 42) {
-    const dx = this.x - entity.x;
-    const dy = this.y - entity.y;
-    return Math.hypot(dx, dy) <= dist;
-  }
-
-  findNearestStation(stations, dist = 48) {
-    let best = null;
-    let bestD = Infinity;
-    for (const s of stations) {
-      const d = Math.hypot(this.x - s.x, this.y - s.y);
-      if (d <= dist && d < bestD) {
-        bestD = d;
-        best = s;
+    let sprite;
+    if (this.heldDish) {
+      sprite = this.game.assetManager.getImage(this.holdSprite)
+        || this.game.assetManager.getImage(this.walkingSprite);
+      if (this.moving && sprite && typeof sprite.play === "function") {
+        sprite.play();
+      } else if (sprite && typeof sprite.pause === "function") {
+        sprite.pause();
+      }
+    } else if (PlayerChef.keysDown["Space"] && this.facing == -1) {
+      sprite = this.game.assetManager.getImage(this.cookingSprite);
+    } else {
+      sprite = this.game.assetManager.getImage(this.walkingSprite);
+      if (this.moving && sprite && typeof sprite.play === "function") {
+        sprite.play();
+      } else if (sprite && typeof sprite.pause === "function") {
+        sprite.pause();
       }
     }
-    return best;
+    if (!sprite) return;
+
+    push();
+    if (this.facing == 1) {
+      scale(-1, 1);
+      image(sprite, -relSize.x - relPos.x, relPos.y, relSize.x, relSize.y);
+    } else {
+      image(sprite, relPos.x, relPos.y, relSize.x, relSize.y);
+    }
+
+    pop();
+
+    this._drawHeldDishIcon(relPos, relSize);
   }
 
-  draw(p) {
-    // Chef (simple)
-    p.push();
-    p.translate(this.x, this.y);
-    p.noStroke();
-    p.fill(60, 120, 220);
-    p.circle(0, 0, this.r * 2);
-    // Hat
-    p.fill(250);
-    p.rect(-10, -26, 20, 10, 3);
-    p.pop();
+  _getHeldDishImage() {
+    if (!this.heldDish) return null;
+
+    const dishImageMap = {
+      rotten_burger: "Dish ZOMBURGER",
+      mutant_soup: "Dish DFD",
+      toxic_stew: "Dish ZOMMEN",
+      bone_bbq: "Dish ZOMBBQ",
+      ultimate_feast: "Dish ZOMBEER",
+    };
+
+    return this.game.assetManager.getImage(dishImageMap[this.heldDish]) || null;
+  }
+
+  _drawHeldDishIcon(relPos, relSize) {
+    const dishImg = this._getHeldDishImage();
+    if (!dishImg) return;
+
+    const heldDishScale = 0.7;
+    let drawW = relSize.x * 0.42 * heldDishScale;
+    let drawH = relSize.y * 0.42 * heldDishScale;
+    if (dishImg.width > 0 && dishImg.height > 0) {
+      const aspect = dishImg.width / dishImg.height;
+      if (aspect >= 1) {
+        drawH = drawW / aspect;
+      } else {
+        drawW = drawH * aspect;
+      }
+    }
+
+    const handAnchorX = this.facing === 1
+      ? relPos.x + relSize.x * 0.38
+      : relPos.x + relSize.x * 0.62;
+    const handShiftX = this.facing === 1
+      ? relSize.x * 0.15
+      : -relSize.x * 0.15;
+    const handAnchorY = relPos.y + relSize.y * 0.56;
+
+    image(
+      dishImg,
+      handAnchorX + handShiftX - drawW / 2,
+      handAnchorY - drawH / 2,
+      drawW,
+      drawH
+    );
   }
 }

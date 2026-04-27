@@ -3,7 +3,7 @@ import { Button } from "../UIElements/Button.js";
 import { Label } from "../UIElements/Label.js";
 import { Vector2 } from "../Utility/Vector2.js";
 import { ShooterScene } from "../Scenes/ShooterScene.js";
-import { KitchenScene_MVP } from "../Scenes/KitchenScene_MVP.js";
+import { KitchenScene } from "./KitchenScene.js";
 import { Inventory } from "../Core/Inventory.js";
 import { SettingsScene } from "../Scenes/SettingsScene.js";
 import { InstructionsScene } from "../Scenes/InstructionsScene.js";
@@ -110,26 +110,11 @@ export class WelcomeScene extends Scene {
     };
 
 
-    // Test Kitchen Button → Directly enter KitchenScene
-    this.testKitchenButton.onClick = () => {
-      this.game.model.difficulty = "normal";
-      this.game.model.gameState.inventory = new Inventory({
-            // Starter stock for all menu recipes in test kitchen mode
-            "Zombie Mince": 100,
-            "Zombie Belly": 100,
-            "Zombie Juice": 100,
-            "Prime Bone": 100,
-            "Zombie Drumstick": 100,
-          });
-      this.game.model.scene = new KitchenScene_MVP(this.game);
-    };
-
     [
       this.title,
       this.playButton,
       this.instructionsButton,
       this.settingsButton,
-      this.testKitchenButton,
       this.easyButton,
       this.mediumButton,
       this.hardButton,

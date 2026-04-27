@@ -5,7 +5,6 @@ import {Controller} from "./Controller.js";
 import {View} from "./View.js";
 import {AssetManager} from "./AssetManager.js";
 import {WelcomeScene} from "../Scenes/WelcomeScene.js";
-import {KitchenScene_MVP} from "../Scenes/KitchenScene_MVP.js";
 import {SoundManager} from "./SoundManager.js";
 import { UnlockScene } from "../Scenes/UnlockScene.js";
 
@@ -35,7 +34,6 @@ export class Game {
 
     finishedLoading(){
         let startScene = new UnlockScene(this);
-        // let startScene = new KitchenScene_MVP(this); // use this for kitchen-only testing
-       this.model.scene = startScene;
+        this.model.scene = startScene;
     }
 }

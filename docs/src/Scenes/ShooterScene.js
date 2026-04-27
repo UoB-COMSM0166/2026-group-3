@@ -6,7 +6,7 @@ import { Menu } from "../UIElements/Menu.js";
 import { Vector2 } from "../Utility/Vector2.js";
 import { ZombieManager } from "../Entities/ZombieManager.js";
 import { WelcomeScene } from "./WelcomeScene.js";
-import { KitchenScene_MVP } from "./KitchenScene_MVP.js";
+import { KitchenScene } from "./KitchenScene.js";
 import { WeaponManager } from "../Core/WeaponManager.js";
 import { Fence } from "../Entities/Fence.js";
 import { TurretManager } from "../Entities/TurretManager.js";
@@ -260,7 +260,7 @@ export class ShooterScene extends Scene {
         console.log("[Shooter] → Kitchen");
 
         //continue to kitchen(CORE FUNCTIONALITY)
-        this.game.model.scene = new KitchenScene_MVP(this.game);
+        this.game.model.scene = new KitchenScene(this.game);
     }
 
 
