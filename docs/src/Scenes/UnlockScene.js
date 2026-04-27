@@ -12,6 +12,7 @@ export class UnlockScene {
   update(events) {
     for (let event of events) {
       if (event.type === "keydown") {
+         userStartAudio();
        this.game.model.scene = new WelcomeScene(this.game);
       }
     }
