@@ -270,16 +270,19 @@ A Wilcoxon Signed Rank Test showed statistical significance for the overall scor
 ### Stacked Radar Chart: Aggregate perceived workload score (n = 10) for Easy and Hard difficulty
 
 <p align="center">
-  <img src="documentation/Evaluation_figures/NASATLXRADARLAYER.jpg" width="400"style="border-radius: 12px;/>
+  <img src="documentation/Evaluation_figures/NASATLXRADARLAYER.jpg"
+       width="400"
+       style="border-radius: 12px;">
 </p>
-
 
 ---
 
 ### Radar Chart (Easy Difficulty): Aggregate perceived workload score (n = 10), per dimension
 
 <p align="center">
-  <img src="documentation/Evaluation_figures/NASATLXEASY.png" width="400"style="border-radius: 12px;/>
+  <img src="documentation/Evaluation_figures/NASATLXEASY.png"
+       width="400"
+       style="border-radius: 12px;">
 </p>
 
 ---
@@ -291,7 +294,6 @@ A Wilcoxon Signed Rank Test showed statistical significance for the overall scor
        width="400"
        style="border-radius: 12px;">
 </p>
-
 
 
 ## Wilcoxon Signed-Rank Test Results (NASA-TLX)
@@ -316,6 +318,48 @@ This could be attributed to differences in participants’ perception of the gam
 
 
 - Description of how code was tested. 
+
+# Sustainability
+It is important to consider the sustainability impact of our systems across all dimensions beyond its immediate effects (enabling and structural), as through our design we cause change, and shape our environment (Karlskrona, 2015 ADD REF).  
+
+Our team conducted a sustainability impact analysis with the Sustainability Analysis Framework. Alongside the environment dimension, we found the individual and social dimensions most applicable to our game. 
+
+#### Individual Impact
+
+**Doomsday Kitchen** may positively impact a user’s mental health by providing stress relief and a sense of accomplishment after each level or night survived. Research suggests that gaming can reduce stress and improve mood (WHO, 2025 ADD REF AT END OF REPORT), supporting the potential benefits of games as a leisure activity. 
+
+On the other hand, if users become highly engaged, the repetitive gameplay loop of “shooting scene → kitchen scene” may encourage an addictive engagement pattern, often described as a “just one more game (ADD REFERENCE AT END OF REPORT)” effect. As levels are relatively short and increase in difficulty, this may promote prolonged or repeated play.
+
+To mitigate this, **Doomsday Kitchen** avoids long-term progression features such as player leaderboards, instead isolating each game session and providing a pause menu to halt gameplay. This reduces the pressure for users to return and continue their progress. Additionally, as no personal data is required to save progress, user privacy is preserved.
+
+Physical health is also at a minor risk, as gameplay requires prolonged use of both a keyboard and mouse to control settings and interact with game elements, such as the “START WAVE” button and weapon upgrades. Extended play may also contribute to eye strain; therefore, a brightness slider has been implemented to improve visual comfort.
+
+Users are given agency through upgrade and customisation options, particularly in weapon selection and kitchen menu items. As difficulty increases and zombie numbers grow, players are encouraged to make strategic decisions about resource allocation. This can enhance engagement, decision-making and planning; however, this agency is constrained by limited in-game currency, which is only earned in the kitchen scene, requiring users to evaluate their choices.
+
+#### **Social Impact**
+
+Our game aims to promote inclusivity through features such as adjustable volume sliders for sound effects and music, as well as a text resize slider. These support players who are hard of hearing or visually impaired, alongside a brightness slider to improve visual comfort. These settings also accommodate different user preferences, improving usability for a wider range of players.
+
+While such features are already common in modern game design, as a team, we agreed their inclusion remains important. Consistent implementation of accessibility settings helps ensure that inclusive design continues to be standard practice within the games industry, rather than being overlooked or deprioritised.
+
+On the other hand, **Doomsday Kitchen** includes themes of combat, involving weapons such as “pistol”, “turret”, and “machine gun”, which are named after real-world items. Although this is a common convention in games such as ***Vampire Survivors***, it may still be perceived as depicting violence.
+
+To mitigate this, the game is centred around fictitious entities, such as zombies, and original food items presented in a creative way. This helps detach the game from real-world contexts and reduces the seriousness of combat, exhibiting a more light-hearted experience.
+
+#### **Environmental Impact**
+
+GitHub Pages, on which Doomsday Kitchen is hosted, provides straightforward deployment and repository storage. However, it is acknowledged that commits, files, and branches are stored redundantly across multiple data centres (Medium, 2025 (ADD REFERENCE AT END OF REPORT)), contributing to increased energy consumption and associated greenhouse gas emissions. In addition, while short gameplay sessions limit prolonged continuous use, repeated play may increase overall energy consumption over time.
+
+The game uses moderately complex 2D graphics, animations, UI overlays, and continuous rendering during gameplay, particularly across the "ShooterScene” and ”KitchenScene_MVP” files. This results in higher processing demand compared to simpler or more static applications. In hindsight, we could have compressed assets to reduce their storage size and improve efficiency.
+
+We aimed to reduce energy usage through features such as a brightness slider; while its primary purpose is to improve visual comfort, it may also contribute to minor reductions in screen energy consumption when used at lower levels.
+
+While our visual design choices enhance the game’s appearance, there is a clear trade-off between user experience and environmental sustainability. In the future we would reduce our asset sizes and reduce unnecessary rendering to minimise energy consumption.
+
+
+CHAINS OF IMPACT DIAGRAM
+
+
 
 # Process 
 
