@@ -231,10 +231,39 @@ Additionally, collecting the requirements emphasised how user stories and accept
 
 Gathering requirements helped us perfect our game concept, moving us closer to a well-rounded game from a vague idea.
 
-## Design
+## 3 Design
 
-- 15% ~750 words 
-- System architecture. Class diagrams, behavioural diagrams. 
+With our requirements laid out, we could begin working on the architecture design, including any class or sequence diagrams required. We decided an object oriented approach would be most suitable and determined a few key design points we wanted to build our architecture around
+
+1. We would need a way to dynamically switch between scenes within the game. To do this, we decided to use a scene object that could be dynamically switched out within the operation of the game. 
+2. We would need a way to contain all the current game elements. To do this, we chose to classify all elements as either entities or UI elements. 
+3. We would need a way to dynamically scale the game and it's elements with the players screen. To do this, we chose to fix all entities onto a 16 by 9, and map those local coordinates onto the screen. You UI elements, we don't want them changing size with the screen size, so we decided they would be in fixed positions on the screen, using parameters to attach them to parts of the screen
+4. We would need a way to update and draw the game each frame. To do this, we chose to use a model-view-controller approach, whereby the controller updates everything in the scene first, including all its elements, before the view draws everything in the scene.
+
+### 3.1 Class diagrams 
+
+From our system architecture, we designed 3 class diagrams. The first is for the core system architecture, representing our model-view-controller system. The 2nd and 3rd represent our 2 main scenes within the game; our kitchen scene and our shooter scene. We determined these were the most important scenes to design, although other scenes exist like a main menu scene or a introduction scene, those had a relatively simple design.
+
+#### MVC Class Diagram
+
+![Core Class Diagram](/documentation/Class_DIagrams/Class_Diagram_Core.png)
+
+#### Shooter Scene Class Diagram
+
+![Kitchen Scene Class Diagram](/documentation/Class_DIagrams/Class_Diagram_Shooter.png)
+
+#### Kitchen Scene Class Diagram
+
+![Kitchen Scene Class Diagram](/documentation/Class_DIagrams/Class_Diagram_Kitchen.png)
+
+#### UI Bar Class Diagram
+
+![UI Bar Class Diagram](/documentation/Class_DIagrams/Class_Diagram_UIBar.png)
+
+### 3.2 Sequence Diagrams
+
+From our architecture, we determined the most import interactions would come from the update and draw loops, and so these were the first ones we aimed to depict.
+TODO: SEQUENCE DIAGRAMS
 
 ## Implementation
 
