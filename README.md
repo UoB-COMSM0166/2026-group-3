@@ -294,11 +294,11 @@ Severity = (Frequency + Impact + Persistence) / 3
 | 4 | Consistency & Standards | Day | Different controls between phases | 2 | 2 | 2 | 2.00 | Control mismatch | Standardize controls |
 | 5 | Recognition vs Recall | Day | No recipe visibility forces memory use | 3 | 3 | 4 | 3.33 | No recipe list | Add recipe panel |
 | 6 | Flexibility & Efficiency | Both | Limited gameplay strategies | 3 | 2 | 4 | 3.00 | Same loop every round | Add upgrades/waves |
-| 7 | Help & Documentation | Both | No tutorial for new players | 4 | 3 | 4 | 3.67 | Players confused | Add onboarding |
+| 7 | Help & Documentation | Both | No tutorial for new players | 4 | 3 | 4 | 3.67 | Players confused | Add Instructions menu |
 | 8 | Aesthetic & Minimalist Design | Day | UI clutter and small text | 3 | 2 | 3 | 2.67 | Too much info | Simplify UI |
 | 9 | Visibility of System Status | Night | No wall damage feedback | 3 | 3 | 3 | 3.00 | No damage indicator | Add cracking effect |
 | 10 | User Control & Freedom | Global | No pause functionality | 3 | 4 | 4 | 3.67 | Cannot pause | Add pause menu |
-| 11 | Flexibility & Efficiency | Night | Turret strength unclear | 2 | 2 | 3 | 2.33 | No damage info | Show turret stats |
+| 11 | Flexibility & Efficiency | Night | Turret position unclear | 2 | 2 | 3 | 2.33 |Can be placed in only one area| Show turret stats |
 | 12 | Visibility of System Status | Night | Meat drops not clearly visible | 3 | 3 | 3 | 3.00 | Loot unclear | Add visible drops |
 
 Based on the findings, several targeted design improvements were recommended:
@@ -384,7 +384,64 @@ This could be attributed to differences in participants’ perception of the gam
 
 
 
-- Description of how code was tested. 
+## Black Box Testing
+
+Testing was performed by simulating real player behavior and verifying that all game systems respond correctly to user interactions. Each feature was tested across different game states (day and night phases) to ensure consistent and expected behavior without examining the underlying code.
+
+### Day/Night Transition
+
+| Test Case | Input | Expected Output | Result |
+|-----------|-------|-----------------|--------|
+| TC1 | Wait for day timer to end | Transition to night phase with visual/audio feedback | ✓ Pass |
+| TC2 | Wait for night timer to end | Transition to day phase with message | ✓ Pass |
+| TC3 | Check UI during transition | Phase indicator updates correctly | ✓ Pass |
+
+### Ingredient Collection (Night Phase)
+
+| Test Case | Input | Expected Output | Result |
+|-----------|-------|-----------------|--------|
+| TC1 | Enemy defeated during night | Meat drops at enemy location | ✓ Pass |
+| TC2 | Meat dropped floats to the Items bar | Ingredient count increases | ✓ Pass |
+
+### Recipe System (Day Phase)
+
+| Test Case | Input | Expected Output | Result |
+|-----------|-------|-----------------|--------|
+| 1 | Player has correct ingredients | Recipe can be cooked | ✓ Pass |
+| 2 | Player missing ingredients | Players tries to add a dish is given a "not enough Ingredients message" | ✓ Pass |
+| 3 | Complete recipe | Ingredients consumed,Player earns Profit | ✓ Pass |
+
+### Enemy Spawning (Night Phase)
+
+| Test Case | Input | Expected Output | Result |
+|-----------|-------|-----------------|--------|
+| 1 | Night phase begins | Enemies spawn at random locations | ✓ Pass |
+| 2 | Enemy defeated | Enemy disappears, meat drops | ✓ Pass |
+| 3 | Multiple waves | Enemy count increases each wave | ✓ Pass |
+
+### Wall Defense
+
+| Test Case | Input | Expected Output | Result |
+|-----------|-------|-----------------|--------|
+| 1 | Enemy attacks wall | Wall health decreases | ✓ Pass |
+| 2 | Wall takes damage | Visual damage indicator shows | ✓ Pass |
+| 3 | Wall health = 0 | Game over/loss state triggered | ✓ Pass |
+
+### Shop Menu
+
+| Test Case | Input | Expected Output | Result |
+|-----------|-------|-----------------|--------|
+| 1 | Press shop menu  |  menu appears | ✓ Pass |
+| 2 | You buy weapons| weapon changes | ✓ Pass |
+| 3 | buy turrets | can place a turret in the shooter scene | ✓ Pass |
+
+### Controls Consistency
+
+| Test Case | Input | Expected Output | Result |
+|-----------|-------|-----------------|--------|
+| 1 | Controls work in day phase | Player can move/interact | ✓ Pass |
+| 2 | Controls work in night phase | Player can move/defend | ✓ Pass |
+| 3 | Key bindings are consistent | Same keys work throughout game | ✓ Pass |
 
 # Sustainability
 It is important to consider the sustainability impact of our systems across all dimensions beyond its immediate effects (enabling and structural), as through our design we cause change, and shape our environment (Karlskrona, 2015 ADD REF).  
