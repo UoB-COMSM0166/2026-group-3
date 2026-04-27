@@ -19,50 +19,72 @@ export class Menu extends UIElement {
     draw(){
         if (!this.isVisible) { return; }
 
-    if (this.image != null){
+        if (this.image != null){
             //Draw an image if there is one
             let sprite = this.game.assetManager.getImage(this.image);
             image(sprite, this.pos.x, this.pos.y, this.size.x, this.size.y);
         } else {
-            const dentSprite = this.game.assetManager.getImage("UI Dent Corners");
-            const dentMiddleSprite = this.game.assetManager.getImage("UI Dent Middle");
+            const cornerSprite = this.game.assetManager.getImage("UI Board Corner");
+            const horizontalEdgeSprite = this.game.assetManager.getImage("UI Board Horizontal Edge");
+            const verticalEdgeSprite = this.game.assetManager.getImage("UI Board Vertical Edge");
+            const middleSprite = this.game.assetManager.getImage("UI Board Middle");
 
-            if (dentSprite && dentMiddleSprite){
+            if (cornerSprite && horizontalEdgeSprite && verticalEdgeSprite && middleSprite){
                 const x = Math.round(this.pos.x);
                 const y = Math.round(this.pos.y);
                 const w = Math.round(this.size.x);
                 const h = Math.round(this.size.y);
-                const capWidth = Math.round(h / 2);
-                const middleX = x + capWidth;
-                const middleWidth = Math.max(0, w - (2 * capWidth));
+                const cornerSize = Math.round(Math.min(w / 2, h / 2, this.style.textSize + 12));
+                const innerX = x + cornerSize;
+                const innerY = y + cornerSize;
+                const innerW = Math.max(0, w - (2 * cornerSize));
+                const innerH = Math.max(0, h - (2 * cornerSize));
 
-                // Tile/stretch the dent middle so caps connect seamlessly.
-                if (middleWidth > 0){
-                    image(dentMiddleSprite, middleX, y, middleWidth, h);
+                if (innerW > 0 && innerH > 0){
+                    image(middleSprite, innerX, innerY, innerW, innerH);
                 }
 
-                // Left cap
-                image(dentSprite, x, y, capWidth, h);
+                if (innerW > 0){
+                    image(horizontalEdgeSprite, innerX, y, innerW, cornerSize);
+                    push();
+                    translate(innerX, y + h);
+                    scale(1, -1);
+                    image(horizontalEdgeSprite, 0, 0, innerW, cornerSize);
+                    pop();
+                }
 
-                // Right cap (mirrored)
+                if (innerH > 0){
+                    image(verticalEdgeSprite, x, innerY, cornerSize, innerH);
+                    push();
+                    translate(x + w, innerY);
+                    scale(-1, 1);
+                    image(verticalEdgeSprite, 0, 0, cornerSize, innerH);
+                    pop();
+                }
+
+                image(cornerSprite, x, y, cornerSize, cornerSize);
                 push();
                 translate(x + w, y);
                 scale(-1, 1);
-                image(dentSprite, 0, 0, capWidth, h);
+                image(cornerSprite, 0, 0, cornerSize, cornerSize);
                 pop();
-            } else if (dentSprite){
-                image(dentSprite, this.pos.x, this.pos.y, this.size.x, this.size.y);
+                push();
+                translate(x, y + h);
+                scale(1, -1);
+                image(cornerSprite, 0, 0, cornerSize, cornerSize);
+                pop();
+                push();
+                translate(x + w, y + h);
+                scale(-1, -1);
+                image(cornerSprite, 0, 0, cornerSize, cornerSize);
+                pop();
             } else {
-                // Fallback if UI assets are missing.
                 fill(this.style.fillColor);
                 stroke(this.style.outline);
                 strokeWeight(this.style.outlineWidth);
                 rect(this.pos.x, this.pos.y, this.size.x, this.size.y, this.style.rounding);
             }
-        }
-
-
-
+        } 
         for (let element of this.elements){
             //Draw each element in the menu
             element.draw();

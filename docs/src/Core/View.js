@@ -69,6 +69,7 @@ export class View {
         for (let uielement of this.model.scene.uielements){
             uielement.reposition();
         }
+        this.model.resize();
     }
 
     localToScreen(pos){ // Returns a screen coordinate from a grid coordinate
@@ -113,6 +114,8 @@ export class View {
         if (this.game.debug){
             this.drawGrid();
         }
+
+        this.resize();
 
         this.model.draw(); // Draws the current model
 

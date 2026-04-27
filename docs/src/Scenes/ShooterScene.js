@@ -84,7 +84,6 @@ export class ShooterScene extends Scene {
         this.zombieManager.waveStarted = true;
         this.getUIElement("FenceLabel").isVisible = true;
         this.getUIElement("shop").isVisible = false;
-        this.uiBar.shopButton.style.fillColor = color(150);
         this.uiBar.shopButton.active = false;
     }
 
@@ -106,7 +105,8 @@ export class ShooterScene extends Scene {
             //Draw a dark overlay to make it dramatic lmao :3
             stroke(0);
             fill(0, 0, 0, 150); //Semi-transparent black
-            rect(0, 0, width, height);       
+            rect(0, 0, width, height);   
+            this.gameOverLabel.draw();    
             this.restartBtn.draw();
         }
     }

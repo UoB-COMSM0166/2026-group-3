@@ -40,6 +40,7 @@ export class WelcomeScene extends Scene {
     
     this.menuButtons = [this.playButton, this.instructionsButton, this.settingsButton]
     this.menuButtons.forEach(b => b.sizeMatch.x = this.menuButtons);
+    this.menuButtons.forEach(b => b.expandToFit.x = true);
 
     // Test Kitchen Button (temporary debug access)
     this.testKitchenButton = new Button(
@@ -59,7 +60,8 @@ export class WelcomeScene extends Scene {
     //Hide difficulty buttons initially
     this.difficultyButtons = [this.easyButton, this.mediumButton, this.hardButton, this.backButton];
     [this.easyButton, this.mediumButton, this.hardButton, this.backButton].forEach(b => b.isVisible = false);
-    this.difficultyButtons.forEach(b => b.sizeMatch.x = this.difficultyButtons)
+    this.difficultyButtons.forEach(b => b.sizeMatch.x = this.difficultyButtons);
+    this.difficultyButtons.forEach(b => b.expandToFit.x = true);
 
     //Button Actions
 

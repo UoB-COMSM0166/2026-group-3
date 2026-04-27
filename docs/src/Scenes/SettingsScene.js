@@ -98,7 +98,7 @@ export class SettingsScene extends Menu {
 
     // Text Resize slider
     this.textResizeSlider = new Slider(
-      game, 10, 30, this.game.view.textSize,
+      game, 15, 30, this.game.view.textSize,
       new Vector2(200, 30),
       new Vector2("Left", "Top"),
       new Vector2(10, 130) 
