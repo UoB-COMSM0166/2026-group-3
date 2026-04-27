@@ -277,7 +277,38 @@ TODO: SEQUENCE DIAGRAMS
 
 - 15% ~750 words
 
-- One qualitative evaluation (of your choice) 
+- One qualitative evaluation (of your choice)
+## Qualitative Evaluation
+
+## Heuristic Evaluation
+
+We conducted a heuristic evaluation of the game using Nielsen's 10 usability heuristics. Each issue was identified and rated based on severity calculated from frequency, impact, and persistence.
+
+Severity = (Frequency + Impact + Persistence) / 3
+
+| # | Heuristic | Location | Problem | F | I | P | Severity | Evidence | Fix |
+|---|-----------|----------|---------|---|---|---|----------|----------|-----|
+| 1 | Visibility of System Status | Night | Player didn't know when day/night changes | 3 | 3 | 2 | 2.67 | Sudden phase switch | Show transition message |
+| 2 | Error Prevention | Day | Incorrect ingredient mapping blocks cooking | 4 | 4 | 4 | 4.00 | Meat mismatch | Fix mapping |
+| 3 | Visibility of System Status | Night | No feedback when meat is collected | 3 | 3 | 3 | 3.00 | No drop indicator | Add animation/UI feedback |
+| 4 | Consistency & Standards | Day | Different controls between phases | 2 | 2 | 2 | 2.00 | Control mismatch | Standardize controls |
+| 5 | Recognition vs Recall | Day | No recipe visibility forces memory use | 3 | 3 | 4 | 3.33 | No recipe list | Add recipe panel |
+| 6 | Flexibility & Efficiency | Both | Limited gameplay strategies | 3 | 2 | 4 | 3.00 | Same loop every round | Add upgrades/waves |
+| 7 | Help & Documentation | Both | No tutorial for new players | 4 | 3 | 4 | 3.67 | Players confused | Add onboarding |
+| 8 | Aesthetic & Minimalist Design | Day | UI clutter and small text | 3 | 2 | 3 | 2.67 | Too much info | Simplify UI |
+| 9 | Visibility of System Status | Night | No wall damage feedback | 3 | 3 | 3 | 3.00 | No damage indicator | Add cracking effect |
+| 10 | User Control & Freedom | Global | No pause functionality | 3 | 4 | 4 | 3.67 | Cannot pause | Add pause menu |
+| 11 | Flexibility & Efficiency | Night | Turret strength unclear | 2 | 2 | 3 | 2.33 | No damage info | Show turret stats |
+| 12 | Visibility of System Status | Night | Meat drops not clearly visible | 3 | 3 | 3 | 3.00 | Loot unclear | Add visible drops |
+
+Based on the findings, several targeted design improvements were recommended:
+
+- Implemented an Instructions menu to support first-time users and improve learnability
+- Introduced a pause menu to enhance user control and improve user experience
+- Improved system feedback mechanisms: Addition of features like meat drops, wall damage, phase transitions
+- Ensured consistency in ingredient mapping and controls
+- Added recipe panel and reduce UI clutter
+- Introduced upgrades and varied gameplay strategies
 
 ## Quantitative Evaluation: NASA Task Load Index (TLX)
 
