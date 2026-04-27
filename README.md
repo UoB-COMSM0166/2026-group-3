@@ -12,29 +12,34 @@
   </a>
 
   <br><br>
-  🧟‍♂️ <a href="https://uob-comsm0166.github.io/2026-group-3/"><b>CLICK HERE TO PLAY</b></a>🍴
+  🧟‍♂️  <a href="https://uob-comsm0166.github.io/2026-group-3/"><b>CLICK HERE TO PLAY</b></a> 🍴
 
-  <br><br><br>
+  <br>
   <a href="https://youtu.be/Si7i7T8xywY">
     <img src="docs/assets/UI/play.png" alt="Watch the Demo Video" width="150">
   </a>
+  
   <br>
 
-  🎥 <a href="https://youtu.be/Si7i7T8xywY"><b>Demo Video</b></a>🎮
+  🎥  <a href="https://youtu.be/Si7i7T8xywY"><b>Demo Video</b></a> 🎮
 
  </div>
 
 
-## Your Group
+## Our Group
+
+<div align="center">
 
  <img src="documentation/images/WhatsApp Image 2026-02-17 at 14.51.29.jpeg" width="75%" />
 
-- 1, Matthew Honey, is25252@bristol.ac.uk, Project Manager, Front-end Developer, QA, Music/SFX
-- 2, Yoyo Wu, xa25891@bristol.ac.uk, Front-end Developer, UX/UI Design, Game Flow, Video
-- 3, Khalda Satti, ji25166@bristol.ac.uk, Project Manager, Front-end Developer, QA, Music/SFX
-- 4, Tanveer Bakshi, lr25703@bristol.ac.uk, Documentation, Developer,Game Flow
-- 5, Shuyuan Liu, de25547@bristol.ac.uk, Developer, Architecture and Integration
-- 6, Di Deng, th25793@bristol.ac.uk, Documentation, Developer,Github Review
+| Name | Email | Role |
+| :---: | :--- | :--- |
+| Matthew Honey | is25252@bristol.ac.uk | Project Manager, Front-end Developer, QA, Music/SFX |
+| Yoyo Wu | xa25891@bristol.ac.uk | Front-end Developer, UX/UI Design, Game Flow, Video |
+| Khalda Satti | ji25166@bristol.ac.uk | Project Manager, Front-end Developer, QA, Music/SFX |
+| Tanveer Bakshi | lr25703@bristol.ac.uk | Documentation, Developer,Game Flow |
+| Shuyuan Liu | de25547@bristol.ac.uk | Developer, Architecture and Integration |
+| Di Deng | th25793@bristol.ac.uk | Documentation, Developer,Github Review |
 
 ## Project Report
 
