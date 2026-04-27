@@ -8,11 +8,10 @@
   <h3><i>Shoot, Cook, Survive. A post-apocalyptic culinary defense game.</i></h3>
 
   <a href="https://uob-comsm0166.github.io/2026-group-3/">
-    <img src="documentation/images/DoomsdayKitchenBackground" alt="Doomsday Kitchen" width="80%">
+    <img src="documentation/images/MainMenuBackground.png" alt="Doomsday Kitchen" width="80%">
   </a>
 
   <br><br>
-
   🧟‍♂️ <a href="https://uob-comsm0166.github.io/2026-group-3/"><b>CLICK HERE TO PLAY</b></a>🍴
 
   <br><br><br>
