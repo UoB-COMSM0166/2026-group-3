@@ -3,13 +3,30 @@
 
 ## Doomsday Kitchen
 
-STRAPLINE. Add an exciting one sentence description of your game here.
+<div align="center">
 
-IMAGE. Add an image of your game here, keep this updated with a snapshot of your latest development.
+  <h3><i>Shoot, Cook, Survive. A post-apocalyptic culinary defense game.</i></h3>
 
-[LINK] (https://uob-comsm0166.github.io/2026-group-3/)
+  <a href="https://uob-comsm0166.github.io/2026-group-3/">
+    <img src="documentation/images/DoomsdayKitchenBackground" alt="Doomsday Kitchen" width="80%">
+  </a>
 
-VIDEO. Include a demo video of your game here (you don't have to wait until the end, you can insert a work in progress video)
+  <br><br>
+
+  🧟‍♂️ <a href="https://uob-comsm0166.github.io/2026-group-3/"><b>CLICK HERE TO PLAY</b></a>🍴
+
+  <br><br><br>
+
+  <a href="https://youtu.be/Si7i7T8xywY">
+    <img src="doc/assets/UI/play.png" alt="Watch the Demo Video" width="200">
+  </a>
+
+  <br>
+
+  🎥 <a href="https://youtu.be/Si7i7T8xywY"><b>Demo Video</b></a>🎮
+
+ </div>
+
 
 ## Your Group
 
