@@ -317,7 +317,44 @@ This could be attributed to differences in participants’ perception of the gam
 
 - 15% ~750 words
 
-- Teamwork. How did you work together, what tools and methods did you use? Did you define team roles? Reflection on how you worked together. Be honest, we want to hear about what didn't work as well as what did work, and importantly how your team adapted throughout the project.
+At the start of this project, we identified our individual strengths to understand our skills, and realise how each member could best contribute to build the game and report. For example, a member with a creative background, focused on graphics and the UI, while another, more confident in coding and implementation aspects. Whilst our development process took these preferences into consideration, team members did not have fixed roles. Instead, we updated our tasks often and adapted our priorities, with members claiming individual activities. This ensured we collaborated to complete the project, whilst allowing members to choose skills they wanted to develop or improve.                       
+
+We met both in person and online, aiming for bi-weekly meetings, with regular progress updates between sessions. Sprints lasted 3–4 weeks.Significant moments in our workflow included reading week and the easter break, which is discussed in this section.
+
+#### Sprint Board: Development Timeline
+
+<p align="center">
+  <img src="documentation/Process_figures/SprintBoardStoryPoints.png" width="800" height="600"/>
+</p>
+Figure: A retrospective sprint board showing the main story points aimed for each sprint.
+
+The first sprint began in reading week, where a minimal viable product formed. We focused on producing a base to slowly develop, with a main page, shooting scene (including shooting functionality), and a simple kitchen scene interface. During this time, we familiarised ourselves with the codebase. To ensure our communication stayed consistent, despite some of us being less available, we maintained our meetings and discussed progress through text messaging.
+
+However, we noticed that discussion and progress became, understandably, stunted over the Easter break, despite the game not being near completion. Our meeting on the 4th of April was a pivotal moment in our process. We recognised our team process was working, but could be improved. In particular, we lacked clear deadlines, with completion timelines being relatively passive and reliant on task progression through the sprint backlog. 
+
+This led to features intended for earlier completion being outstanding, alongside unfinished sections of the report. This meeting served as a friendly mid-sprint check-in, with the outcome being a stricter plan. We set firmer deadlines on incomplete features and bugs to resolve for the remainder of our sprint, in addition to evaluating each members current workloads and redistributing the remaining tasks. The final sprint served as a period of consolidation for our game, during which we worked more efficiently than in earlier sprints.
+
+#### Planning Poker
+
+We used planning poker during a lab session, via an online tool: Planning Poker online. This helped us understand how each team member perceived the effort required to meet certain requirements. It sparked conversations around why certain requirements were considered more complicated than a few members anticipated. In hindsight, we had a few inaccuracies in our estimations. For example, the user requirement on text resizing, needed less effort and was less time consuming than expected. However, the kitchen scene was more time consuming than estimated. This tool was great in facilitating team discussion and coordinating our viewpoints on task complexity before starting our first sprint.
+
+<p align="center">
+  <img src="documentation/Process_figures/PlanningPokerApp.png" width="800" height="600"/>
+</p>
+
+#### **Kanban**
+
+Kanban was a brilliant tool for visualising exactly what needed to be done, its priority and its size. We primarily used it to delegate tasks to members (keeping in mind collective ownership), ensuring responsibilities were clear to all members. This allowed no ambiguity around what work remained “unclaimed” and prevented any tasks being duplicated. Initially, we used Jira Kanban, but moved to GitHub Projects, keeping our tools in one place with our Git repository. After a while, especially as the deadline approached, we drifted away from this approach. We began meeting more regularly, and as the number of remaining tasks decreased, we relied more on WhatsApp for communication.
+
+INSERT THE KANBAN JIRA BOARD
+
+#### Communication: WhatsApp and Google Meet
+
+To maintain regular communication outside of in-person meetings, we used a combination of WhatsApp groups and Google Meet. WhatsApp was utilised for everyday discussions whilst Google Meet hosted our online meetings. We regularly shared “progress update” messages to flag significant changes we made to the repository, that might need context (see image below). This allowed all team members to constantly be “in the loop” with activities, and provided a shared channel to discuss upcoming tasks. WhatsApp was used to notify the group in advance of any absences from lab sessions or meetings, which helped to plan lab tasks such as evaluations.
+
+#### Pair programming
+
+A couple of pairs formed to pair program. This was particularly useful when guiding how assets were going to be placed in the game. Our tactician drove the creative vision and implementation methods, whilst the helm brought them to life! We found this approach reduced the number of potential bugs compared to working independently, as defects were identified early. Because this approach required discussion between pairs, it made working through parts of the game more straightforward, as points could be discussed together in person rather than waiting for text responses or until the next meeting.
 
 ## Conclusion
 
