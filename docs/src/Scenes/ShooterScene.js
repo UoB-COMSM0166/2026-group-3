@@ -73,7 +73,10 @@ export class ShooterScene extends Scene {
         this.addUIElement(fenceHealth);
 
         let shop = new ShopMenu(game, this);
-        shop.isVisible = false;
+        if (this.game.model.gameState.phase == 1){
+            shop.isVisible = false;
+        }
+        
         shop.offset.y = 100;
         shop.offset.x = 100;
         this.addUIElement(shop);

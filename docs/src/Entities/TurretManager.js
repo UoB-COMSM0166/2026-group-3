@@ -16,7 +16,7 @@ export class TurretManager extends Entity{
             this.turretPositions.push(new Vector2(5, row));
         }
         this.buyingTurret = false;
-        this.turretPrice = 50;
+        this.turretPrice = 60;
 
         this.ghostTurret = new Turret(game, this.pos, true);
 
