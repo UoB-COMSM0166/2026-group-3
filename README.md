@@ -41,9 +41,13 @@
 | Shuyuan Liu | de25547@bristol.ac.uk | Developer, Architecture and Integration |
 | Di Deng | th25793@bristol.ac.uk | Documentation, Developer,Github Review |
 
-## Project Report
+</div>
 
-## Introduction
+<br><br>
+
+# Project Report
+
+## 1. Introduction
 
 Doomsday Kitchen is a genre-blending 2D survival game set in a post-apocalyptic world, forty years after a catastrophic global famine known as the "Shamble Shift." Players take on the role of "The Chef," inheriting a legendary wasteland restaurant from his father. To keep the colony from starving, the player must engage in a dual-phase gameplay loop that seamlessly transitions between high-octane action and strategic time management.
 
