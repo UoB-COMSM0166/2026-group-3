@@ -52,7 +52,7 @@ export class ShooterScene extends Scene {
         let startButton = new Button(game, "Start Wave", new Vector2(250, 60), new Vector2("Centre", "Bottom"));
         startButton.expandToFit = new Vector2(true, true)
         startButton.textSizeOverride = true;
-        startButton.style.textSize = 40;
+        startButton.style.textSize = Math.max(14, Math.round(40 * (this.game?.view?.uiScale ?? 1)));
         startButton.id = "Start Button";
         startButton.onClick = function() {
             if (!this.game.model.scene.zombieManager.loaded) {return;}
@@ -124,17 +124,18 @@ export class ShooterScene extends Scene {
         const healthRatio = constrain(fence.health / fence.maxHealth, 0, 1);
         const healthPercent = Math.round(healthRatio * 100);
 
-        const barW = 320;
-        const barH = 26;
+        const s = this.game?.view?.uiScale ?? 1;
+        const barW = Math.round(320 * s);
+        const barH = Math.round(26 * s);
         const barX = width / 2 - barW / 2;
-        const barY = height - barH - 18;
+        const barY = height - barH - Math.round(18 * s);
 
         push();
         // Frame
         fill(20, 20, 20, 205);
         stroke(240, 230, 190, 230);
-        strokeWeight(1.3);
-        rect(barX, barY, barW, barH, 8);
+        strokeWeight(1.3 * s);
+        rect(barX, barY, barW, barH, Math.round(8 * s));
 
         // Track
         const pad = 4;
@@ -144,33 +145,33 @@ export class ShooterScene extends Scene {
         const trackH = barH - pad * 2;
         noStroke();
         fill(80, 35, 35, 180);
-        rect(trackX, trackY, trackW, trackH, 6);
+        rect(trackX, trackY, trackW, trackH, Math.round(6 * s));
 
         // Fill
         fill(76, 178, 84, 230);
-        rect(trackX, trackY, trackW * healthRatio, trackH, 6);
+        rect(trackX, trackY, trackW * healthRatio, trackH, Math.round(6 * s));
 
         // Defense icon (shield)
-        const iconCx = barX + 22;
-        const iconCy = barY + barH / 2 - 1;
+        const iconCx = barX + Math.round(22 * s);
+        const iconCy = barY + barH / 2 - Math.round(1 * s);
         noStroke();
         fill(232, 222, 185);
         beginShape();
-        vertex(iconCx - 7, iconCy - 6);
-        vertex(iconCx + 7, iconCy - 6);
-        vertex(iconCx + 6, iconCy + 2);
-        vertex(iconCx, iconCy + 8);
-        vertex(iconCx - 6, iconCy + 2);
+        vertex(iconCx - Math.round(7 * s), iconCy - Math.round(6 * s));
+        vertex(iconCx + Math.round(7 * s), iconCy - Math.round(6 * s));
+        vertex(iconCx + Math.round(6 * s), iconCy + Math.round(2 * s));
+        vertex(iconCx, iconCy + Math.round(8 * s));
+        vertex(iconCx - Math.round(6 * s), iconCy + Math.round(2 * s));
         endShape(CLOSE);
         fill(120, 98, 55);
-        rect(iconCx - 1, iconCy - 4, 2, 9, 1);
+        rect(iconCx - Math.round(1 * s), iconCy - Math.round(4 * s), Math.round(2 * s), Math.round(9 * s), Math.round(1 * s));
 
         // Label
         fill(255, 245, 220);
         noStroke();
         textAlign(CENTER, CENTER);
-        textSize(14);
-        text(`${healthPercent}%`, barX + barW / 2 + 6, barY + barH / 2 + 0.5);
+        textSize(Math.max(10, Math.round(14 * s)));
+        text(`${healthPercent}%`, barX + barW / 2 + Math.round(6 * s), barY + barH / 2 + 0.5);
         pop();
     }
 

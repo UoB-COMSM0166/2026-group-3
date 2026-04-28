@@ -54,7 +54,7 @@ this.position = new Vector2(0, 120);
 
     fill(0);
     textAlign(CENTER, CENTER);
-    textSize(12);
+    textSize(Math.max(10, Math.round(12 * (this.game?.view?.uiScale ?? 1))));
     textStyle(BOLD);
 
     text(
@@ -71,7 +71,7 @@ If zombies get too close, the kitchen falls.
 
 Reach the kitchen for full controls... if you dare.`,
       this.pos.x + this.size.x / 2,
-      this.pos.y + 200 
+      this.pos.y + Math.round(200 * (this.game?.view?.uiScale ?? 1))
     );
   }
 
