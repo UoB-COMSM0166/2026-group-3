@@ -6,7 +6,7 @@
 
 body {
     display: flex;
-    justify-content: center;
+    justify-content: left;
     align-items: center;
     min-height: 100vh;
     background: #071a10; /* very dark green */
