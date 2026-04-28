@@ -6,8 +6,13 @@
 
 body {
     display: flex;
-    justify-content: left;
-    align-items: top;
-    background: #f0f0f0;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #071a10; /* very dark green */
     overflow: hidden;
+}
+
+canvas {
+    display: block;
 }
