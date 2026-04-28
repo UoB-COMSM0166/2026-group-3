@@ -13,6 +13,10 @@ export class AssetManager {
 
         //Add all image loads here:
 
+        //Welcome Scene
+        this.loadImage("Welcome Scene Background", "./assets/MainMenuBackground.png");
+        
+        //Shooter Scene
         this.loadImage("ChefShooting","./assets/chefshooting.gif");
         this.loadImage("Chef Cooking","./assets/chefcooking.gif");
         this.loadImage("Chef Walking","./assets/chefwalking.gif");

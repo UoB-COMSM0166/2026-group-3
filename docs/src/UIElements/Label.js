@@ -11,6 +11,7 @@ export class Label extends UIElement {
         this.style = new Style();
         game.view.defaultStyle(this.style);
         this.image = null;
+        this.drawBackground = true;
         this.expandToFit = new Vector2(false, false); // Expand the label to fit the text within
         this.textSizeOverride = false; // Whether to override the default game text size
         this.padding = new Vector2();
@@ -65,7 +66,7 @@ export class Label extends UIElement {
             //Draw an image if there is one
             let sprite = this.game.assetManager.getImage(this.image);
             image(sprite, this.pos.x, this.pos.y, this.size.x, this.size.y);
-        } else {
+        } else if (this.drawBackground) {
             this.drawTexture("UI Dent Corners", "UI Dent Middle");
         }
         

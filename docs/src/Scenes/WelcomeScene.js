@@ -16,22 +16,7 @@ export class WelcomeScene extends Scene {
     this.instructions = new InstructionsScene(this.game);
     this.instructions.isVisible = false;
 
-  this.background = "Kitchen Background";
-
-    // Title
-    this.title = new Label(
-      game,
-      "DOOMSDAY KITCHEN",
-      new Vector2(600, 80),
-      new Vector2("Centre", "Top"),
-      new Vector2(0, 180)
-    );
-    this.title.style.textSize = 60;
-    this.title.style.textColor = "#00FF00";
-    this.title.style.textAlign = { x: "center", y: "center" };
-    this.title.expandToFit.x = true;
-
-    this.title.textSizeOverride = true;
+  this.background = "Welcome Scene Background";
 
     //Main Menu Buttons 
     this.playButton = new Button(game, "Play", new Vector2(220, 50), new Vector2("Centre", "Top"), new Vector2(0, 320));
@@ -111,7 +96,6 @@ export class WelcomeScene extends Scene {
 
 
     [
-      this.title,
       this.playButton,
       this.instructionsButton,
       this.settingsButton,
