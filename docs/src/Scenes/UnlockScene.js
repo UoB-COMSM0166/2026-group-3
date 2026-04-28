@@ -1,5 +1,6 @@
 import { Vector2 } from "../Utility/Vector2.js";
 import { Label } from "../UIElements/Label.js";
+import {IntroScene} from "./IntroScene.js";
 import { WelcomeScene } from "./WelcomeScene.js";
 
 export class UnlockScene {
@@ -13,7 +14,7 @@ export class UnlockScene {
     for (let event of events) {
       if (event.type === "keydown") {
          userStartAudio();
-       this.game.model.scene = new WelcomeScene(this.game);
+       this.game.model.scene = new IntroScene(this.game);
       }
     }
   }

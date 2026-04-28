@@ -7,6 +7,7 @@ import {AssetManager} from "./AssetManager.js";
 import {WelcomeScene} from "../Scenes/WelcomeScene.js";
 import {SoundManager} from "./SoundManager.js";
 import { UnlockScene } from "../Scenes/UnlockScene.js";
+import {IntroScene} from "../Scenes/IntroScene.js";
 
 export class Game {
     constructor(windowSize, gridSize, DEBUG){
@@ -33,7 +34,7 @@ export class Game {
     }
 
     finishedLoading(){
-        let startScene = new UnlockScene(this);
-        this.model.scene = startScene;
+    let startScene = new UnlockScene(this);
+    this.model.scene = startScene;
     }
 }
