@@ -586,13 +586,33 @@ We used pair programming primarily to guide how assets were going to be placed i
 
 ## Conclusion
 
-- 10% ~500 words
+By applying an Agile approach to our project, we were able to appreciate its strengths for greenfield development. It allowed us to respond to change and be ready to iterate and redesign, to improve our final game. This became particularly evident during our largest technical challenge, where we had to make many changes. This shift completely altered the direction of our development. Such a change would have been far more difficult to accommodate within a rigid and linear process like the Waterfall model.
 
-- Reflect on the project as a whole. Lessons learnt. Reflect on challenges. Future work, describe both immediate next steps for your current game and also what you would potentially do if you had chance to develop a sequel.
+An aspect that was mentioned at the beginning of the term and emphasised throughout the project, was creating a game the team was genuinely invested in. By developing a game that we ourselves would play and collaborating on our different ideas, we kept ourselves engaged through our technical challenges and process blockers. Whilst this level of personal investment is not always possible in professional environments, this experience showed us the importance of building teams around motivated individuals.  
+
+A key lesson we learned about our team process is that we needed structured, clearer deadlines. Working in sprints was effective as we were able to group certain features clearly; however, we relied on completing some components through the backlog. Nonetheless, this wasn’t a significant blocker compared to our technical challenges. If we were to repeat the project, we would make higher detailed plans early to support a steady and sustainable pace.
+
+Our most notable technical challenge was transitioning from a reactive ordering system to a more strategic, planning-based game. This was especially complex, as it required redesigning of the initial game logic to create a balanced relationship between zombie drops and the menu items prepared in the kitchen scene. By rebalancing this, we could guarantee the gameplay flow would maintain up to an infinite number of levels while introducing more deliberate planning of resource allocation (using zombie drops in the kitchen) and decision-making for the player.
+
+One of the design aspects we mention in the requirements section of this report is allowing zombies to move freely, in different directions and not in a fixed straight line. This was one of our early ideas that was labelled more of a “could have”, and during the development process, we chose not to implement it. The main reason was we felt our game and entity management alone was complex to develop in a short time. The idea stemmed from adapting the Plants vs Zombies game, which has zombies walking in a straight line, and we wanted to add novelty in this way. This is one of the main things we would implement as an immediate next step.
+
+Other aspects we would develop in the short term would be increasing the variability in zombie speeds, especially the most frequently appearing one, which currently moves quite slowly. Additionally, an oversight we noticed in the kitchen scene was that the chef could cook facing away from the food stations. Lastly, a multiplayer option would be a valuable addition. Doomsday Kitchen would translate well as a multiplayer game, as players could team up to kill the zombies and serve the kitchen. This could be complemented by a higher number of zombies and drops, so players could serve busier kitchens, increasing the difficulty in the kitchen phase. However, this would require adaptation to our controls, as two people cannot use the spacebar at the same time.
+
+Our more significant ideas include greater customisability for the player, for example, by allowing the player to choose their chef character, and from a wider range of kitchen menu items and weaponry. On the other hand, we could implement a way to save progress and have the players unlock such themes, including different kitchens and food stations as they advance through the game. Finally, as our zombies had different behaviours, this idea could be extended to create a more diverse range of customers. For example, a particular customer would be known for being impatient and demanding their food be served promptly, with text bubbles of them expressing their frustration.
+
+In summary, this project allowed us to experience all stages of the software development process and understand how different roles and individual strengths contribute to building a final product. We thoroughly enjoyed developing Doomsday Kitchen and found the experience both rewarding and valuable for our learning.
+
 
 ## Contribution Statement
 
-- Provide a table of everyone's contribution, which *may* be used to weight individual grades. We expect that the contribution will be split evenly across team-members in most cases. Please let us know as soon as possible if there are any issues with teamwork as soon as they are apparent and we will do our best to help your team work harmoniously together.
+| Name             | Contribution |
+|------------------|-------------|
+| Matthew Honey    | 1.0         |
+| Yoyo Wu          | 1.0         |
+| Khalda Satti     | 1.0         |
+| Tanveer Bakshi   | 1.0         |
+| Shuyuan Liu      | 1.0         |
+| Di Deng          | 1.0         |
 
 ## Additional Marks
 
