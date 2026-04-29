@@ -463,43 +463,60 @@ Testing was performed by simulating real player behavior and verifying that all 
 # Sustainability
 It is important to consider the sustainability impact of our systems across all dimensions beyond its immediate effects (enabling and structural), as through our design we cause change, and shape our environment (Karlskrona, 2015 ADD REF).  
 
-Our team conducted a sustainability impact analysis with the Sustainability Analysis Framework. Alongside the environment dimension, we found the individual and social dimensions most applicable to our game. 
+Our team conducted a sustainability impact analysis with the Sustainability Analysis Framework. We identified user stories for each dimension. However, we found the environment dimension, individual and social dimensions most applicable to our game.
 
 #### Individual Impact
 
-**Doomsday Kitchen** may positively impact a user’s mental health by providing stress relief and a sense of accomplishment after each level or night survived. Research suggests that gaming can reduce stress and improve mood (WHO, 2025 ADD REF AT END OF REPORT), supporting the potential benefits of games as a leisure activity. 
+**Doomsday Kitchen** may positively impact a user’s mental health by providing stress relief and a sense of accomplishment after each level/day survived. Research suggests that gaming can reduce stress and improve mood (WHO, 2025 ADD REF AT END OF REPORT), supporting the potential benefits of games as a leisure activity. 
 
-On the other hand, if users become highly engaged, the repetitive gameplay loop of “shooting scene → kitchen scene” may encourage an addictive engagement pattern, often described as a “just one more game (ADD REFERENCE AT END OF REPORT)” effect. As levels are relatively short and increase in difficulty, this may promote prolonged or repeated play.
+On the other hand, if users become highly engaged, the repetitive gameplay loop of “shooting scene → kitchen scene” may encourage an addictive engagement pattern, often described as a “just one more game (ADD REFERENCE AT END OF REPORT)” effect. As game "days" are relatively short and increase in difficulty, this may promote prolonged or repeated play.
 
-To mitigate this, **Doomsday Kitchen** avoids long-term progression features such as player leaderboards, instead isolating each game session and providing a pause menu to halt gameplay. This reduces the pressure for users to return and continue their progress. Additionally, as no personal data is required to save progress, user privacy is preserved.
+To mitigate this, **Doomsday Kitchen** avoids long-term progression features such as player leaderboards and providing a pause menu to halt gameplay. This reduces the pressure for users to return and continue their progress or in stay in a continuous loop. Additionally, as no personal data is required to save progress or leaderboard information, user privacy is preserved.
 
-Physical health is also at a minor risk, as gameplay requires prolonged use of both a keyboard and mouse to control settings and interact with game elements, such as the “START WAVE” button and weapon upgrades. Extended play may also contribute to eye strain; therefore, a brightness slider has been implemented to improve visual comfort.
+Physical health is also at risk, as extended play may contribute to eye strain; therefore, a brightness slider has been implemented to improve visual comfort.
 
-Users are given agency through upgrade and customisation options, particularly in weapon selection and kitchen menu items. As difficulty increases and zombie numbers grow, players are encouraged to make strategic decisions about resource allocation. This can enhance engagement, decision-making and planning; however, this agency is constrained by limited in-game currency, which is only earned in the kitchen scene, requiring users to evaluate their choices.
+Users are given agency through upgrade and customisation options, particularly in weapon selection and kitchen menu items. As difficulty increases and zombie numbers grow, players are encouraged to make strategic decisions about resource allocation. This can enhance engagement, decision-making and planning; however, this agency is constrained by limited in-game currency, which is only earned in the kitchen scene, requiring users to evaluate and plan their choices.
 
 #### **Social Impact**
 
-Our game aims to promote inclusivity through features such as adjustable volume sliders for sound effects and music, as well as a text resize slider. These support players who are hard of hearing or visually impaired, alongside a brightness slider to improve visual comfort. These settings also accommodate different user preferences, improving usability for a wider range of players.
+Our game aims to promote inclusivity through features such as adjustable volume sliders for sound effects and music, as well as a text resize slider. These support players who are hard of hearing or visually impaired, alongside the aforementioned brightness slider. These settings also accommodate different user preferences, improving usability for a wider range of players.
 
 While such features are already common in modern game design, as a team, we agreed their inclusion remains important. Consistent implementation of accessibility settings helps ensure that inclusive design continues to be standard practice within the games industry, rather than being overlooked or deprioritised.
 
-On the other hand, **Doomsday Kitchen** includes themes of combat, involving weapons such as “pistol”, “turret”, and “machine gun”, which are named after real-world items. Although this is a common convention in games such as ***Vampire Survivors***, it may still be perceived as depicting violence.
+On the other hand, **Doomsday Kitchen** includes themes of combat, involving weapons such as “pistol”, “turret”, and “machine gun”, which are named after real-world items. Although this is a common convention in games such as Vampire Survivors, it may still be associated with violence.
 
-To mitigate this, the game is centred around fictitious entities, such as zombies, and original food items presented in a creative way. This helps detach the game from real-world contexts and reduces the seriousness of combat, exhibiting a more light-hearted experience.
+To mitigate this, the game is centred around fictitious entities, such as zombies, and original food items presented in a creative way. This helps detach the game from real-world contexts and reduces the perceived seriousness of combat. As a result, the game presents a more lighthearted experience.
 
 #### **Environmental Impact**
 
-GitHub Pages, on which Doomsday Kitchen is hosted, provides straightforward deployment and repository storage. However, it is acknowledged that commits, files, and branches are stored redundantly across multiple data centres (Medium, 2025 (ADD REFERENCE AT END OF REPORT)), contributing to increased energy consumption and associated greenhouse gas emissions. In addition, while short gameplay sessions limit prolonged continuous use, repeated play may increase overall energy consumption over time.
+GitHub Pages, on which Doomsday Kitchen is hosted, provides straightforward deployment and repository storage. However, commits, files, and branches are stored redundantly across multiple data centres (Medium, 2025 (ADD REFERENCE AT END OF REPORT)), contributing to increased energy consumption and greenhouse gas emissions. Although individual day/night phases are short, the continuous day–night progression creates a repeating loop that may encourage extended play, possibly increasing energy consumption over time.
 
-The game uses moderately complex 2D graphics, animations, UI overlays, and continuous rendering during gameplay, particularly across the "ShooterScene” and ”KitchenScene_MVP” files. This results in higher processing demand compared to simpler or more static applications. In hindsight, we could have compressed assets to reduce their storage size and improve efficiency.
+The game uses moderately complex 2D graphics with GIF animations, UI overlays, and continuous rendering during gameplay, particularly for entity management across the "ShooterScene” and ”KitchenScene_MVP” files. This results in higher processing demand compared to simpler, static applications. This was particularly evident with two team members experiencing lag during the shooter scene, which worsened when multiple entities appeared in waves. In hindsight, the game could have benefited from compressed assets to reduce their storage size and processing demands.
 
-We aimed to reduce energy usage through features such as a brightness slider; while its primary purpose is to improve visual comfort, it may also contribute to minor reductions in screen energy consumption when used at lower levels.
+We aimed to reduce energy usage through features such as a brightness slider; while its primary purpose is to reduce eye strain, it may also contribute to minor reductions in screen energy consumption when used at lower levels.
 
-While our visual design choices enhance the game’s appearance, there is a clear trade-off between user experience and environmental sustainability. In the future we would reduce our asset sizes and reduce unnecessary rendering to minimise energy consumption.
+When developing this game, we prioritised using a visually appealing design and whilst this improved our user experience, there is a tradeoff between user experience and environmental sustainability. In the future, our asset sizes and unnecessary rendering would be reduced to minimise energy consumption.
+
+| Sustainability Dimension | User Story | Acceptance Criteria |
+|-------------------------|------------|---------------------|
+| Individual | As a player, I want to be able to pause Doomsday Kitchen at any time, so that I can avoid repetitive, prolonged gaming sessions. | Given I am playing a level, when I open the pause menu, then Doomsday Kitchen should halt immediately and display options to exit or resume. |
+|  | As a player, I want a brightness slider, so that I can reduce eye strain during game sessions. | Given I am on the settings menu, when I adjust the brightness slider, then the brightness should immediately update to the selected level. |
+| Social | As a visually-impaired player, I want to increase text size, so that I can read content comfortably. | Given I am on the settings menu, when I increase the text size, then all UI text should increase proportionally and remain readable for the remainder of the Doomsday Kitchen session. |
+|  | As a hearing-impaired player, I want to control sound effects and music volume separately, so that I can customise the audio levels to suit my hearing needs. | Given I am on the settings menu, when I adjust the music or sound effects volume, then they should update without affecting the other. |
+|  | As a player, I want Doomsday Kitchen phases to use fictional and stylised elements, so that violent themes (like weaponery) feel less realistic or distressing. | Given I am playing the game, when I enter the shooter or kitchen phase, then I should see characters and assets presented in a non-realistic style. |
+| Environmental | As a player, I want Doomsday Kitchen to run efficiently, so that it minimises unnecessary energy consumption. | Given I am playing Doomsday Kitchen, when it is running, then it should be using compressed file formats to minimise size and rendering load. |
+|  | As an environmentally aware player, I want to be able to exit Doomsday Kitchen at any time, so that I can reduce excessive energy consumption. | Given I am playing Doomsday Kitchen, when I choose to exit the level, then I should be able to do so immediately without being forced to continue. |
+| Technical | As a developer, I want Doomsday Kitchen code to be modular, so that it is easier to maintain and update features. | Given the Doomsday Kitchen codebase, when new features are added, then they should not require significant changes to other components designs. |
+| Economic | As a player on a low budget, I want the Doomsday Kitchen to be free to access, so that I can play without considering my financial situation. | Given I access Doomsday Kitchen, when I click on “play”, then I should not be required to make a payment. |
 
 
-CHAINS OF IMPACT DIAGRAM
 
+<p align="center">
+  <img src="documentation/Sustainability_figures/ChainsOfEffects.png"
+       width="800"
+       style="border-radius: 12px;">
+</p>
+Figure: Doomsday Kitchen, Chains of Effects diagram
 
 
 # Process 
@@ -560,7 +577,12 @@ To maintain regular communication outside of in-person meetings, we used both a 
 
 We used pair programming primarily to guide how assets were going to be placed in the game. Our tactician drove the creative vision and implementation methods, whilst the helm brought them to life! We found this approach reduced the number of potential bugs compared to working independently, as defects were identified early. Because this approach required discussion between pairs, it made working through parts of the game quicker, as points could be discussed together in person rather than waiting for text responses or until the next meeting.
 
-insert image here
+<p align="center">
+  <img src="documentation/Process_figures/PairProgramming.png"
+       width="800"
+       style="border-radius: 12px;">
+</p>
+
 
 ## Conclusion
 
