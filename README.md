@@ -47,6 +47,35 @@
 
 # Project Report
 
+## Contents
+
+- [1. Introduction](#1-introduction)
+- [2. Requirements](#2-requirements)
+  - [2.1 Ideation Process](#21-ideation-process)
+  - [2.2 Stakeholders & Epics](#22-stakeholders--epics)
+  - [2.3 Use Cases](#23-use-cases)
+  - [2.4 Reflection](#24-reflection)
+- [3. Design](#3-design)
+  - [3.1 Class Diagrams](#31-class-diagrams)
+  - [3.2 Behavioural Diagrams](#32-behavioural-diagrams)
+- [4. Implementation](#4-implementation)
+- [5. Evaluation](#5-evaluation)
+  - [Qualitative Evaluation](#qualitative-evaluation)
+  - [Heuristic Evaluation](#heuristic-evaluation)
+  - [Quantitative Evaluation: NASA Task Load Index (TLX)](#quantitative-evaluation-nasa-task-load-index-tlx)
+  - [Methods](#methods)
+  - [Results](#results)
+  - [Black Box Testing](#black-box-testing)
+- [6. Sustainability](#6-sustainability)
+- [7. Process](#7-process)
+  - [Planning Poker](#planning-poker)
+  - [Kanban](#kanban)
+  - [Communication: WhatsApp and Google Meet](#communication-whatsapp-and-google-meet)
+  - [Pair Programming](#pair-programming)
+- [8. Conclusion](#8-conclusion)
+- [9. Contribution Statement](#9-contribution-statement)
+- [10. References](#10-references)
+
 ## 1. Introduction
 
 Doomsday Kitchen is a genre-blending 2D survival game set in a post-apocalyptic world, forty years after a catastrophic global famine known as the "Shamble Shift." Players take on the role of "The Chef," inheriting a legendary wasteland restaurant from his father. To keep the colony from starving, the player must engage in a dual-phase gameplay loop that seamlessly transitions between high-octane action and strategic time management.
@@ -284,17 +313,13 @@ The draw loop propagates from the app to the view, where it clears the canvas. I
 
 ![UI Bar Class Diagram](/documentation/Class_Diagrams/Sequence_Diagram.png)
 
-## Implementation
+## 4. Implementation
 
 - 15% ~750 words
 
 - Describe implementation of your game, in particular highlighting the TWO areas of *technical challenge* in developing your game. 
 
-## Evaluation
-
-- 15% ~750 words
-
-- One qualitative evaluation (of your choice)
+## 5. Evaluation
 ## Qualitative Evaluation
 
 ## Heuristic Evaluation
@@ -334,7 +359,6 @@ Based on the findings, several targeted design improvements were recommended:
 We administered the NASA Task Load Index (Hart and Staveland, 1988) to measure users’ perceived workload across two difficulty levels: Easy and Hard. The latter contained a higher spawn frequency of zombies. To reduce between-participant differences, a within-subjects design was adopted and we recruited only students. 
 
 Limitation: Learning effects potentially minimised perceived workload differences in the Hard difficulty. On reflection, the conditions could have been counterbalanced or randomised across participants, or possibly a time gap to reduce these biases. Nonetheless, the results show that workload predictably increased between the Easy and Hard difficulty levels.
-
 
 
 ## Results
@@ -400,7 +424,6 @@ Interestingly, frustration had an insignificant result, with unusual variability
 This could be attributed to differences in participants’ perception of the game feedback, specifically the health bar, which very gradually decreased from 100% during gameplay. Participants may not have perceived this as impactful enough to feel frustrated. Rather than omitting these values as possible outliers, we included them in our evaluation, linking them to individual differences. 
 
 
-
 ## Black Box Testing
 
 Testing was performed by simulating real player behavior and verifying that all game systems respond correctly to user interactions. Each feature was tested across different game states (day and night phases) to ensure consistent and expected behavior without examining the underlying code.
@@ -460,7 +483,7 @@ Testing was performed by simulating real player behavior and verifying that all 
 | 2 | Controls work in night phase | Player can move/defend | ✓ Pass |
 | 3 | Key bindings are consistent | Same keys work throughout game | ✓ Pass |
 
-# Sustainability
+# 6. Sustainability
 It is important to consider the sustainability impact of our systems across all dimensions beyond its immediate effects (enabling and structural), as through our design we cause change, and shape our environment (Karlskrona, 2015 ADD REF).  
 
 Our team conducted a sustainability impact analysis with the Sustainability Analysis Framework. We identified user stories for each dimension. However, we found the environment dimension, individual and social dimensions most applicable to our game.
@@ -510,7 +533,6 @@ When developing this game, we prioritised using a visually appealing design and 
 | Economic | As a player on a low budget, I want the Doomsday Kitchen to be free to access, so that I can play without considering my financial situation. | Given I access Doomsday Kitchen, when I click on “play”, then I should not be required to make a payment. |
 
 
-
 <p align="center">
   <img src="documentation/Sustainability_figures/ChainsOfEffects.png"
        width="800"
@@ -519,7 +541,7 @@ When developing this game, we prioritised using a visually appealing design and 
 Figure: Doomsday Kitchen, Chains of Effects diagram
 
 
-# Process 
+# 7. Process 
 
 At the start of this project, we identified our individual strengths to understand our skills, and realise how each member could best contribute to the game and report. For example, a member with a creative background, focused on graphics and the UI, while another, more confident in coding and implementation aspects. Whilst our development process took these preferences into consideration, team members did not have fixed roles. Instead, we frequently updated tasks and adapted priorities, with members claiming work as needed. This ensured we collaborated to complete the project, whilst allowing members to choose skills they wanted to develop or improve.                       
 
@@ -584,13 +606,13 @@ We used pair programming primarily to guide how assets were going to be placed i
 </p>
 
 
-## Conclusion
+## 8. Conclusion
 
 By applying an Agile approach to our project, we were able to appreciate its strengths for greenfield development. It allowed us to respond to change and be ready to iterate and redesign, to improve our final game. This became particularly evident during our largest technical challenge, where we had to make many changes. This shift completely altered the direction of our development. Such a change would have been far more difficult to accommodate within a rigid and linear process like the Waterfall model.
 
 An aspect that was mentioned at the beginning of the term and emphasised throughout the project, was creating a game the team was genuinely invested in. By developing a game that we ourselves would play and collaborating on our different ideas, we kept ourselves engaged through our technical challenges and process blockers. Whilst this level of personal investment is not always possible in professional environments, this experience showed us the importance of building teams around motivated individuals.  
 
-A key lesson we learned about our team process is that we needed structured, clearer deadlines. Working in sprints was effective as we were able to group certain features clearly; however, we relied on completing some components through the backlog. Nonetheless, this wasn’t a significant blocker compared to our technical challenges. If we were to repeat the project, we would make higher detailed plans early to support a steady and sustainable pace.
+A key lesson we learned about our team process is that we needed structured, clearer deadlines. Working in sprints was effective as we were able to group certain features clearly; however, we relied on completing some components through the backlog. Nonetheless, this wasn’t a significant blocker compared to our technical challenges. If we were to repeat the project, we would make greater detailed plans earlier, to support a steady and sustainable pace.
 
 Our most notable technical challenge was transitioning from a reactive ordering system to a more strategic, planning-based game. This was especially complex, as it required redesigning of the initial game logic to create a balanced relationship between zombie drops and the menu items prepared in the kitchen scene. By rebalancing this, we could guarantee the gameplay flow would maintain up to an infinite number of levels while introducing more deliberate planning of resource allocation (using zombie drops in the kitchen) and decision-making for the player.
 
@@ -603,7 +625,7 @@ Our more significant ideas include greater customisability for the player, for e
 In summary, this project allowed us to experience all stages of the software development process and understand how different roles and individual strengths contribute to building a final product. We thoroughly enjoyed developing Doomsday Kitchen and found the experience both rewarding and valuable for our learning.
 
 
-## Contribution Statement
+## 9. Contribution Statement
 
 | Name             | Contribution |
 |------------------|-------------|
@@ -613,6 +635,10 @@ In summary, this project allowed us to experience all stages of the software dev
 | Tanveer Bakshi   | 1.0         |
 | Shuyuan Liu      | 1.0         |
 | Di Deng          | 1.0         |
+
+
+## 10. References
+
 
 ## Additional Marks
 
