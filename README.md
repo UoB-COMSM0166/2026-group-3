@@ -243,7 +243,7 @@ With our requirements laid out, we could begin working on the architecture desig
 
 1. We would need a way to dynamically switch between scenes within the game. To do this, we decided to use a scene object that could be dynamically switched out within the operation of the game. 
 2. We would need a way to contain all the current game elements. To do this, we chose to classify all elements as either entities or UI elements. 
-3. We would need a way to dynamically scale the game and it's elements with the players screen. To do this, we chose to fix all entities onto a 16 by 9, and map those local coordinates onto the screen. You UI elements, we don't want them changing size with the screen size, so we decided they would be in fixed positions on the screen, using parameters to attach them to parts of the screen
+3. We would need a way to dynamically scale the game and it's elements with the players screen. To do this, we chose to fix all entities onto a 16 by 9, and map those local coordinates onto the screen. For UI elements, we don't want them changing size with the screen size, so we decided they would be in fixed positions on the screen, using parameters to attach them to parts of the screen
 4. We would need a way to update and draw the game each frame. To do this, we chose to use a model-view-controller approach, whereby the controller updates everything in the scene first, including all its elements, before the view draws everything in the scene.
 
 ### 3.1 Class diagrams 
@@ -252,24 +252,37 @@ From our system architecture, we designed 3 class diagrams. The first is for the
 
 #### MVC Class Diagram
 
-![Core Class Diagram](/documentation/Class_DIagrams/Class_Diagram_Core.png)
+Game.js is the core of our MVC architecture, holding the model, view, controller and the extra sound and asset managers. Controller handles any incoming events from app and view handles any window resizing and canvas drawing. Model holds any game data as well as the current game state. The idea is that any data that should be preserved between scenes should be held within the Model, while any local data for the scene should be held within that scene. The scene holds two arrays, one for all the entities, and one for all the UI elements. In addition, there are some generic UI elements such as buttons and labels which can be used across all scenes.
+
+![Core Class Diagram](/documentation/Class_Diagrams/Class_Diagram_Core.png)
 
 #### Shooter Scene Class Diagram
 
-![Kitchen Scene Class Diagram](/documentation/Class_DIagrams/Class_Diagram_Shooter.png)
+The shooter scene uses three managers to control its turrets, weapons and zombies. It has UI elements the UIBar and the shop menu, and has a range of entities that are the player, zombies, bullets, turrets and fence.
+
+![Kitchen Scene Class Diagram](/documentation/Class_Diagrams/Class_Diagram_Shooter.png)
 
 #### Kitchen Scene Class Diagram
 
-![Kitchen Scene Class Diagram](/documentation/Class_DIagrams/Class_Diagram_Kitchen.png)
+The kitchen scene has a production manager that interacts with the menu data and the task list to generate orders from the 5 available production tasks. It's entities are the player, customers, counter and kitchen stations, while sharing the same UIbar with the shooter scene
+
+![Kitchen Scene Class Diagram](/documentation/Class_Diagrams/Class_Diagram_Kitchen.png)
 
 #### UI Bar Class Diagram
 
-![UI Bar Class Diagram](/documentation/Class_DIagrams/Class_Diagram_UIBar.png)
+The UI bar is a UI element the includes a number of buttons and labels, as well as the phase progression bar which expands to fit the remaining space within the UI bar.
 
-### 3.2 Sequence Diagrams
+![UI Bar Class Diagram](/documentation/Class_Diagrams/Class_Diagram_UIBar.png)
 
-From our architecture, we determined the most import interactions would come from the update and draw loops, and so these were the first ones we aimed to depict.
-TODO: SEQUENCE DIAGRAMS
+### 3.2 Behavioural Diagrams
+
+From our architecture, we determined the most import interactions would come from the update and draw loops as well as any other interactions within our MVC architecture. To map out these interactions, we designed a sequence diagram that contained these various interactions within the system.
+
+The update loop propagates from the App to the controller, where it collects all events gathered over that frame from any onInput events. These are then sent to the model, which is sent to the current scene, which is then sent to each entity and UI element.
+
+The draw loop propagates from the app to the view, where it clears the canvas. It the propagates to the model, then the current scene and then all the entities and UI elements.
+
+![UI Bar Class Diagram](/documentation/Class_Diagrams/Sequence_Diagram.png)
 
 ## Implementation
 
