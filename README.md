@@ -358,22 +358,7 @@ Based on the findings, several targeted design improvements were recommended:
 
 We administered the NASA Task Load Index (Hart and Staveland, 1988) to measure users’ perceived workload across two difficulty levels: Easy and Hard. The latter contained a higher spawn frequency of zombies. To reduce between-participant differences, a within-subjects design was adopted and we recruited only students. 
 
-Limitation: Learning effects potentially minimised perceived workload differences in the Hard difficulty. On reflection, the conditions could have been counterbalanced or randomised across participants, or possibly a time gap to reduce these biases. Nonetheless, the results show that workload predictably increased between the Easy and Hard difficulty levels.
-
-
 ## Results
-
-### Bar Chart: NASA Task Load Index (TLX)
-
-<p align="center">
-  <img src="documentation/Evaluation_figures/NASATLX,%20BARCHART.png"
-       width="700"
-       style="border-radius: 12px;">
-</p>
-
-A Wilcoxon Signed Rank Test showed statistical significance for the overall scores (W = 1, p < 0.005).
-
----
 
 ### Stacked Radar Chart: Aggregate perceived workload score (n = 10) for Easy and Hard difficulty
 
@@ -387,19 +372,27 @@ A Wilcoxon Signed Rank Test showed statistical significance for the overall scor
 
 ### Radar Chart (Easy Difficulty): Aggregate perceived workload score (n = 10), per dimension
 
+<table>
+  <tr>
+    <td align="center">
+      <strong>Radar Chart (Easy Difficulty)</strong><br>
+      Aggregate perceived workload score (n = 10), per dimension<br><br>
+      <img src="documentation/Evaluation_figures/NASATLXEASY.png" width="300">
+    </td>
+    <td align="center">
+      <strong>Radar Chart (Hard Difficulty)</strong><br>
+      Aggregate perceived workload score (n = 10), per dimension<br><br>
+      <img src="documentation/Evaluation_figures/NASATLXHARD.png" width="300">
+    </td>
+  </tr>
+</table>
+
+
+### Bar Chart: NASA Task Load Index (TLX)
+
 <p align="center">
-  <img src="documentation/Evaluation_figures/NASATLXEASY.png"
-       width="400"
-       style="border-radius: 12px;">
-</p>
-
----
-
-### Radar Chart (Hard Difficulty): Aggregate perceived workload score (n = 10), per dimension
-
-<p align="center">
-  <img src="documentation/Evaluation_figures/NASATLXHARD.png"
-       width="400"
+  <img src="documentation/Evaluation_figures/NASATLX,%20BARCHART.png"
+       width="700"
        style="border-radius: 12px;">
 </p>
 
@@ -417,11 +410,19 @@ A Wilcoxon Signed Rank Test showed statistical significance for the overall scor
 
 ---
 
-Mental, physical, temporal and effort scores were recorded significantly higher in the hard condition, as expected due to a higher zombie spawn frequency, tighter timing pressure, and the need for faster keyboard movements. 
+Most dimensions produced a significant result, demonstrating that perceived workload increased between easy and hard conditions, and our difficulty levels were clearly different. 
+
+Mental demand was significantly higher in the hard condition, which can be attributed to the increased zombie spawn frequency. This required players to handle multiple threats, moving quickly across the screen before zombies became too close. This likely challenged their attentional resources and, alongside the non-significant result in performance, is consistent with research that increasing "enemies" can reduce game performance and increase cognitive workload (Allison and Polich, 2009).
+
+Physical demand was moderately higher in the harder difficulty, as expected, due to the faster and more frequent keyboard inputs needed to manage multiple actions, such as shooting zombies and purchasing upgrades to succeed in the level.
+
+Temporal and effort scores were moderately higher in the hard condition, indicating players felt under time pressure and exerted more effort to achieve their score. We attribute this to increased perceived time pressure and higher task complexity due to the greater number of zombies. This is consistent with gaming research that use the NASA-TLX, indicating higher cognitive load in time-constrained situations where players feel the need to act quickly under pressure (Sevcenko et al., 2021).
 
 Interestingly, frustration had an insignificant result, with unusual variability in scores. For example, User 7 reported less frustration and effort for the hard condition, despite rating increased mental demand. User 1 also recorded less frustration in the harder condition, despite rating mental, physical and temporal demand as higher.
 
 This could be attributed to differences in participants’ perception of the game feedback, specifically the health bar, which very gradually decreased from 100% during gameplay. Participants may not have perceived this as impactful enough to feel frustrated. Rather than omitting these values as possible outliers, we included them in our evaluation, linking them to individual differences. 
+
+Limitation: Learning effects potentially minimised perceived workload differences in the Hard difficulty. On reflection, the conditions could have been counterbalanced or randomised across participants, or possibly a time gap to reduce these biases. Nonetheless, the results show that workload predictably increased between the Easy and Hard difficulty levels.
 
 
 ## Black Box Testing
@@ -484,17 +485,31 @@ Testing was performed by simulating real player behaviour and verifying that all
 | 3 | Key bindings are consistent | Same keys work throughout game | ✓ Pass |
 
 # 6. Sustainability
-It is important to consider the sustainability impact of our systems across all dimensions beyond its immediate effects (enabling and structural), as through our design we cause change, and shape our environment (Karlskrona, 2015 ADD REF).  
+It is important to consider the sustainability impact of our systems across all dimensions beyond its immediate effects (enabling and structural), as through our design we cause change, and shape our environment (Becker et al., 2015).  
 
-Our team conducted a sustainability impact analysis with the Sustainability Analysis Framework. We identified user stories for each dimension. However, we found the environment dimension, individual and social dimensions most applicable to our game.
+Our team conducted a sustainability impact analysis with the Sustainability Analysis Framework. We identified user stories for each dimension. 
+
+| Sustainability Dimension | User Story | Acceptance Criteria |
+|-------------------------|------------|---------------------|
+| Individual |  As a player, I want Doomsday Kitchen to have a pause menu, so I can prevent the continuous, addictive game loop and take a break. | Given I am playing a level, when I open the pause menu, then Doomsday Kitchen should halt immediately and display an option to exit. |
+|  | As a player, I want a brightness slider, so I can reduce eye strain during game sessions. | Given I am on the settings menu, when I adjust the brightness slider, then the brightness should immediately update to the selected value. |
+| Social | As a visually-impaired player, I want to increase text size, so I can read text comfortably. | Given I am on the settings menu, when I increase the text size, then all UI text should increase proportionally and remain readable for the session. |
+|  | As a hearing-impaired player, I want to control both sound effects and music volume, so that I can adjust the audio levels to suit my hearing needs. | Given I am on the settings menu, when I increase or decrease the music or sound effects volume, then they should update without affecting the other. |
+|  | As a player, I want Doomsday Kitchen phases to use fictional elements, so violent themes (like weaponery) feel more light-hearted and less realistic . | Given I am playing the game, when I enter the shooter or kitchen phase, then I should see characters and assets presented in a non-realistic style. |
+| Environmental | As an environmentally-aware player, I want to be able to exit Doomsday Kitchen's loop at any time, so I can reduce unnecessary energy consumption. | Given I am playing Doomsday Kitchen, when I choose to exit the level, then it should stop the game and return me to the main page. |
+| Technical | As a developer, I want Doomsday Kitchen code to be modular, so it is easier to maintain and update components. | Given the Doomsday Kitchen codebase, when new features are added, then they should not require significant changes to other components designs. |
+| Economic | As a player, I want to progress through levels in Doomsday Kitchen without needing to pay for key features, so I am not limited by my finances.  | Given I access Doomsday Kitchen, when I progress through levels, I should not be asked to make payments to continue. |
+
 
 #### Individual Impact
 
-**Doomsday Kitchen** may positively impact a user’s mental health by providing stress relief and a sense of accomplishment after each level/day survived. Research suggests that gaming can reduce stress and improve mood (WHO, 2025 ADD REF AT END OF REPORT), supporting the potential benefits of games as a leisure activity. 
+Doomsday Kitchen may positively impact a user’s mental health by providing stress relief and a sense of accomplishment after each level/day survived. Research suggests that gaming can reduce stress and improve mood (Vuorre et al., 2024), supporting the potential benefits of games as a leisure activity. 
 
-On the other hand, if users become highly engaged, the repetitive gameplay loop of “shooting scene → kitchen scene” may encourage an addictive engagement pattern, often described as a “just one more game (ADD REFERENCE AT END OF REPORT)” effect. As game "days" are relatively short and increase in difficulty, this may promote prolonged or repeated play.
+On the other hand, if users become highly engaged, the repetitive gameplay loop of “shooting scene → kitchen scene” may encourage an addictive engagement pattern. As game "days" are relatively short and increase in difficulty, this may promote prolonged or repeated play.
 
-To mitigate this, **Doomsday Kitchen** avoids long-term progression features such as player leaderboards and providing a pause menu to halt gameplay. This reduces the pressure for users to return and continue their progress or in stay in a continuous loop. Additionally, as no personal data is required to save progress or leaderboard information, user privacy is preserved.
+To mitigate this, Doomsday Kitchen avoids long-term progression features such as player leaderboards, which reduces competition between players. This reduces the pressure for users to return and continue their progress. In addition, we implemented a pause menu to halt gameplay to prevent the user playing for extended amounts of time in the continuous game loop. Additionally, as no personal data is required to save progress or leaderboard information, user privacy is preserved. 
+
+In the future, we could further mitigate this by isolating the game sessions into levels that users must unlock and enter themselves, rather than automatically starting the next one. Players would have clearer stopping points in sessions. 
 
 Physical health is also at risk, as extended play may contribute to eye strain; therefore, a brightness slider has been implemented to improve visual comfort.
 
@@ -506,32 +521,19 @@ Our game aims to promote inclusivity through features such as adjustable volume 
 
 While such features are already common in modern game design, as a team, we agreed their inclusion remains important. Consistent implementation of accessibility settings helps ensure that inclusive design continues to be standard practice within the games industry, rather than being overlooked or deprioritised.
 
-On the other hand, **Doomsday Kitchen** includes themes of combat, involving weapons such as “pistol”, “turret”, and “machine gun”, which are named after real-world items. Although this is a common convention in games such as Vampire Survivors, it may still be associated with violence.
+On the other hand, Doomsday Kitchen includes themes of combat, involving weapons such as “pistol”, “turret”, and “machine gun”, which are named after real-world items. Although this is a common convention in games such as Vampire Survivors, it may still be associated with violence.
 
-To mitigate this, the game is centred around fictitious entities, such as zombies, and original food items presented in a creative way. This helps detach the game from real-world contexts and reduces the perceived seriousness of combat. As a result, the game presents a more light-hearted experience.
+To mitigate this, the game is centred around fictitious entities, such as zombies, and original food items presented in a creative way. This helps detach the game from real-world contexts and reduces the perceived seriousness of combat. As a result, the game presents a more lighthearted experience.
 
 #### **Environmental Impact**
 
-GitHub Pages, on which Doomsday Kitchen is hosted, provides straightforward deployment and repository storage. However, commits, files, and branches are stored redundantly across multiple data centres (Medium, 2025 (ADD REFERENCE AT END OF REPORT)), contributing to increased energy consumption and greenhouse gas emissions. Although individual day/night phases are short, the continuous day–night progression creates a repeating loop that may encourage extended play, possibly increasing energy consumption over time.
+GitHub Pages, on which Doomsday Kitchen is hosted, provides straightforward deployment and repository storage. However, commits, files, and branches are stored redundantly across multiple data centres (Saifi, 2025), contributing to increased energy consumption and greenhouse gas emissions. Although individual day/night phases are short, the continuous day–night progression creates a repeating loop that may encourage extended play, possibly increasing energy consumption over time.
 
 The game uses moderately complex 2D graphics with GIF animations, UI overlays, and continuous rendering during gameplay, particularly for entity management across the "ShooterScene” and ”KitchenScene_MVP” files. This results in higher processing demand compared to simpler, static applications. This was particularly evident with two team members experiencing lag during the shooter scene, which worsened when multiple entities appeared in waves. In hindsight, the game could have benefited from compressed assets to reduce their storage size and processing demands.
 
 We aimed to reduce energy usage through features such as a brightness slider; while its primary purpose is to reduce eye strain, it may also contribute to minor reductions in screen energy consumption when used at lower levels.
 
-When developing this game, we prioritised using a visually appealing design and whilst this improved our user experience, there is a trade-off between user experience and environmental sustainability. In the future, our asset sizes and unnecessary rendering would be reduced to minimise energy consumption.
-
-| Sustainability Dimension | User Story | Acceptance Criteria |
-|-------------------------|------------|---------------------|
-| Individual | As a player, I want to be able to pause Doomsday Kitchen at any time, so that I can avoid repetitive, prolonged gaming sessions. | Given I am playing a level, when I open the pause menu, then Doomsday Kitchen should halt immediately and display options to exit or resume. |
-|  | As a player, I want a brightness slider, so that I can reduce eye strain during game sessions. | Given I am on the settings menu, when I adjust the brightness slider, then the brightness should immediately update to the selected level. |
-| Social | As a visually-impaired player, I want to increase text size, so that I can read content comfortably. | Given I am on the settings menu, when I increase the text size, then all UI text should increase proportionally and remain readable for the remainder of the Doomsday Kitchen session. |
-|  | As a hearing-impaired player, I want to control sound effects and music volume separately, so that I can customise the audio levels to suit my hearing needs. | Given I am on the settings menu, when I adjust the music or sound effects volume, then they should update without affecting the other. |
-|  | As a player, I want Doomsday Kitchen phases to use fictional and stylised elements, so that violent themes (like weaponry) feel less realistic or distressing. | Given I am playing the game, when I enter the shooter or kitchen phase, then I should see characters and assets presented in a non-realistic style. |
-| Environmental | As a player, I want Doomsday Kitchen to run efficiently, so that it minimises unnecessary energy consumption. | Given I am playing Doomsday Kitchen, when it is running, then it should be using compressed file formats to minimise size and rendering load. |
-|  | As an environmentally aware player, I want to be able to exit Doomsday Kitchen at any time, so that I can reduce excessive energy consumption. | Given I am playing Doomsday Kitchen, when I choose to exit the level, then I should be able to do so immediately without being forced to continue. |
-| Technical | As a developer, I want Doomsday Kitchen code to be modular, so that it is easier to maintain and update features. | Given the Doomsday Kitchen codebase, when new features are added, then they should not require significant changes to other components designs. |
-| Economic | As a player on a low budget, I want the Doomsday Kitchen to be free to access, so that I can play without considering my financial situation. | Given I access Doomsday Kitchen, when I click on “play”, then I should not be required to make a payment. |
-
+When developing this game, we prioritised using a visually appealing design and whilst this improved our user experience, there is a tradeoff between user experience and environmental sustainability. In the future, our asset sizes and unnecessary rendering would be reduced to minimise energy consumption.
 
 <p align="center">
   <img src="documentation/Sustainability_figures/ChainsOfEffects.png"
@@ -647,6 +649,18 @@ Overall, AI was used to support implementation, debugging, and visual drafting, 
 
 ## 11. References
 
+Allison, B.Z. and Polich, J. (2009) Workload assessment of computer gaming using a single-stimulus paradigm. Biological Psychology.
+
+Becker, C. et al. (2015) The Karlskrona Manifesto for Sustainability Design. https://sustainabilitydesign.org/karlskrona-manifesto/
+
+Hart, S.G. and Staveland, L.E. (1988) Development of NASA-TLX (Task Load Index): Results of empirical and theoretical research. In: Hancock, P.A. and Meshkati, N. (eds.) Human Mental Workload. Amsterdam: North Holland, pp. 139–183.
+
+Saifi, S. (2025) The Hidden Environmental Cost of Your GitHub Repos. Medium. https://medium.com/@sohail_saifi/the-hidden-environmental-cost-of-your-github-repos-e8dfa84e8c7a
+
+Sevcenko, N. et al. (2021) Measuring cognitive load using in-game metrics of a serious game. Frontiers in Psychology. https://doi.org/10.3389/fpsyg.2021.572437
+
+Vuorre et al. (2024) Affective Uplift During Video Game Play: A Naturalistic Case Study. 
+ACM Games. https://doi.org/10.1145/3659464
 
 ## Additional Marks
 
