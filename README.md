@@ -624,8 +624,16 @@ Our more significant ideas include greater customisability for the player, for e
 
 In summary, this project allowed us to experience all stages of the software development process and understand how different roles and individual strengths contribute to building a final product. We thoroughly enjoyed developing Doomsday Kitchen and found the experience both rewarding and valuable for our learning.
 
+## 9. AI Use Statement
+Our group used AI tools as a support tool during the development of this project. The project requirements, overall structure, feature planning, and design decisions were discussed and decided by group members. AI was then used to assist with producing some initial implementation of selected features based on our planned structure and instructions. The AI-generated output was not treated as final work; group members reviewed, modified, tested, and integrated the code to ensure that it matched the project requirements and that we understood the final implementation.
 
-## 9. Contribution Statement
+AI was also used for limited debugging support, such as helping us understand error messages, identify possible causes of bugs, and consider possible fixes. Any AI suggestions were checked by group members before being used.
+
+In addition, AI was used for visual and presentation support. For example, it helped generate some initial images, UI ideas, and visual templates, including the pair programming diagram, the sprint board in the process section, and the sustainability chains of effects diagram. The final content, labels, written items, GIF adjustments, aesthetic choices, and presentation design were completed and adapted by group members.
+
+Overall, AI was used to support implementation, debugging, and visual drafting, while the requirements analysis, structure, design choices, testing, final integration, and responsibility for the submitted work remained with our group.
+
+## 10. Contribution Statement
 
 | Name             | Contribution |
 |------------------|-------------|
@@ -637,7 +645,7 @@ In summary, this project allowed us to experience all stages of the software dev
 | Di Deng          | 1.0         |
 
 
-## 10. References
+## 11. References
 
 
 ## Additional Marks
