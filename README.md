@@ -5,7 +5,7 @@
 
 <div align="center">
 
-  <h3><i>Shoot, Cook, Survive. A post-apocalyptic culinary defense game.</i></h3>
+  <h3><i>Shoot, Cook, Survive. A post-apocalyptic culinary defence game.</i></h3>
 
   <a href="https://uob-comsm0166.github.io/2026-group-3/">
     <img src="documentation/images/MainMenuBackground.png" alt="Doomsday Kitchen" width="80%">
@@ -80,7 +80,7 @@
 
 Doomsday Kitchen is a genre-blending 2D survival game set in a post-apocalyptic world, forty years after a catastrophic global famine known as the "Shamble Shift." Players take on the role of "The Chef," inheriting a legendary wasteland restaurant from his father. To keep the colony from starving, the player must engage in a dual-phase gameplay loop that seamlessly transitions between high-octane action and strategic time management.
 
-Our core mechanics draw heavy inspiration from several successful titles. The combat and survival aspects are influenced by the horde-clearing upgrade systems of Vampire Survivors and the iconic zombie defense themes of Plants vs. Zombies. Meanwhile, the resource management and restaurant operation phases are directly inspired by the dual-gameplay loop of Dave the Diver, where combat gathering fuels the business operations.
+Our core mechanics draw heavy inspiration from several successful titles. The combat and survival aspects are influenced by the horde-clearing upgrade systems of Vampire Survivors and the iconic zombie defence themes of Plants vs. Zombies. Meanwhile, the resource management and restaurant operation phases are directly inspired by the dual-gameplay loop of Dave the Diver, where combat gathering fuels the business operations.
 
 What makes Doomsday Kitchen novel is its subversion of player expectations. At first glance, players may assume it is a straightforward top-down shooter focused purely on surviving endless waves of enemies. However, the game's true "twist" is revealed when the player transitions into the management phase: the enemies they were just shooting are actually the raw ingredients for their restaurant. This unhinged, dark-comedy element of harvesting, cooking, and serving zombie meat to hungry wasteland survivors adds a unique thematic layer. It transforms standard enemy loot into a crucial economic resource, forcing players to balance aggressive hunting with careful culinary planning.
 
@@ -129,7 +129,7 @@ Incorporating technical novelty into Doomsday Kitchen was more straightforward t
   <img src="documentation/Requirements_figures/VSlevelup.jpg" width="45%" /> 
 </p>
 <p align="center">
- Our initial concept was a Tower Defense game inspired by Plants vs. Zombies, featuring the power-scaling and upgrade systems of Vampire Survivors. To create a unique twist, we integrated a management cycle similar to Dave the Diver: the gameplay loops between a combat phase (gathering resources) and a management phase (running a shop/restaurant).
+ Our initial concept was a Tower Defence game inspired by Plants vs. Zombies, featuring the power-scaling and upgrade systems of Vampire Survivors. To create a unique twist, we integrated a management cycle similar to Dave the Diver: the gameplay loops between a combat phase (gathering resources) and a management phase (running a shop/restaurant).
 </p>
 
 <p align="center">
@@ -139,11 +139,11 @@ Incorporating technical novelty into Doomsday Kitchen was more straightforward t
 <b> Core Mechanics & Inspirations: </b>
 <p align="center">
 
-- Tower Defense: Base defense mechanics inspired by Plants vs. Zombies.
+- Tower Defence: Base defence mechanics inspired by Plants vs. Zombies.
 
 - Progression: Roguelike level-ups and upgrades similar to Vampire Survivors.
 
-- The Twist: A dual-phase loop inspired by Dave the Diver—players switch between an action phase (combat) and a management phase (serving customers).)
+- The Twist: A dual-phase loop inspired by Dave the Diver—players switch between an action phase (combat) and a management phase (serving customers).
 </p>
 <p align="center">
   <img src="documentation/Requirements_figures/gamePhase.jpg" width="70%" />
@@ -156,7 +156,7 @@ Incorporating technical novelty into Doomsday Kitchen was more straightforward t
 <table>
   <tr>
     <td width="50%" valign="top">
-      <h3>Phase 1: Day Time Defense</h3>
+      <h3>Phase 1: Day Time Defence</h3>
       <ul>
         <li><b>Chef's Position:</b> In front of the counter.</li>
         <li><b>Goal:</b> Defend the kitchen from incoming zombies.</li>
@@ -172,7 +172,7 @@ Incorporating technical novelty into Doomsday Kitchen was more straightforward t
 <table>
   <tr>
     <td width="50%" valign="top">
-      <h3>Phase 2: Night Time Managment</h3>
+      <h3>Phase 2: Night Time Management</h3>
       <ul>
         <li><b>Chef's Position:</b> Behind the counter.</li>
         <li><b>Goal:</b> Serve customers food to earn gold.</li>
@@ -193,7 +193,7 @@ Incorporating technical novelty into Doomsday Kitchen was more straightforward t
 <p align="center"><em>Figure : Onion model showing stakeholders of Doomsday Kitchen</em></p>
 
 
-We also identified the following epics based on the requirments of these stakeholders
+We also identified the following epics based on the requirements of these stakeholders
 
 - Difficulty options
 - Accessibility settings
@@ -245,7 +245,7 @@ Table X — Use Case Specifications (Zombie Kitchen)
 | UC6 | Gather Ingredients | Player | Collect dropped ingredients | Ingredients in scene | Player collects item | Item picked up → Inventory updated | Ingredients stored | Inventory full prevents pickup |
 | UC7 | Night Phase – Run Kitchen | Player | Convert ingredients into coins/upgrades | Day phase completed | Night phase starts | Cook → Serve → Earn coins → Upgrade | Upgrades applied | None |
 | UC8 | Cook Dishes | Player | Prepare dishes from ingredients | Ingredients available | Player selects recipe | Ingredients consumed → Dish created | Dish ready | Missing ingredients |
-| UC9 | Serve Customers | Player | Fulfill orders for coins | Customers present | Order placed | Dish served → Coins rewarded | Coins earned | Wrong dish or timeout penalty |
+| UC9 | Serve Customers | Player | Fulfil orders for coins | Customers present | Order placed | Dish served → Coins rewarded | Coins earned | Wrong dish or timeout penalty |
 | UC10 | Pause Game | Player | Temporarily halt gameplay | Play Game active | Player pauses | Game freezes → Pause menu shown | Game resumes | None |
 | UC11 | Quit Game | Player | Exit current run | Play Game active | Player selects quit | Confirmation → Run ends | Main menu shown | Quit cancelled |
 | UC12 | Game Over | Player | End run after failure | Failure met | Kitchen destroyed | Game stops → Game Over screen | Post-game options | None |
@@ -426,7 +426,7 @@ This could be attributed to differences in participants’ perception of the gam
 
 ## Black Box Testing
 
-Testing was performed by simulating real player behavior and verifying that all game systems respond correctly to user interactions. Each feature was tested across different game states (day and night phases) to ensure consistent and expected behavior without examining the underlying code.
+Testing was performed by simulating real player behaviour and verifying that all game systems respond correctly to user interactions. Each feature was tested across different game states (day and night phases) to ensure consistent and expected behaviour without examining the underlying code.
 
 ### Day/Night Transition
 
@@ -459,7 +459,7 @@ Testing was performed by simulating real player behavior and verifying that all 
 | 2 | Enemy defeated | Enemy disappears, meat drops | ✓ Pass |
 | 3 | Multiple waves | Enemy count increases each wave | ✓ Pass |
 
-### Wall Defense
+### Wall Defence
 
 | Test Case | Input | Expected Output | Result |
 |-----------|-------|-----------------|--------|
@@ -508,7 +508,7 @@ While such features are already common in modern game design, as a team, we agre
 
 On the other hand, **Doomsday Kitchen** includes themes of combat, involving weapons such as “pistol”, “turret”, and “machine gun”, which are named after real-world items. Although this is a common convention in games such as Vampire Survivors, it may still be associated with violence.
 
-To mitigate this, the game is centred around fictitious entities, such as zombies, and original food items presented in a creative way. This helps detach the game from real-world contexts and reduces the perceived seriousness of combat. As a result, the game presents a more lighthearted experience.
+To mitigate this, the game is centred around fictitious entities, such as zombies, and original food items presented in a creative way. This helps detach the game from real-world contexts and reduces the perceived seriousness of combat. As a result, the game presents a more light-hearted experience.
 
 #### **Environmental Impact**
 
@@ -518,7 +518,7 @@ The game uses moderately complex 2D graphics with GIF animations, UI overlays, a
 
 We aimed to reduce energy usage through features such as a brightness slider; while its primary purpose is to reduce eye strain, it may also contribute to minor reductions in screen energy consumption when used at lower levels.
 
-When developing this game, we prioritised using a visually appealing design and whilst this improved our user experience, there is a tradeoff between user experience and environmental sustainability. In the future, our asset sizes and unnecessary rendering would be reduced to minimise energy consumption.
+When developing this game, we prioritised using a visually appealing design and whilst this improved our user experience, there is a trade-off between user experience and environmental sustainability. In the future, our asset sizes and unnecessary rendering would be reduced to minimise energy consumption.
 
 | Sustainability Dimension | User Story | Acceptance Criteria |
 |-------------------------|------------|---------------------|
@@ -526,7 +526,7 @@ When developing this game, we prioritised using a visually appealing design and 
 |  | As a player, I want a brightness slider, so that I can reduce eye strain during game sessions. | Given I am on the settings menu, when I adjust the brightness slider, then the brightness should immediately update to the selected level. |
 | Social | As a visually-impaired player, I want to increase text size, so that I can read content comfortably. | Given I am on the settings menu, when I increase the text size, then all UI text should increase proportionally and remain readable for the remainder of the Doomsday Kitchen session. |
 |  | As a hearing-impaired player, I want to control sound effects and music volume separately, so that I can customise the audio levels to suit my hearing needs. | Given I am on the settings menu, when I adjust the music or sound effects volume, then they should update without affecting the other. |
-|  | As a player, I want Doomsday Kitchen phases to use fictional and stylised elements, so that violent themes (like weaponery) feel less realistic or distressing. | Given I am playing the game, when I enter the shooter or kitchen phase, then I should see characters and assets presented in a non-realistic style. |
+|  | As a player, I want Doomsday Kitchen phases to use fictional and stylised elements, so that violent themes (like weaponry) feel less realistic or distressing. | Given I am playing the game, when I enter the shooter or kitchen phase, then I should see characters and assets presented in a non-realistic style. |
 | Environmental | As a player, I want Doomsday Kitchen to run efficiently, so that it minimises unnecessary energy consumption. | Given I am playing Doomsday Kitchen, when it is running, then it should be using compressed file formats to minimise size and rendering load. |
 |  | As an environmentally aware player, I want to be able to exit Doomsday Kitchen at any time, so that I can reduce excessive energy consumption. | Given I am playing Doomsday Kitchen, when I choose to exit the level, then I should be able to do so immediately without being forced to continue. |
 | Technical | As a developer, I want Doomsday Kitchen code to be modular, so that it is easier to maintain and update features. | Given the Doomsday Kitchen codebase, when new features are added, then they should not require significant changes to other components designs. |
@@ -618,7 +618,7 @@ Our most notable technical challenge was transitioning from a reactive ordering 
 
 One of the design aspects we mention in the requirements section of this report is allowing zombies to move freely, in different directions and not in a fixed straight line. This was one of our early ideas that was labelled more of a “could have”, and during the development process, we chose not to implement it. The main reason was we felt our game and entity management alone was complex to develop in a short time. The idea stemmed from adapting the Plants vs Zombies game, which has zombies walking in a straight line, and we wanted to add novelty in this way. This is one of the main things we would implement as an immediate next step.
 
-Other aspects we would develop in the short term would be increasing the variability in zombie speeds, especially the most frequently appearing one, which currently moves quite slowly. Additionally, an oversight we noticed in the kitchen scene was that the chef could cook facing away from the food stations. Lastly, a multiplayer option would be a valuable addition. Doomsday Kitchen would translate well as a multiplayer game, as players could team up to kill the zombies and serve the kitchen. This could be complemented by a higher number of zombies and drops, so players could serve busier kitchens, increasing the difficulty in the kitchen phase. However, this would require adaptation to our controls, as two people cannot use the spacebar at the same time.
+Other aspects we would develop in the short term would be increasing the variability in zombie speeds, especially the most frequently appearing one, which currently moves quite slowly. Additionally, an oversight we noticed in the kitchen scene was that the chef could cook facing away from the food stations. Lastly, a multiplayer option would be a valuable addition. Doomsday Kitchen would translate well as a multiplayer game, as players could team up to kill the zombies and serve the kitchen. This could be complemented by a higher number of zombies and drops, so players could serve busier kitchens, increasing the difficulty in the kitchen phase. However, this would require adaptation to our controls, as two people cannot use the space bar at the same time.
 
 Our more significant ideas include greater customisability for the player, for example, by allowing the player to choose their chef character, and from a wider range of kitchen menu items and weaponry. On the other hand, we could implement a way to save progress and have the players unlock such themes, including different kitchens and food stations as they advance through the game. Finally, as our zombies had different behaviours, this idea could be extended to create a more diverse range of customers. For example, a particular customer would be known for being impatient and demanding their food be served promptly, with text bubbles of them expressing their frustration.
 
