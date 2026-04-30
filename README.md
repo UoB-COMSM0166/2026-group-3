@@ -59,6 +59,8 @@
   - [3.1 Class Diagrams](#31-class-diagrams)
   - [3.2 Behavioural Diagrams](#32-behavioural-diagrams)
 - [4. Implementation](#4-implementation)
+  - [4.1 Shooting Scene Challenge: Managing a large number of game entities in the shooting scene](#41-shooting-scene-challenge-managing-a-large-number-of-game-entities-in-the-shooting-scene)
+  - [4.2 Kitchen Scene Challenge: Changing the Kitchen from Order-Following to Planning-Based Gameplay](#42-kitchen-scene-challenge-changing-the-kitchen-from-order-following-to-planning-based-gameplay)
 - [5. Evaluation](#5-evaluation)
   - [Qualitative Evaluation](#qualitative-evaluation)
   - [Heuristic Evaluation](#heuristic-evaluation)
@@ -315,9 +317,11 @@ The draw loop propagates from the app to the view, where it clears the canvas. I
 
 ## 4. Implementation
 
-From an overall implementation perspective, our game was not designed as a single gameplay mode. Instead, it was divided into two main parts: the shooting section and the kitchen section. Because these two sections have different mechanics and responsibilities, placing all the game logic in one file would have made the code difficult to maintain and unsuitable for team development. Therefore, we used the Game class as the central structure to connect the Model, View, Controller, AssetManager and SoundManager. Different stages of the game were then managed through separate Scene classes. This structure made it easier to add new scenes and allowed team members to develop different modules more independently. It also became the foundation for implementing both the kitchen system and the shooting system.
+From an overall implementation perspective, our game was not designed as a single gameplay mode. Instead, it was divided into two main parts: the shooting section and the kitchen section. Because these two sections have different mechanics and responsibilities, placing all the game logic in one file would have made the code difficult to maintain and unsuitable for team development. 
 
-### 4.1 Challenge 1: Managing a large number of game entities in the shooting scene
+Therefore, we used the Game class as the central structure to connect the Model, View, Controller, AssetManager and SoundManager. Different stages of the game were then managed through separate Scene classes. This structure made it easier to add new scenes and allowed team members to develop different modules more independently. It also became the foundation for implementing both the kitchen system and the shooting system.
+
+### 4.1 Shooting Scene Challenge: Managing a large number of game entities in the shooting scene
 
 One of the major implementation challenge was the shooting scene, which required us to create and control a large number of entities with different behaviours, sprites and interactions. Unlike the kitchen scene, which mainly focuses on player movement, stations and UI interaction, the shooting scene contains many dynamic objects at the same time, such as zombies, towers, bullets and collectible items. If each object had been handled with separate hard-coded logic, the scene would have quickly become difficult to extend and debug. Therefore, the implementation needed an entity-based structure where each object could store its own state and behaviour while still being updated and rendered consistently by the scene. This made it possible to spawn multiple zombies, manage their movement, handle attacks or collisions, and display the correct sprite for each object without duplicating the same logic throughout the code.
 <p align="center">
@@ -339,7 +343,7 @@ One of the major implementation challenge was the shooting scene, which required
  <em>Figure: Shooting Scene Demo</em>
 </p>
 
-### 4.2 Challenge 2: Changing the Kitchen from Order-Following to Planning-Based Gameplay
+### 4.2 Kitchen Scene Challenge: Changing the Kitchen from Order-Following to Planning-Based Gameplay
 
 One major challenge in the kitchen part was redesigning the gameplay logic from an order-following system into a planning-based system. This was difficult because the change affected several connected systems at the same time, including inventory, recipes, cooking, selling, and rewards. The most notable change was that we reduced the role of customer orders and introduced a task list, allowing the player to actively plan what to produce instead of simply reacting to customer requests. Ingredients collected from zombies are stored in the inventory, and the player can choose which dishes to cook based on the available resources. These dishes can then be sold for coins, which connects the kitchen more clearly to the wider game loop. Therefore, the challenge was not just adding a new feature, but making sure that the whole kitchen gameplay loop worked consistently.
 <p align="center">
