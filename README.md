@@ -109,7 +109,7 @@ As opposed to Evolution Through Consumption, which was solely inspired by *Agar.
 
 ### Interactive Menu System for Purchasing Food and Weapons
 
-We adapted the menu of *Dave the Diver* to create our own zombie food items, such as [insert examples]. This increased the customisability and interactivity of the game for the player, encouraging engagement by collecting coins and purchasing items they personally like. This is a key component of our user experience.
+We adapted the menu of *Dave the Diver* to create our own zombie food items, such as Zomburgers or Zombbq. This increased the customisability and interactivity of the game for the player, encouraging engagement by collecting coins and purchasing items they personally like. This is a key component of our user experience.
 
 
 ### Increased Technical Complexity in Mechanics
@@ -277,11 +277,11 @@ With our requirements laid out, we could begin working on the architecture desig
 
 ### 3.1 Class diagrams 
 
-From our system architecture, we designed 3 class diagrams. The first is for the core system architecture, representing our model-view-controller system. The 2nd and 3rd represent our 2 main scenes within the game; our kitchen scene and our shooter scene. We determined these were the most important scenes to design, although other scenes exist like a main menu scene or a introduction scene, those had a relatively simple design.
+From our system architecture, we designed 3 class diagrams. The first is for the core system architecture, representing our model-view-controller system. The 2nd and 3rd represent our 2 main scenes within the game; our kitchen scene and our shooter scene. We determined these were the most important scenes to design, and although other scenes exist like a main menu scene or a introduction scene, those had a relatively simple design.
 
 #### MVC Class Diagram
 
-Game.js is the core of our MVC architecture, holding the model, view, controller and the extra sound and asset managers. Controller handles any incoming events from app and view handles any window resizing and canvas drawing. Model holds any game data as well as the current game state. The idea is that any data that should be preserved between scenes should be held within the Model, while any local data for the scene should be held within that scene. The scene holds two arrays, one for all the entities, and one for all the UI elements. In addition, there are some generic UI elements such as buttons and labels which can be used across all scenes.
+Game.js is the core of our MVC architecture, holding the model, view, controller and the extra sound and asset managers. Controller.js handles any incoming events from app and View.js handles any window resizing and canvas drawing. Model.js holds any game data as well as the current game state. The idea is that any data that should be preserved between scenes should be held within the Model, while any local data for the scene should be held within that scene. The scene holds two arrays, one for all the entities, and one for all the UI elements. In addition, there are some generic UI elements such as buttons and labels which can be used across all scenes.
 
 ![Core Class Diagram](/documentation/Class_Diagrams/Class_Diagram_Core.png)
 
