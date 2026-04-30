@@ -226,9 +226,14 @@ With these epics and stakeholders, we devised the following user stories which w
 
 ### 2.3 Use Cases
 
-![Use Case Diagram](documentation/images/UseCaseDiagram.png)
+<p align="center">
+  <img src="documentation/images/UseCaseDiagram.png"
+       width="700"
+       style="border-radius: 12px;">
 
-Figure X – Use Case Diagram
+<p align="center">
+ <em>Figure: Use Case Diagram</em>
+</p>
 
 - Actor: Player
 - System: Zombie Kitchen
@@ -236,7 +241,6 @@ Figure X – Use Case Diagram
 
 
 
-Table X — Use Case Specifications (Zombie Kitchen)
 | Use Case ID | Use Case Name | Primary Actor | Description | Preconditions | Trigger | Main Flow (Summary) | Postconditions | Alternatives / Exceptions |
 |------------|-------------|--------------|------------|--------------|--------|--------------------|---------------|--------------------------|
 | UC1 | Start Game | Player | Start a new gameplay run | Game launched; main menu visible | Player selects Start Game | System initializes run and enters gameplay loop | New run active | Loading failure returns to menu |
@@ -253,7 +257,9 @@ Table X — Use Case Specifications (Zombie Kitchen)
 | UC12 | Game Over | Player | End run after failure | Failure met | Kitchen destroyed | Game stops → Game Over screen | Post-game options | None |
 | UC13 | Purchase Upgrades | Player | Improve abilities | Sufficient coins | Player opens upgrade menu | Upgrade applied → Coins deducted | Ability improved | Insufficient coins |
 | UC14 | Post-Game Options | Player | Choose next action | Game Over active | Player selects option | Action executed | New run or menu | Invalid selection retry |
-
+<p align="center">
+ <em>Table： Use Case Specifications (Doomsday Kitchen)</em>
+</p>
 
 
 ### 2.4 Reflection
@@ -317,9 +323,11 @@ The draw loop propagates from the app to the view, where it clears the canvas. I
 
 ## 4. Implementation
 
-From an overall implementation perspective, our game was not designed as a single gameplay mode. Instead, it was divided into two main parts: the shooting section and the kitchen section. Because these two sections have different mechanics and responsibilities, placing all the game logic in one file would have made the code difficult to maintain and unsuitable for team development. 
+From an overall implementation perspective, our game was not designed around a single gameplay mode. Instead, it was divided into two main parts: the shooting section and the kitchen section. These two sections worked in very different ways. The shooting scene required the game to create and control many entities with different behaviours, sprites and interactions, while the kitchen scene required the player to plan dishes, use ingredients, cook food and sell the finished dishes.
 
-Therefore, we used the Game class as the central structure to connect the Model, View, Controller, AssetManager and SoundManager. Different stages of the game were then managed through separate Scene classes. This structure made it easier to add new scenes and allowed team members to develop different modules more independently. It also became the foundation for implementing both the kitchen system and the shooting system.
+Because of this, putting all the logic into one large file would have made the code hard to maintain and difficult for the team to develop together. Therefore, we used the Game class as the central structure to connect the Model, View, Controller, AssetManager and SoundManager. Each stage of the game was then handled by a separate Scene class.
+
+This structure made the project more modular, made it easier to add or change scenes, and allowed team members to work on different parts of the game more independently. It also provides the basis for the two implementation challenges discussed below: managing many different entities in the shooting scene, and changing the kitchen scene from an order-following system into a planning-based gameplay system.
 
 ### 4.1 Shooting Scene Challenge: Managing a large number of game entities in the shooting scene
 
