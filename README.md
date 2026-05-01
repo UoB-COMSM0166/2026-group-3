@@ -90,7 +90,7 @@ What makes Doomsday Kitchen novel is its subversion of player expectations. At f
 
 ### 2.1 Ideation Process
 
-Doomsday Kitchen was a result of continuous brainstorming and developing our ideas in response to feedback from both our team and other student groups. While gathering inspiration, we focused on what we liked and didn’t like about each game’s mechanics, storylines, objectives, themes and player modes (see Figure - below).
+Doomsday Kitchen was a result of continuous brainstorming and developing our ideas in response to feedback from both our team and other student groups. While gathering inspiration, we focused on what we liked and didn’t like about each game’s mechanics, storylines, objectives, themes and player modes.
 
 Individual members developed their own game ideas, creating drawings, diagrams or character images to illustrate them to the group. Through an anonymous vote, we chose two games:
 - **Evolution Through Consumption**
@@ -192,7 +192,7 @@ Incorporating technical novelty into Doomsday Kitchen was more straightforward t
 <p align="center">
   <img src="documentation/Requirements_figures/OnionModel.png" width="60%" />
 </p>
-<p align="center"><em>Figure : Onion model showing stakeholders of Doomsday Kitchen</em></p>
+<p align="center"><em>Onion model showing stakeholders of Doomsday Kitchen</em></p>
 
 
 We also identified the following epics based on the requirements of these stakeholders
@@ -232,7 +232,7 @@ With these epics and stakeholders, we devised the following user stories which w
        style="border-radius: 12px;">
 
 <p align="center">
- <em>Figure: Use Case Diagram</em>
+ <em>Use Case Diagram</em>
 </p>
 
 - Actor: Player
@@ -272,7 +272,6 @@ Our group also encountered challenges in creating quantifiable acceptance criter
 
 Additionally, collecting the requirements emphasised how user stories and acceptance criteria can differ for the same epic. For example, both a casual player and a competitive player might want the option to switch difficulties, but for distinct reasons.
 
-Gathering requirements helped us perfect our game concept, moving us closer to a well-rounded game from a vague idea.
 
 ## 3 Design
 
@@ -338,7 +337,7 @@ One of the major implementation challenge was the shooting scene, which required
        style="border-radius: 12px;">
 
 <p align="center">
- <em>Figure: How to manage different types of zombies</em>
+ <em>How to manage different types of zombies</em>
 </p>
 
 <p align="center">
@@ -348,7 +347,7 @@ One of the major implementation challenge was the shooting scene, which required
 </p>
 
 <p align="center">
- <em>Figure: Shooting Scene Demo</em>
+ <em>Shooting Scene Demo</em>
 </p>
 
 ### 4.2 Kitchen Scene Challenge: Changing the Kitchen from Order-Following to Planning-Based Gameplay
@@ -371,7 +370,7 @@ One major challenge in the kitchen part was redesigning the gameplay logic from 
 </p>
 
 <p align="center">
- <em>Figure: Kitchen Scene Tasklist</em>
+ <em>Kitchen Scene Tasklist</em>
 </p>
 
 ## 5. Evaluation
@@ -465,17 +464,15 @@ We administered the NASA Task Load Index (Hart and Staveland, 1988) to measure u
 
 ---
 
-Most dimensions produced a significant result, demonstrating that perceived workload increased between easy and hard conditions, and our difficulty levels were clearly different. 
+Most dimensions produced a statistically significant result, showing that perceived workload increased across easy and hard conditions. Our difficulty levels were clearly different to most players.
 
-Mental demand was significantly higher in the hard condition, which can be attributed to the increased zombie spawn frequency. This required players to handle multiple threats, moving quickly across the screen before zombies became too close. This likely challenged their attentional resources and, alongside the non-significant result in performance, is consistent with research that increasing "enemies" can reduce game performance and increase cognitive workload (Allison and Polich, 2009).
+Mental demand was significantly higher in the hard condition. This is likely due to the increase in zombie spawn frequency. Players may have perceived pressure to multi-task and move quickly across the screen to defeat the zombies before they became too close. This potentially challenged the user's attentional resources, and pairing this with the non-significant result in performance, is consistent with research that increasing “enemies” can reduce perceived game performance and increase cognitive workload (Allison and Polich, 2009).
 
-Physical demand was moderately higher in the harder difficulty, as expected, due to the faster and more frequent keyboard inputs needed to manage multiple actions, such as shooting zombies and purchasing upgrades to succeed in the level.
-
-Temporal and effort scores were moderately higher in the hard condition, indicating players felt under time pressure and exerted more effort to achieve their score. We attribute this to increased perceived time pressure and higher task complexity due to the greater number of zombies. This is consistent with gaming research that use the NASA-TLX, indicating higher cognitive load in time-constrained situations where players feel the need to act quickly under pressure (Sevcenko et al., 2021).
+Temporal and effort scores were moderately higher in the hard condition, indicating players felt under time pressure and exerted more effort to achieve their score. We assume that players perceived an increase in time pressure in attempts to defeat the zombies before their health dropped, and an overall higher task complexity. This is in line with gaming studies that use the NASA-TLX, which indicate higher cognitive load when players are under time constraints to move quickly (Sevcenko et al., 2021).
 
 Interestingly, frustration had an insignificant result, with unusual variability in scores. For example, User 7 reported less frustration and effort for the hard condition, despite rating increased mental demand. User 1 also recorded less frustration in the harder condition, despite rating mental, physical and temporal demand as higher.
 
-This could be attributed to differences in participants’ perception of the game feedback, specifically the health bar, which very gradually decreased from 100% during gameplay. Participants may not have perceived this as impactful enough to feel frustrated. Rather than omitting these values as possible outliers, we included them in our evaluation, linking them to individual differences. 
+This could be attributed to differences in participants’ perception of the game feedback, specifically the health bar, which very gradually decreased from 100% during gameplay. Participants may not have perceived this as impactful enough to feel frustrated. Rather than omitting these values as possible outliers, we included them in our evaluation, linking them to individual differences.
 
 Limitation: Learning effects potentially minimised perceived workload differences in the Hard difficulty. On reflection, the conditions could have been counterbalanced or randomised across participants, or possibly a time gap to reduce these biases. Nonetheless, the results show that workload predictably increased between the Easy and Hard difficulty levels.
 
@@ -546,29 +543,30 @@ Our team conducted a sustainability impact analysis with the Sustainability Anal
 
 | Sustainability Dimension | User Story | Acceptance Criteria |
 |-------------------------|------------|---------------------|
-| Individual |  As a player, I want Doomsday Kitchen to have a pause menu, so I can prevent the continuous, addictive game loop and take a break. | Given I am playing a level, when I open the pause menu, then Doomsday Kitchen should halt immediately and display an option to exit. |
-|  | As a player, I want a brightness slider, so I can reduce eye strain during game sessions. | Given I am on the settings menu, when I adjust the brightness slider, then the brightness should immediately update to the selected value. |
-| Social | As a visually-impaired player, I want to increase text size, so I can read text comfortably. | Given I am on the settings menu, when I increase the text size, then all UI text should increase proportionally and remain readable for the session. |
-|  | As a hearing-impaired player, I want to control both sound effects and music volume, so that I can adjust the audio levels to suit my hearing needs. | Given I am on the settings menu, when I increase or decrease the music or sound effects volume, then they should update without affecting the other. |
-|  | As a player, I want Doomsday Kitchen phases to use fictional elements, so violent themes (like weaponery) feel more light-hearted and less realistic . | Given I am playing the game, when I enter the shooter or kitchen phase, then I should see characters and assets presented in a non-realistic style. |
-| Environmental | As an environmentally-aware player, I want to be able to exit Doomsday Kitchen's loop at any time, so I can reduce unnecessary energy consumption. | Given I am playing Doomsday Kitchen, when I choose to exit the level, then it should stop the game and return me to the main page. |
-| Technical | As a developer, I want Doomsday Kitchen code to be modular, so it is easier to maintain and update components. | Given the Doomsday Kitchen codebase, when new features are added, then they should not require significant changes to other components designs. |
+| Individual |  As a player, I want Doomsday Kitchen to have a pause menu, so I can break the continuous, addictive game loop and take a break. | Given I am playing a level, when I open the pause menu, then Doomsday Kitchen should immediately stop and provide an option to exit. |
+|  | As a player, I want a brightness slider, so I can reduce my eye strain while playing. | Given I am on the settings menu, when I adjust the brightness, then the brightness should immediately update to the selected value. |
+| Social | As a visually-impaired player, I want to increase text size, so I can read text comfortably. | Given I am on the settings menu, when I increase the text size, then all the UI text should increase proportionally and remain readable for the game session. |
+|  | As a hearing-impaired player, I want to control both the sound effects and music volume, so that I can adjust the audio levels to suit my hearing needs. | Given I am on the settings menu, when I increase or decrease the music or sound effects volume, then they should update seperately |
+|  | As a player, I want Doomsday Kitchen phases to use fictional elements, so violent, combat themes (like weaponery) feel more light-hearted and less realistic . | Given I am playing the game, when I enter the shooter or kitchen phase, then I should see characters and assets presented in a non-realistic style. |
+| Environmental | As an environmentally-aware player, I want to be able to exit Doomsday Kitchen's loop at any time, so I can minimise unnecessary energy use. | Given I am playing Doomsday Kitchen, when I choose to exit the level, then it should stop the game and return me to the main page. |
+| Technical | As a developer, I want Doomsday Kitchen code to be modular, so it is easier to maintain and update components. | Given the Doomsday Kitchen codebase, when I want to add new features, then they should not require significant changes to other components designs. |
 | Economic | As a player, I want to progress through levels in Doomsday Kitchen without needing to pay for key features, so I am not limited by my finances.  | Given I access Doomsday Kitchen, when I progress through levels, I should not be asked to make payments to continue. |
 
 
 #### Individual Impact
 
-Doomsday Kitchen may positively impact a user’s mental health by providing stress relief and a sense of accomplishment after each level/day survived. Research suggests that gaming can reduce stress and improve mood (Vuorre et al., 2024), supporting the potential benefits of games as a leisure activity. 
+Doomsday Kitchen may positively impact a user’s mental health by providing stress relief and a sense of accomplishment after each level/day survived. Research suggests that gaming can reduce stress and improve mood (Vuorre et al., 2024), supporting the potential benefits of games as a leisure activity.
 
-On the other hand, if users become highly engaged, the repetitive gameplay loop of “shooting scene → kitchen scene” may encourage an addictive engagement pattern. As game "days" are relatively short and increase in difficulty, this may promote prolonged or repeated play.
+On the other hand, if users become overly engaged, the repetitive gameplay loop of “shooting scene → kitchen scene” may encourage an addictive engagement. As game "days" are relatively short and slightly increase in difficulty, this could enable prolonged sessions.
 
-To mitigate this, Doomsday Kitchen avoids long-term progression features such as player leaderboards, which reduces competition between players. This reduces the pressure for users to return and continue their progress. In addition, we implemented a pause menu to halt gameplay to prevent the user playing for extended amounts of time in the continuous game loop. Additionally, as no personal data is required to save progress or leaderboard information, user privacy is preserved. 
+ In attempts to mitigate this, Doomsday Kitchen avoids long-term progression features such as player leaderboards, to reduce competition between players. This could reduce the pressure for users to return, continue their progress and return to the continuous loop. In addition, we implemented a pause menu to allow players to halt gameplay and prevent playing for extended amounts of time. User privacy is protected and preserved as users do not provide their names for leaderboard information.
 
-In the future, we could further mitigate this by isolating the game sessions into levels that users must unlock and enter themselves, rather than automatically starting the next one. Players would have clearer stopping points in sessions. 
+In the future, we could further mitigate this by isolating the game sessions into levels that users must unlock and enter themselves, rather than automatically starting the next one, similar to popular games like Candy Crush. This way, players would have defined stopping points in sessions, encouraging them to
+choose to stop.
 
-Physical health is also at risk, as extended play may contribute to eye strain; therefore, a brightness slider has been implemented to improve visual comfort.
+Physical health is also at a small risk, as extended sessions could contribute to eye strain; therefore, a brightness slider has been implemented to improve visual comfort.
 
-Users are given agency through upgrade and customisation options, particularly in weapon selection and kitchen menu items. As difficulty increases and zombie numbers grow, players are encouraged to make strategic decisions about resource allocation. This can enhance engagement, decision-making and planning; however, this agency is constrained by limited in-game currency, which is only earned in the kitchen scene, requiring users to evaluate and plan their choices.
+Users are given agency through opportunities to upgrade and customise, particularly in weapon selection and innovative kitchen menu items. However, at the same time, this is constrained by the number of coins earned in the kitchen scene and zombie drops collected in the shooter scene. This pushes players to plan ahead, thinking about how best to allocate their resources to buy the items they desire. This type of planning and strategic decision-making game has been found to enhance decision making abilities in video game players (Jordan and Dhamala, 2022). 
 
 #### **Social Impact**
 
@@ -595,7 +593,7 @@ When developing this game, we prioritised using a visually appealing design and 
        width="800"
        style="border-radius: 12px;">
 </p>
-Figure: Doomsday Kitchen, Chains of Effects diagram
+<em>Doomsday Kitchen, Chains of Effects diagram</em>
 
 
 # 7. Process 
@@ -612,7 +610,7 @@ We met both in person and online, aiming for bi-weekly meetings, with regular pr
        style="border-radius: 12px;">
 </p>
 
-Figure: A retrospective sprint board showing the main story points aimed for each sprint.
+A retrospective sprint board showing the main story points implemented in each sprint.
 
 The first sprint began in reading week, where a minimal viable product formed. We focused on producing a base to slowly develop, with a main page, shooting scene (including shooting functionality), and a simple kitchen scene interface. During this time, we familiarised ourselves with the codebase. To ensure our communication stayed consistent, despite some of us being less available, we maintained our meetings and discussed progress through text messaging.
 
@@ -679,7 +677,7 @@ Other aspects we would develop in the short term would be increasing the variabi
 
 Our more significant ideas include greater customisability for the player, for example, by allowing the player to choose their chef character, and from a wider range of kitchen menu items and weaponry. On the other hand, we could implement a way to save progress and have the players unlock such themes, including different kitchens and food stations as they advance through the game. Finally, as our zombies had different behaviours, this idea could be extended to create a more diverse range of customers. For example, a particular customer would be known for being impatient and demanding their food be served promptly, with text bubbles of them expressing their frustration.
 
-In summary, this project allowed us to experience all stages of the software development process and understand how different roles and individual strengths contribute to building a final product. We thoroughly enjoyed developing Doomsday Kitchen and found the experience both rewarding and valuable for our learning.
+In summary, this project allowed us to experience all stages of the software development process and understand how different roles and individual strengths contribute to building a final product. We thoroughly enjoyed developing Doomsday Kitchen and we are all the more excited to complete further development projects in our professional careers!
 
 ## 9. AI Use Statement
 Our group used AI tools as a support tool during the development of this project. The project requirements, overall structure, feature planning, and design decisions were discussed and decided by group members. AI was then used to assist with producing some initial implementation of selected features based on our planned structure and instructions. The AI-generated output was not treated as final work; group members reviewed, modified, tested, and integrated the code to ensure that it matched the project requirements and that we understood the final implementation.
@@ -709,6 +707,8 @@ Allison, B.Z. and Polich, J. (2009) Workload assessment of computer gaming using
 Becker, C. et al. (2015) The Karlskrona Manifesto for Sustainability Design. https://sustainabilitydesign.org/karlskrona-manifesto/
 
 Hart, S.G. and Staveland, L.E. (1988) Development of NASA-TLX (Task Load Index): Results of empirical and theoretical research. In: Hancock, P.A. and Meshkati, N. (eds.) Human Mental Workload. Amsterdam: North Holland, pp. 139–183.
+
+Jordan, T. and Dhamala, M. (2022) Video game players have improved decision-making abilities and enhanced brain activities. ScienceDirect.
 
 Saifi, S. (2025) The Hidden Environmental Cost of Your GitHub Repos. Medium. https://medium.com/@sohail_saifi/the-hidden-environmental-cost-of-your-github-repos-e8dfa84e8c7a
 
