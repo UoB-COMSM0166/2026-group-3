@@ -610,7 +610,7 @@ We met both in person and online, aiming for bi-weekly meetings, with regular pr
        style="border-radius: 12px;">
 </p>
 
-A retrospective sprint board showing the main story points implemented in each sprint.
+<em> A retrospective sprint board showing the main story points implemented in each sprint. </em>
 
 The first sprint began in reading week, where a minimal viable product formed. We focused on producing a base to slowly develop, with a main page, shooting scene (including shooting functionality), and a simple kitchen scene interface. During this time, we familiarised ourselves with the codebase. To ensure our communication stayed consistent, despite some of us being less available, we maintained our meetings and discussed progress through text messaging.
 
@@ -627,6 +627,7 @@ We used planning poker during a lab session, via an online tool: Planning Poker 
        width="300"
        style="border-radius: 12px;">
 </p>
+<em> Planning Poker online </em>
 
 ## **Kanban**
 
@@ -638,7 +639,7 @@ Kanban was a beneficial tool for visualising exactly what needed to be done, its
   <img src="documentation/Process_figures/JiraKanbanList.png" width="600"
        style="margin-top: -100px; border-radius: 12px;"/>
 </p>
-
+<em> Jira Kanban Platform </em>
 
 ## Communication: WhatsApp and Google Meet
 
@@ -649,6 +650,7 @@ To maintain regular communication outside of in-person meetings, we used both a 
        width="700"
        style="border-radius: 12px;">
 </p>
+<em> Example: Progress update text </em>
 
 ## Pair programming
 
@@ -659,7 +661,7 @@ We used pair programming primarily to guide how assets were going to be placed i
        width="800"
        style="border-radius: 12px;">
 </p>
-
+<em> Example of how pair programming was used </em>
 
 ## 8. Conclusion
 
